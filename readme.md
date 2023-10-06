@@ -1,4 +1,4 @@
-# Prospark - Backend
+# Zuriportfolio - Backend
 
 This is a `Node.js / Express` project bootstrapped with [`create-prospark-app`](https://github.com/benrobo/prospark).
 
