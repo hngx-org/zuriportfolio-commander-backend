@@ -1,0 +1,31 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+      "target": "es2017",
+      "lib": ["es2017", "esnext.asynciterable"],
+      "typeRoots": ["node_modules/@types"],
+      "allowSyntheticDefaultImports": true,
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "forceConsistentCasingInFileNames": true,
+      "moduleResolution": "node",
+      "module": "commonjs",                         
+      "rootDir": "./src",
+      "pretty": true,
+      "sourceMap": true,
+      "declaration": true,
+      "outDir": "dist",
+      "allowJs": true,
+      "noEmit": false,
+      "esModuleInterop": true,
+      "resolveJsonModule": true,
+      "importHelpers": true,
+      "baseUrl": "./src",
+    },
+    "include": ["src/**/*.ts","src/**/*.html", "src/**/*.json", ".env", "src/**/*"],
+    "exclude": ["node_modules", "src/http", "src/logs", "src/tests"],
+    "ts-node": {
+      "require": ["tsconfig-paths/register"]
+    }
+  }
+  
