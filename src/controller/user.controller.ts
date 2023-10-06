@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import BaseController from "./base.controller";
 
 export default class UserController extends BaseController {
@@ -5,7 +6,7 @@ export default class UserController extends BaseController {
     super();
   }
 
-  async getUser(req, res) {
+  async getUser(req: Request, res: Response) {
     const userdata = [
       {
         name: "john doe",
