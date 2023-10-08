@@ -181,7 +181,7 @@ model store_traffic {
 model sales_report {
     id         String   @id
     user_id    String
-    sales      Int
+    total_sale Decimal  @db.Decimal(10, 2)
     created_at DateTime @default(now())
 }
 
