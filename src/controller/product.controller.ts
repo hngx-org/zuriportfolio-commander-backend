@@ -63,6 +63,26 @@ export default class ProductController extends BaseController {
     this.success(res, 'Product Added', 'Product has been added successfully', 201, product);
   }
 
+  async addProductDraft(req: Request, res: Response) {
+    // Validates product details
+    const { error, value } = productSchema.validate(req.body);
+    
+    // returns error in case of wroong user details
+    if (error) {
+      return this.error(res, 'Validation Error', error.details[0].message, 400, null);
+    }
+
+    // creates new product as draft
+    const product = await prisma.product.create({
+      data: {
+        ...value,
+        isPublished: false
+      },
+    });
+
+    this.success(res, 'Product Added', 'Product has been added as Draft', 201, product);
+  }
+
   async unpublishProduct(req: Request, res: Response) {
     const productId = req.params.productId;
     // Update the is_published field to false
