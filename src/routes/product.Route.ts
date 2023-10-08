@@ -1,11 +1,11 @@
-import express from "express";
-import useCatchErrors from "../error/catchErrors";
-import productController from "../controller/product.Controller";
+import express from 'express';
+import useCatchErrors from '../error/catchErrors';
+import productController from '../controller/product.Controller';
 
 export default class productRoute {
   router = express.Router();
   productController = new productController();
-  path = "/products";
+  path = '/products';
 
   constructor() {
     this.initializeRoutes();
@@ -14,12 +14,7 @@ export default class productRoute {
   initializeRoutes() {
     this.router.get(
       `${this.path}/publish/:productId`,
-      useCatchErrors(this.productController.publishProduct.bind(this.productController))
+      useCatchErrors(this.productController.publishProduct.bind(this.productController)),
     );
   }
 }
-
-
-
-
-

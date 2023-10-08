@@ -59,7 +59,4 @@ export default class App {
     // handle global errors
     this.app.use(HandleErrors);
   }
-
-  
-};
-
+}

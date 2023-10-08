@@ -40,6 +40,6 @@ export default class ProductController extends BaseController {
       data: updatedProduct,
     };
 
-    this.success(res, "--publish/success", payload.message, payload.statusCode,payload.data);
+    this.success(res, '--publish/success', payload.message, payload.statusCode, payload.data);
   }
 }
