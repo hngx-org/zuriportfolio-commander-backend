@@ -30,7 +30,7 @@ export default class ProductController extends BaseController {
         id: productId,
       },
       data: {
-        is_published: true,
+        isPublished: true,
       },
     });
 
@@ -40,6 +40,6 @@ export default class ProductController extends BaseController {
       data: updatedProduct,
     };
 
-    this.success(res, payload.message, payload.statusCode, payload.data);
+    this.success(res, "--publish/success", payload.message, payload.statusCode,payload.data);
   }
 }

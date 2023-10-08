@@ -5,7 +5,7 @@
   "scripts": {
     "test": "",
     "dev": "nodemon",
-    "migrate:prisma": "prisma migrate",
+    "generate": "prisma generate",
     "build": "rimraf ./dist && tsc",
     "dbPush": "prisma db push",
     "migrate": "prisma migrate dev",
