@@ -20,5 +20,9 @@ export default class ProductRoute {
       `${this.path}/add`,
       useCatchErrors(this.productController.addProduct.bind(this.productController))
     );
+    this.router.post(
+      `${this.path}/:productId/draft`,
+      useCatchErrors(this.productController.addProductDraft.bind(this.productController))
+    );
   }
 }
