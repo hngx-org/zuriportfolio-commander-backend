@@ -46,14 +46,29 @@ Visit `http://localhost:8080/api/user/data` in your browser just to confirm rout
 Create a .env file inside the root of your application and include the following content:
 
 ```bash
-DATABASE_URL='postgresql://root:@localhost:5432/prospark-db'
+DATABASE_URL='postgresql://postgres:@localhost:5432/prospark-db'
 
 NODE_ENV="development"
 
 JWT_SECRET="sdcsdcdc32ry38y9dpnp23i3892te832tp9e23on"
+
+CLOUDINARY_NAME="ssdcsdcs"
+
+CLOUDINARY_API_KEY="sdcscsdsdc"
+
+CLOUDINARY_API_SECRET="sdcdscsdcc"
 ```
 
-> Note!! you need to create the database `free-lunch` yourself before doing any other thing within the app if you need it to work properly. You could use tool like `PhpMyAdmin` or `MysqlWorkBench`
+Navigate to [cloudinary](https://console.cloudinary.com/console/c-8bfa927f05e8c13c1b160b6b4d3792/getting-started) to retrieve needed info for your `.env` file.
+
+> Note!! you need to create the database `zuriportfolio` yourself before doing any other thing within the app if you need it to work properly. You could use tool like `PhpMyAdmin` or `MysqlWorkBench`
+
+### Droping all created tables
+
+```bash
+drop schema public cascade;
+create schema public;
+```
 
 # Routes
 
