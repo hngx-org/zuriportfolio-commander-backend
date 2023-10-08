@@ -1,17 +1,178 @@
-
 generator client {
     provider = "prisma-client-js"
 }
 
 datasource db {
-    provider     = "postgresql"
-    url          = env("DATABASE_URL")
-    
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
-  
-model Users {
-    id              String   @id
-    emailVerified   Boolean? @default(false)
-    accountVerified Boolean? @default(false)
-    email           String   @unique
+
+enum STATUS {
+    pending
+    complete
+    failed
+}
+
+enum ADMIN_STATUS {
+    pending
+    review
+    approved
+    blacklist
+}
+
+enum Discount_type {
+    Percentage
+    Fixed
+}
+
+enum Promo_type {
+    Discount
+}
+
+model user {
+    id              String            @id @unique
+    username        String
+    firstName       String
+    lastName        String
+    email           String
+    sectionOrder    String?
+    password        String
+    provider        String
+    profilePic      String?
+    refreshToken    String
+    createdAt       DateTime          @default(now())
+    orders          order[]           @relation(name: "merchant_orders")
+    customer        order[]           @relation(name: "customer_orders")
+    revenue         revenue[]
+    promotion       promotion[]
+    track_promotion track_promotion[]
+}
+
+model order {
+    id         String   @id
+    type       String
+    quantity   Int
+    amount     Float
+    subtotal   Float?
+    VAT        Float?
+    productId  String
+    merchantId String
+    customerId String
+    promo      Int?
+    status     STATUS   @default(pending)
+    createdAt  DateTime @default(now())
+
+    merchant user @relation(name: "merchant_orders", fields: [merchantId], references: [id])
+    customer user @relation(name: "customer_orders", fields: [customerId], references: [id])
+}
+
+model product {
+    id            String       @id @unique
+    userId        String
+    shopId        String
+    name          String
+    description   String
+    quantity      Int
+    price         Float
+    discountPrice Float
+    tax           Float
+    adminStatus   ADMIN_STATUS @default(pending)
+    ratingId      Int?
+    isPublished   Boolean      @default(false)
+    currency      String
+    createdAt     DateTime     @default(now())
+    updatedAt     DateTime     @default(now())
+
+    image           product_image[]
+    categories      product_category[]
+    promotion       promotion?
+    track_promotion track_promotion[]
+    //   rating
+    // shop
+}
+
+model product_image {
+    id        Int     @id @default(autoincrement())
+    productId String
+    url       String
+    product   product @relation(fields: [productId], references: [id])
+}
+
+model product_category {
+    id                 Int    @id @default(autoincrement())
+    name               String
+    parent_category_id Int?
+    product_id         String
+    status             STATUS @default(pending)
+
+    product product @relation(fields: [product_id], references: [id])
+}
+
+model promo_product {
+    id          String   @id
+    promo_id    String
+    description String
+    created_at  DateTime @default(now())
+}
+
+model promotion {
+    id             String        @id
+    user_id        String
+    promotion_type Promo_type
+    discount_type  Discount_type
+    quantity       Int
+    amount         Float
+    product_id     String        @unique
+    valid_from     DateTime
+    valid_to       DateTime
+    min_cart_price Int
+    created_at     DateTime      @default(now())
+    updated_at     DateTime      @default(now())
+
+    user    user     @relation(fields: [user_id], references: [id])
+    product product? @relation(fields: [product_id], references: [id])
+}
+
+model revenue {
+    id        String   @id @unique
+    userId    String
+    appId     String
+    amount    Float
+    createdAt DateTime @default(now())
+
+    user user @relation(fields: [userId], references: [id])
+}
+
+model track_promotion {
+    id        String        @id @unique
+    productId String
+    userId    String
+    type      Discount_type
+    createdAt DateTime      @default(now())
+
+    user    user     @relation(fields: [userId], references: [id])
+    product product? @relation(fields: [productId], references: [id])
+}
+
+model store_traffic {
+    id        Int      @id @default(autoincrement())
+    shop_id   String
+    ip_addr   String
+    createdAt DateTime @default(now())
+}
+
+model sales_report {
+    id         String   @id
+    user_id    String
+    sales      Int
+    created_at DateTime @default(now())
+}
+
+model activity {
+    id          String   @id
+    action      String
+    user_id     String
+    title       String
+    description String
+    created_at  DateTime @default(now())
 }
