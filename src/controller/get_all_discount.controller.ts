@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
-import prisma from 'config/prisma';
+import prisma from '../config/prisma';
 import { Discount_type } from '@prisma/client';
 
 export default class GetAllDiscountController extends BaseController {
