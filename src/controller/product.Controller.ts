@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import BaseController from './base.controller'; // Assuming you have a BaseController
-import { productSchema } from 'helper/validate';
+import { productSchema } from '../helper/validate';
 
 const prisma = new PrismaClient();
 
@@ -81,5 +81,20 @@ export default class ProductController extends BaseController {
     });
 
     this.success(res, 'Product Added', 'Product has been added as Draft', 201, product);
+  }
+
+  async unpublishProduct(req: Request, res: Response) {
+    const productId = req.params.productId;
+    // Update the is_published field to false
+    const updatedProduct = await prisma.product.update({
+      where: {
+        id: productId,
+      },
+      data: {
+        isPublished: false,
+      },
+    });
+
+    this.success(res, 'Product Unpublished', 'Product has been unpublished successfully', 201, updatedProduct);
   }
 }

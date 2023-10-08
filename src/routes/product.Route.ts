@@ -24,5 +24,9 @@ export default class ProductRoute {
       `${this.path}/:productId/draft`,
       useCatchErrors(this.productController.addProductDraft.bind(this.productController))
     );
+    this.router.patch(
+      `${this.path}/unpublish/:productId`,
+      useCatchErrors(this.productController.unpublishProduct.bind(this.productController)),
+    );
   }
 }
