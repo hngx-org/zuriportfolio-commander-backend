@@ -75,24 +75,21 @@ create schema public;
 The routes can be found within the `/routes` directory. for eg the user route would handle routing that has to do with the user controllers which is prefix with `/user/*` and when been invoked, would be done in this format `/api/user/*`
 
 ```js
-const express = require("express");
-const UserController = require("../controller/user");
-const useCatchErrors = require("../error/catchErrors");
+const express = require('express');
+const UserController = require('../controller/user');
+const useCatchErrors = require('../error/catchErrors');
 
 class UserRoute {
   router = express.Router();
   userController = new UserController();
-  path = "/user";
+  path = '/user';
 
   constructor() {
     this.initializeRoutes();
   }
 
   initializeRoutes() {
-    this.router.get(
-      `${this.path}/data`,
-      useCatchErrors(this.userController.getUser.bind(this.userController))
-    );
+    this.router.get(`${this.path}/data`, useCatchErrors(this.userController.getUser.bind(this.userController)));
   }
 }
 
