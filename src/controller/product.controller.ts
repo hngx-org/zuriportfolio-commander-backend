@@ -65,7 +65,7 @@ export default class ProductController extends BaseController {
 
   async unpublishProduct(req: Request, res: Response) {
     const productId = req.params.productId;
-    // Update the is_published field to true
+    // Update the is_published field to false
     const updatedProduct = await prisma.product.update({
       where: {
         id: productId,
