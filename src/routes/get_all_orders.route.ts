@@ -14,7 +14,7 @@ export default class GetAllOrdersRoute {
   initializeRoutes() {
     this.router.get(
       `${this.path}`,
-      useCatchErrors(this.getAllOrdersController.getAllOrders.bind(this.getAllOrdersController))
+      useCatchErrors(this.getAllOrdersController.getAllOrders.bind(this.getAllOrdersController)),
     );
   }
 }

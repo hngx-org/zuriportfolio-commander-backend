@@ -17,4 +17,8 @@ export default class CreateDiscountRoute {
       useCatchErrors(this.CreateDiscountController.createDiscount.bind(this.CreateDiscountController))
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 86789cf5f5f3e62e8f1d069a0016a5847087bf0f

@@ -26,6 +26,8 @@
     "express": "^4.18.2",
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.0",
+    "short-uuid": "^4.2.2",
+    "validate": "^5.2.0",
     "winston": "^3.8.2"
   },
   "devDependencies": {
@@ -38,7 +40,7 @@
     "dotenv": "^16.0.3",
     "nodemon": "^3.0.1",
     "prisma": "^5.4.1",
-    "rimraf": "^3.0.2",
+    "rimraf": "^5.0.5",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.1",
     "tslib": "^2.4.1",

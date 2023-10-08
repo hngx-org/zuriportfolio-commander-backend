@@ -14,7 +14,7 @@ export default class GetAllDiscountRoute {
   initializeRoutes() {
     this.router.get(
       `${this.path}`,
-      useCatchErrors(this.getAllDiscountController.getAllDiscount.bind(this.getAllDiscountController))
+      useCatchErrors(this.getAllDiscountController.getAllDiscount.bind(this.getAllDiscountController)),
     );
   }
 }
