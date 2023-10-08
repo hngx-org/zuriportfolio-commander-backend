@@ -5,7 +5,7 @@
   "scripts": {
     "test": "",
     "dev": "nodemon",
-    "migrate:prisma": "prisma migrate",
+    "generate": "prisma generate",
     "build": "rimraf ./dist && tsc",
     "dbPush": "prisma db push",
     "migrate": "prisma migrate dev",
@@ -24,6 +24,7 @@
     "cloudinary": "^1.41.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
+    "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.0",
     "winston": "^3.8.2"
   },
