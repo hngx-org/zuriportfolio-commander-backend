@@ -46,38 +46,50 @@ Visit `http://localhost:8080/api/user/data` in your browser just to confirm rout
 Create a .env file inside the root of your application and include the following content:
 
 ```bash
-DATABASE_URL='postgresql://root:@localhost:5432/prospark-db'
+DATABASE_URL='postgresql://postgres:@localhost:5432/prospark-db'
 
 NODE_ENV="development"
 
 JWT_SECRET="sdcsdcdc32ry38y9dpnp23i3892te832tp9e23on"
+
+CLOUDINARY_NAME="ssdcsdcs"
+
+CLOUDINARY_API_KEY="sdcscsdsdc"
+
+CLOUDINARY_API_SECRET="sdcdscsdcc"
 ```
 
-> Note!! you need to create the database `free-lunch` yourself before doing any other thing within the app if you need it to work properly. You could use tool like `PhpMyAdmin` or `MysqlWorkBench`
+Navigate to [cloudinary](https://console.cloudinary.com/console/c-8bfa927f05e8c13c1b160b6b4d3792/getting-started) to retrieve needed info for your `.env` file.
+
+> Note!! you need to create the database `zuriportfolio` yourself before doing any other thing within the app if you need it to work properly. You could use tool like `PhpMyAdmin` or `MysqlWorkBench`
+
+### Droping all created tables
+
+```bash
+drop schema public cascade;
+create schema public;
+```
 
 # Routes
 
 The routes can be found within the `/routes` directory. for eg the user route would handle routing that has to do with the user controllers which is prefix with `/user/*` and when been invoked, would be done in this format `/api/user/*`
 
 ```js
-const express = require("express");
-const UserController = require("../controller/user");
-const useCatchErrors = require("../error/catchErrors");
+const express = require('express');
+const UserController = require('../controller/user');
+const useCatchErrors = require('../error/catchErrors');
 
 class UserRoute {
   router = express.Router();
   userController = new UserController();
-  path = "/user";
+  path = '/user';
 
   constructor() {
     this.initializeRoutes();
   }
 
   initializeRoutes() {
-    this.router.get(
-      `${this.path}/data`,
-      useCatchErrors(this.userController.getUser.bind(this.userController))
-    );
+    this.router.get(`${this.path}/data`, useCatchErrors(this.userController.getUser.bind(this.userController)));
   }
 }
 

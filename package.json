@@ -7,8 +7,11 @@
     "dev": "nodemon",
     "migrate:prisma": "prisma migrate",
     "build": "rimraf ./dist && tsc",
+    "dbPush": "prisma db push",
+    "migrate": "prisma migrate dev",
     "start": "npm run generate:prisma && node ./dist/server.js",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "format": "npx prettier --write ."
   },
   "keywords": [],
   "author": "",
@@ -18,6 +21,7 @@
     "@prisma/client": "^4.12.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
+    "cloudinary": "^1.41.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",

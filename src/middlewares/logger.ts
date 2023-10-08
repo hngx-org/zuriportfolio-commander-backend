@@ -1,16 +1,12 @@
-import logger from "../config/logger";
-import { NextFunction, Request, Response } from "express";
+import logger from '../config/logger';
+import { NextFunction, Request, Response } from 'express';
 
-export const requestLogger = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
   const { method, path } = req;
   return new Promise((resolve, reject) => {
-    req.on("end", () => {
+    req.on('end', () => {
       const { statusCode } = res;
-      console.log("");
+      console.log('');
       logger.info(`${method.toUpperCase()}: ${path} ${statusCode}`);
       resolve(1);
     });
