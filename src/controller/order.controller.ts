@@ -11,12 +11,14 @@ export default class OrderController extends BaseController {
 
   async getOrder(req: Request, res: Response) {
     // Assuming you have the order ID from the request params
-    const orderId = req.params.orderId; // Replace with your actual parameter name
+    const orderId = req.params.order_id; // Replace with your actual parameter name
 
     // Fetch the order details from the database using Prisma
-    const order = await prisma.order.findUnique({
+    const order = await prisma.order.findFirst({
       where: {
         id: orderId,
+        status: "complete",
+
       },
       include: {
         merchant: true,
