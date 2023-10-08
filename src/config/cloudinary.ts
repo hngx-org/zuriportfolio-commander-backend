@@ -1,5 +1,5 @@
-import { v2 as cloudinary } from "cloudinary";
-import ENV from "./env";
+import { v2 as cloudinary } from 'cloudinary';
+import ENV from './env';
 
 const mediaUploadLib = cloudinary.config({
   cloud_name: ENV.cloudinary.name,
