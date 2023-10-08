@@ -26,6 +26,8 @@
     "express": "^4.18.2",
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.0",
+    "short-uuid": "^4.2.2",
+    "validate": "^5.2.0",
     "winston": "^3.8.2"
   },
   "devDependencies": {
