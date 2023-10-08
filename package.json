@@ -10,7 +10,8 @@
     "dbPush": "prisma db push",
     "migrate": "prisma migrate dev",
     "start": "npm run generate:prisma && node ./dist/server.js",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "format": "npx prettier --write ."
   },
   "keywords": [],
   "author": "",
