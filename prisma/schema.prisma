@@ -1,17 +1,35 @@
-
 generator client {
     provider = "prisma-client-js"
 }
 
 datasource db {
-    provider     = "postgresql"
-    url          = env("DATABASE_URL")
-    
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
-  
+
 model Users {
     id              String   @id
     emailVerified   Boolean? @default(false)
     accountVerified Boolean? @default(false)
     email           String   @unique
+}
+
+model Product {
+    id             String   @id @default(uuid())
+    user_id        String   @default(uuid())
+    shop_id        String   @default(uuid())
+    name           String
+    description    String
+    quantity       BigInt
+    category       Int
+    image_id       Int
+    price          Decimal
+    discount_price Decimal
+    tax            Decimal
+    admin_status   String   @default("pending")
+    rating_id      Int
+    is_published   Boolean  @default(false)
+    currency       String
+    created_at     DateTime @default(now())
+    updated_at     DateTime @updatedAt
 }
