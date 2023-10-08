@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from 'express';
 
 export default function useCatchErrors(fn: Function) {
   return async (req: Request, res: Response, next: NextFunction) => {

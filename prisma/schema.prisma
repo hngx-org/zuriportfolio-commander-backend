@@ -46,6 +46,7 @@ model user {
     revenue         revenue[]
     promotion       promotion[]
     track_promotion track_promotion[]
+    shop            shop[]
 }
 
 model order {
@@ -118,8 +119,8 @@ model promo_product {
 model promotion {
     id             String        @id
     user_id        String
-    promotion_type Promo_type
-    discount_type  Discount_type
+    promotion_type Promo_type    @default(Discount)
+    discount_type  Discount_type @default(Percentage)
     quantity       Int
     amount         Float
     product_id     String        @unique
@@ -154,6 +155,22 @@ model track_promotion {
     product product? @relation(fields: [productId], references: [id])
 }
 
+model shop {
+    id                  String       @id @unique
+    merchant_id         String
+    name                String
+    policy_confirmation Boolean?
+    restricted          String       @default("no")
+    admin_status        ADMIN_STATUS @default(pending)
+    reviewed            Boolean
+    rating              Float
+
+    created_at DateTime @default(now())
+    updated_at DateTime @default(now())
+
+    merchant user @relation(fields: [merchant_id], references: [id])
+}
+
 model store_traffic {
     id        Int      @id @default(autoincrement())
     shop_id   String
@@ -164,7 +181,7 @@ model store_traffic {
 model sales_report {
     id         String   @id
     user_id    String
-    sales      Int
+    total_sale Decimal  @db.Decimal(10, 2)
     created_at DateTime @default(now())
 }
 
