@@ -100,8 +100,8 @@ CREATE TABLE "promo_product" (
 CREATE TABLE "promotion" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
-    "promotion_type" "Promo_type" NOT NULL,
-    "discount_type" "Discount_type" NOT NULL,
+    "promotion_type" "Promo_type" NOT NULL DEFAULT 'Discount',
+    "discount_type" "Discount_type" NOT NULL DEFAULT 'Percentage',
     "quantity" INTEGER NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
     "product_id" TEXT NOT NULL,
@@ -137,6 +137,22 @@ CREATE TABLE "track_promotion" (
 );
 
 -- CreateTable
+CREATE TABLE "shop" (
+    "id" TEXT NOT NULL,
+    "merchant_id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "policy_confirmation" BOOLEAN,
+    "restricted" TEXT NOT NULL DEFAULT 'no',
+    "admin_status" "ADMIN_STATUS" NOT NULL DEFAULT 'pending',
+    "reviewed" BOOLEAN NOT NULL,
+    "rating" DOUBLE PRECISION NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "shop_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "store_traffic" (
     "id" SERIAL NOT NULL,
     "shop_id" TEXT NOT NULL,
@@ -150,7 +166,7 @@ CREATE TABLE "store_traffic" (
 CREATE TABLE "sales_report" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
-    "sales" INTEGER NOT NULL,
+    "total_sale" DECIMAL(10,2) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "sales_report_pkey" PRIMARY KEY ("id")
@@ -183,6 +199,9 @@ CREATE UNIQUE INDEX "revenue_id_key" ON "revenue"("id");
 -- CreateIndex
 CREATE UNIQUE INDEX "track_promotion_id_key" ON "track_promotion"("id");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "shop_id_key" ON "shop"("id");
+
 -- AddForeignKey
 ALTER TABLE "order" ADD CONSTRAINT "order_merchantId_fkey" FOREIGN KEY ("merchantId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -209,3 +228,6 @@ ALTER TABLE "track_promotion" ADD CONSTRAINT "track_promotion_userId_fkey" FOREI
 
 -- AddForeignKey
 ALTER TABLE "track_promotion" ADD CONSTRAINT "track_promotion_productId_fkey" FOREIGN KEY ("productId") REFERENCES "product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "shop" ADD CONSTRAINT "shop_merchant_id_fkey" FOREIGN KEY ("merchant_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
