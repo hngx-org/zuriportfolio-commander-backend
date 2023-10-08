@@ -51,7 +51,15 @@ DATABASE_URL='postgresql://postgres:@localhost:5432/prospark-db'
 NODE_ENV="development"
 
 JWT_SECRET="sdcsdcdc32ry38y9dpnp23i3892te832tp9e23on"
+
+CLOUDINARY_NAME="ssdcsdcs"
+
+CLOUDINARY_API_KEY="sdcscsdsdc"
+
+CLOUDINARY_API_SECRET="sdcdscsdcc"
 ```
+
+Navigate to [cloudinary](https://console.cloudinary.com/console/c-8bfa927f05e8c13c1b160b6b4d3792/getting-started) to retrieve needed info for your `.env` file.
 
 > Note!! you need to create the database `free-lunch` yourself before doing any other thing within the app if you need it to work properly. You could use tool like `PhpMyAdmin` or `MysqlWorkBench`
 
