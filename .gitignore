@@ -6,3 +6,5 @@
 /dist
 
 /package-lock.json
+src/routes/product.Route.ts
+src/controller/product.Controller.ts
