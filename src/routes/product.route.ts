@@ -1,10 +1,10 @@
 import express from 'express';
 import useCatchErrors from '../error/catchErrors';
-import ProductController from '../controller/product.Controller';
+import productController from '../controller/product.Controller';
 
 export default class ProductRoute {
   router = express.Router();
-  productController = new ProductController();
+  productController = new productController();
   path = '/products';
 
   constructor() {
@@ -26,7 +26,7 @@ export default class ProductRoute {
     );
     this.router.patch(
       `${this.path}/unpublish/:productId`,
-      useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
+      useCatchErrors(this.productController.unpublishProduct.bind(this.productController)),
     );
   }
 }
