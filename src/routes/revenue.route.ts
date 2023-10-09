@@ -13,7 +13,7 @@ export default class RevenueRoute {
 
   initializeRoutes() {
     this.router.patch(
-      `${this.path}`,
+      `${this.path}/:order_id`,
       useCatchErrors(this.revenueController.updateRevenue.bind(this.revenueController))
     );
   }

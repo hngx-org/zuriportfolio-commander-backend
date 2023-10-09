@@ -10,7 +10,7 @@ export default class RevenueController extends BaseController {
   }
 
   async updateRevenue(req: Request, res: Response) {
-    const { order_id, user_id, revenue } = req.body;
+    const { order_id } = req.params;
 
     const order = await prisma.order.findUnique({
       where: { id: order_id },
@@ -24,19 +24,31 @@ export default class RevenueController extends BaseController {
       return res.status(400).json({ error: 'Order is not completed' });
     }
 
-    const newRevenue = order.amount + revenue;
+    const revenueAmount = order.amount;
 
-    await prisma.revenue.update({
-      where: { id: user_id },
-      data: { amount: newRevenue },
+    const existingRevenue = await prisma.revenue.findFirst({
+      where: {
+        userId: order.merchantId,
+      },
     });
+
+    if (existingRevenue) {
+      await prisma.revenue.update({
+        where: {
+          id: existingRevenue.id,
+        },
+        data: {
+          amount: existingRevenue.amount + revenueAmount,
+        },
+      });
+    }
 
     this.success(
       res,
       "revenues",
       "Revenue updated successfully",
       200,
-      newRevenue
+      existingRevenue 
     );
   }
 }
