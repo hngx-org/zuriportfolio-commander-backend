@@ -102,7 +102,7 @@ export default class ProductController extends BaseController {
     this.success(res, 'Product Added', 'Product has been added successfully', 201, product);
   }
 
-    async addProductDraft(req: Request, res: Response) {
+async addProductDraft(req: Request, res: Response) {
     const productId = req.params.productId;
 
     // Find the product by ID
@@ -138,11 +138,9 @@ export default class ProductController extends BaseController {
 
     const placeHolderImg = image ?? null;
     
-
     // Update the is_published field to true saving as draft
-    let updatedProduct;
     if (placeHolderImg) {
-      updatedProduct = await prisma.product.update({
+      const updatedProduct = await prisma.product.update({
         where: {
           id: productId,
         },
@@ -157,7 +155,7 @@ export default class ProductController extends BaseController {
         },
       });
     } else {
-      updatedProduct = await prisma.product.update({
+      const updatedProduct = await prisma.product.update({
         where: {
           id: productId,
         },
@@ -167,7 +165,6 @@ export default class ProductController extends BaseController {
         },
       });
     }
-    
 
     const payload = {
       message: 'Product updated and saved as draft',
@@ -176,9 +173,9 @@ export default class ProductController extends BaseController {
     };
 
     this.success(res, 'Product saved as Daft', payload.message, payload.statusCode, payload.data);
-  }
+}
 
-  async unpublishProduct(req: Request, res: Response) {
+async unpublishProduct(req: Request, res: Response) {
     const productId = req.params.productId;
     // Update the is_published field to false
     const updatedProduct = await prisma.product.update({
