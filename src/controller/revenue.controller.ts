@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import BaseController from "./base.controller";
+import { Request, Response } from 'express';
+import BaseController from './base.controller';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -31,12 +31,6 @@ export default class RevenueController extends BaseController {
       data: { amount: newRevenue },
     });
 
-    this.success(
-      res,
-      "revenues",
-      "Revenue updated successfully",
-      200,
-      newRevenue
-    );
+    this.success(res, 'revenues', 'Revenue updated successfully', 200, newRevenue);
   }
 }

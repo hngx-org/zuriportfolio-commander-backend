@@ -6,7 +6,7 @@ export default class SendResponse {
     return capWrd;
   }
 
-  error(res: Response, code: string, message: string, statusCode: number, data: any) {
+  error(res: Response, code: string, message: string, statusCode: number, data?: any) {
     const response = {
       errorStatus: true,
       code: code ?? '--error',
@@ -17,7 +17,7 @@ export default class SendResponse {
     return res.status(statusCode).json(response);
   }
 
-  success(res: Response, code: string, message: string, statusCode: number, data: any) {
+  success(res: Response, code: string, message: string, statusCode: number, data?: any) {
     const response = {
       errorStatus: false,
       code: code ?? '--success',

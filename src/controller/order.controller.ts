@@ -35,7 +35,7 @@ export default class OrderController extends BaseController {
       '--product/updated',
       'product updated successfully',
       200,
-      { data: order } // Include the order data in the response
+      { data: order }, // Include the order data in the response
     );
   }
 

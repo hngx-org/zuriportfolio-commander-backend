@@ -4,7 +4,7 @@ import { requestLogger } from './middlewares/logger';
 import bodyParser from 'body-parser';
 import logger from './config/logger';
 import HandleErrors from './middlewares/error';
-import { Routes } from './interface/routes.interface';
+import { Routes } from './@types';
 
 export default class App {
   public app: express.Application;
@@ -28,7 +28,7 @@ export default class App {
       cors({
         origin: ['http://127.0.0.1:3000', 'http://localhost:3000', '*'],
         credentials: true,
-      }),
+      })
     );
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));

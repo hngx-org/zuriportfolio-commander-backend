@@ -1,4 +1,4 @@
-import ProductRoute from './routes/product.Route';
+import ProductRoute from './routes/product.route';
 import App from './app';
 import UserRoute from './routes/user.route';
 import RevenueRoute from './routes/revenue.route';

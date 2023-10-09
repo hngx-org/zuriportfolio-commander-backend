@@ -1,11 +1,17 @@
 import express from 'express';
 import useCatchErrors from '../error/catchErrors';
-import productController from '../controller/product.Controller';
+import productController from '../controller/product.controller';
+import Multer from 'multer';
+
+const storage = Multer.memoryStorage();
+const upload = Multer({
+  storage,
+});
 
 export default class ProductRoute {
   router = express.Router();
   productController = new productController();
-  path = '/products';
+  path = '/product';
 
   constructor() {
     this.initializeRoutes();
@@ -18,6 +24,7 @@ export default class ProductRoute {
     );
     this.router.post(
       `${this.path}/add`,
+      upload.single('image'),
       useCatchErrors(this.productController.addProduct.bind(this.productController))
     );
     this.router.post(
@@ -26,7 +33,7 @@ export default class ProductRoute {
     );
     this.router.patch(
       `${this.path}/unpublish/:productId`,
-      useCatchErrors(this.productController.unpublishProduct.bind(this.productController)),
+      useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
     );
   }
 }

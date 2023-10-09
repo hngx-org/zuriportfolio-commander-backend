@@ -1,7 +1,11 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import BaseController from './base.controller'; 
+import BaseController from './base.controller';
 import { productSchema } from '../helper/validate';
+import { uploadSingleImage } from '../helper/uploadImage';
+import logger from '../config/logger';
+import { AddProductPayloadType } from '@types';
+import shortUUID from 'short-uuid';
 
 const prisma = new PrismaClient();
 
@@ -31,7 +35,7 @@ export default class ProductController extends BaseController {
         id: productId,
       },
       data: {
-        isPublished: true,
+        is_published: true,
       },
     });
 
@@ -45,18 +49,55 @@ export default class ProductController extends BaseController {
   }
 
   async addProduct(req: Request, res: Response) {
-    // ! This is just a workaround for this task, it does nothing actually as
-    //! i still have to validate each payload and upload
-    // ! each file sent from clients.
+    const file = req.file ?? null;
+    const payload: AddProductPayloadType = JSON.parse(req.body.json);
 
-    const { error, value } = productSchema.validate(req.body);
-    if (error) {
-      return this.error(res, 'Validation Error', error.details[0].message, 400, null);
+    const { error, value } = productSchema.validate(payload);
+    if (error || !file) {
+      return this.error(res, '--product/invalid-fields', error?.message ?? 'product image is missing.', 400, null);
+    }
+    // upload image to cloudinary
+    const { name, currency, description, discountPrice, price, quantity, tax, category, shopId } = payload;
+    const { isError, errorMsg, image } = await uploadSingleImage(file);
+
+    if (isError) {
+      logger.error(`Error uploading image: ${errorMsg}`);
     }
 
+    // check if user has a shop
+    const shopExists = await prisma.shop.findFirst({
+      where: {
+        id: shopId,
+      },
+    });
+
+    if (!shopExists) {
+      return this.error(res, '--product/shop-notfound', 'Failed to crete product, shop not found.', 404);
+    }
+
+    const placeHolderImg = image ?? 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
     const product = await prisma.product.create({
       data: {
-        ...value,
+        id: shortUUID.generate(),
+        name,
+        shop_id: 'sdcsdcsdc',
+        user_id: 'sdcsdcsdc',
+        currency,
+        description,
+        discount_price: discountPrice ?? 0,
+        quantity,
+        price,
+        tax: tax ?? 0,
+        categories: {
+          create: {
+            name: category,
+          },
+        },
+        image: {
+          create: {
+            url: placeHolderImg,
+          },
+        },
       },
     });
 
@@ -66,7 +107,7 @@ export default class ProductController extends BaseController {
   async addProductDraft(req: Request, res: Response) {
     // Validates product details
     const { error, value } = productSchema.validate(req.body);
-    
+
     // returns error in case of wroong user details
     if (error) {
       return this.error(res, 'Validation Error', error.details[0].message, 400, null);
@@ -76,7 +117,7 @@ export default class ProductController extends BaseController {
     const product = await prisma.product.create({
       data: {
         ...value,
-        isPublished: false
+        isPublished: false,
       },
     });
 
@@ -91,7 +132,7 @@ export default class ProductController extends BaseController {
         id: productId,
       },
       data: {
-        isPublished: false,
+        is_published: false,
       },
     });
 
