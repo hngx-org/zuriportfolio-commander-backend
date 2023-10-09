@@ -1,13 +1,11 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import BaseController from './base.controller';
 import { productSchema } from '../helper/validate';
 import { uploadSingleImage } from '../helper/uploadImage';
 import logger from '../config/logger';
 import { AddProductPayloadType } from '@types';
 import shortUUID from 'short-uuid';
-
-const prisma = new PrismaClient();
+import prisma from '../config/prisma';
 
 export default class ProductController extends BaseController {
   constructor() {
