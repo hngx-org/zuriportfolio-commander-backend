@@ -28,7 +28,7 @@ export default class ProductController extends BaseController {
     }
 
     // Update the is_published field to true
-    const updatedProduct = await prisma.product.update({
+    await prisma.product.update({
       where: {
         id: productId,
       },
@@ -98,81 +98,74 @@ export default class ProductController extends BaseController {
     this.success(res, 'Product Added', 'Product has been added successfully', 201, product);
   }
 
-async addProductDraft(req: Request, res: Response) {
-    const productId = req.params.productId;
-
-    // Find the product by ID
-    const currentProduct = await prisma.product.findUnique({
-      where: {
-        id: productId,
-      },
-    });
-    
-    // Check if the product exists
-    if (!currentProduct) {
-      return res.status(404).json({ error: 'Product not found' });
-    }
-
+  async addProductDraft(req: Request, res: Response) {
     const file = req.file ?? null;
     const payload: AddProductPayloadType = JSON.parse(req.body.json);
 
     const { error, value } = productSchema.validate(payload);
     if (error) {
-      return this.error(res, '--product/invalid-fields', error?.message ?? 'Important product details is missing.', 400, null);
+      return this.error(
+        res,
+        '--product/invalid-fields',
+        error?.message ?? 'Important product details is missing.',
+        400,
+        null
+      );
     }
-    
-    // upload image to cloudinary
-    const { name, currency, description, discountPrice, price, quantity, tax, category} = payload;
 
-    if (file) {
-      const { isError, errorMsg, image } = await uploadSingleImage(file);
-    }
+    // upload image to cloudinary
+    const { name, currency, description, discountPrice, price, quantity, tax, category, shopId, userId } = payload;
+    const { isError, errorMsg, image } = await uploadSingleImage(file);
 
     if (isError) {
       logger.error(`Error uploading image: ${errorMsg}`);
     }
 
-    const placeHolderImg = image ?? null;
-    
-    // Update the is_published field to true saving as draft
-    if (placeHolderImg) {
-      const updatedProduct = await prisma.product.update({
-        where: {
-          id: productId,
-        },
-        data: {
-          ...payload,
-          is_published: false,
-          image: {
-            update: {
-              url: placeHolderImg,
-            },
+    const placeHolderImg = image ?? 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
+    const productId = shortUUID.generate();
+    const product = await prisma.product.create({
+      data: {
+        id: productId,
+        name,
+        shop_id: shopId,
+        user_id: userId,
+        currency,
+        description,
+        discount_price: discountPrice ?? 0,
+        quantity,
+        price,
+        tax: tax ?? 0,
+        categories: {
+          create: {
+            name: category,
           },
         },
-      });
-    } else {
-      const updatedProduct = await prisma.product.update({
-        where: {
-          id: productId,
+        image: {
+          create: {
+            url: placeHolderImg,
+          },
         },
-        data: {
-          ...payload,
-          is_published: false,
-        },
-      });
+      },
+    });
+
+    // product Id is returned back incase they try re-saving it as draft
+    // but I think the usual method is redirecting the user back to a page
+    // after saving as draft so they don't have to click on the save-as-draft
+    // button twice.
+
+    this.success(res, '--product/save-as-draft', 'Product updated and saved as draft', 201, { productId });
+  }
+
+  async unpublishProduct(req: Request, res: Response) {
+    const productId = req.params.productId;
+
+    //check if product exists
+    const prodExists = await prisma.product.findFirst({ where: { id: productId } });
+
+    if (!prodExists) {
+      return this.error(res, '--product/notfound', 'Failed to unpublish, product not found', 404);
     }
 
-    const payload = {
-      message: 'Product updated and saved as draft',
-      statusCode: 200,
-      data: updatedProduct,
-    };
-
-    this.success(res, 'Product saved as Daft', payload.message, payload.statusCode, payload.data);
-}
-
-async unpublishProduct(req: Request, res: Response) {
-    const productId = req.params.productId;
     // Update the is_published field to false
     const updatedProduct = await prisma.product.update({
       where: {

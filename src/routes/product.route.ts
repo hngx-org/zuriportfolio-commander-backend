@@ -18,22 +18,22 @@ export default class ProductRoute {
   }
 
   initializeRoutes() {
-    this.router.get(
+    this.router.patch(
       `${this.path}/publish/:productId`,
-      useCatchErrors(this.productController.publishProduct.bind(this.productController)),
+      useCatchErrors(this.productController.publishProduct.bind(this.productController))
     );
     this.router.post(
       `${this.path}/add`,
       upload.single('image'),
-      useCatchErrors(this.productController.addProduct.bind(this.productController)),
+      useCatchErrors(this.productController.addProduct.bind(this.productController))
     );
     this.router.post(
       `${this.path}/:productId/draft`,
-      useCatchErrors(this.productController.addProductDraft.bind(this.productController)),
+      useCatchErrors(this.productController.addProductDraft.bind(this.productController))
     );
     this.router.patch(
       `${this.path}/unpublish/:productId`,
-      useCatchErrors(this.productController.unpublishProduct.bind(this.productController)),
+      useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
     );
   }
 }
