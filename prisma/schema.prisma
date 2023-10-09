@@ -29,16 +29,30 @@ enum Promo_type {
     Discount
 }
 
+enum product_status {
+    active
+    temporary
+}
+
+enum shop_status {
+    active
+    temporary
+}
+
 model user {
     id              String            @id @unique
     username        String
-    firstName       String
-    lastName        String
+    first_name      String
+    last_name       String
     email           String
-    sectionOrder    String?
-    password        String
-    provider        String
-    profilePic      String?
+    section_order   String?
+    password        String?
+    provider        String?
+    is_verified     Boolean           @default(false)
+    two_factor_auth Boolean           @default(false)
+    location        String?
+    country         String?
+    profile_pic     String?
     refreshToken    String
     createdAt       DateTime          @default(now())
     orders          order[]           @relation(name: "merchant_orders")
@@ -46,6 +60,8 @@ model user {
     revenue         revenue[]
     promotion       promotion[]
     track_promotion track_promotion[]
+    shop            shop[]
+    prmo_product    promo_product[]
 }
 
 model order {
@@ -60,28 +76,32 @@ model order {
     customerId String
     promo      Int?
     status     STATUS   @default(pending)
-    createdAt  DateTime @default(now())
+    created_at DateTime @default(now())
+    updated_at DateTime @default(now())
 
     merchant user @relation(name: "merchant_orders", fields: [merchantId], references: [id])
     customer user @relation(name: "customer_orders", fields: [customerId], references: [id])
 }
 
 model product {
-    id            String       @id @unique
-    userId        String
-    shopId        String
-    name          String
-    description   String
-    quantity      Int
-    price         Float
-    discountPrice Float
-    tax           Float
-    adminStatus   ADMIN_STATUS @default(pending)
-    ratingId      Int?
-    isPublished   Boolean      @default(false)
-    currency      String
-    createdAt     DateTime     @default(now())
-    updatedAt     DateTime     @default(now())
+    id             String       @id @unique
+    user_id        String
+    shop_id        String
+    name           String
+    description    String
+    quantity       Int
+    category_id    Int? // this isn't meant to be there.
+    image_id       Int? // same as this
+    price          Float
+    discount_price Float // this might be some prob.
+    tax            Float
+    admin_status   ADMIN_STATUS @default(pending)
+    rating_id      Int?
+    is_published   Boolean      @default(false) // handle draft
+    // is_deleted     Boolean      @default(false) would need this later on.
+    currency       String
+    createdAt      DateTime     @default(now())
+    updatedAt      DateTime     @default(now())
 
     image           product_image[]
     categories      product_category[]
@@ -109,17 +129,20 @@ model product_category {
 }
 
 model promo_product {
-    id          String   @id
-    promo_id    String
+    id          Int      @id @default(autoincrement())
+    promo_id    Int // incorrect type, should be String
+    user_id     String
     description String
     created_at  DateTime @default(now())
+
+    user user @relation(fields: [user_id], references: [id])
 }
 
 model promotion {
     id             String        @id
     user_id        String
-    promotion_type Promo_type
-    discount_type  Discount_type
+    promotion_type Promo_type    @default(Discount)
+    discount_type  Discount_type @default(Percentage)
     quantity       Int
     amount         Float
     product_id     String        @unique
@@ -134,37 +157,58 @@ model promotion {
 }
 
 model revenue {
-    id        String   @id @unique
-    userId    String
-    appId     String
-    amount    Float
-    createdAt DateTime @default(now())
+    id         Int      @id @unique @default(autoincrement())
+    user_id    String
+    app_id     String
+    amount     Float
+    created_at DateTime @default(now())
 
-    user user @relation(fields: [userId], references: [id])
+    user user @relation(fields: [user_id], references: [id])
 }
 
 model track_promotion {
-    id        String        @id @unique
-    productId String
-    userId    String
-    type      Discount_type
-    createdAt DateTime      @default(now())
+    id         Int           @id @unique @default(autoincrement()) // incorrect type, should be string.
+    product_id String
+    user_id    String
+    code       Int // this isn't needed
+    type       Discount_type // this isn't needed
+    created_at DateTime      @default(now())
 
-    user    user     @relation(fields: [userId], references: [id])
-    product product? @relation(fields: [productId], references: [id])
+    user    user     @relation(fields: [user_id], references: [id])
+    product product? @relation(fields: [product_id], references: [id])
+}
+
+model shop {
+    id                  String       @id @unique
+    merchant_id         String
+    product_id          String // this wont be needed, adding it so i dont get error with prod DB
+    name                String
+    policy_confirmation Boolean?
+    restricted          String       @default("no")
+    admin_status        ADMIN_STATUS @default(pending)
+    is_deleted          shop_status  @default(active)
+    reviewed            Boolean
+    rating              Float
+
+    created_at DateTime @default(now())
+    updated_at DateTime @default(now())
+
+    merchant user @relation(fields: [merchant_id], references: [id])
 }
 
 model store_traffic {
-    id        Int      @id @default(autoincrement())
-    shop_id   String
-    ip_addr   String
-    createdAt DateTime @default(now())
+    id         Int      @id @default(autoincrement())
+    user_id    String? // not needed
+    // shop_id   String same with this, 4 now, just to stick with what we have in prod
+    // ip_addr   String // this would be added later on
+    created_at DateTime @default(now())
 }
 
 model sales_report {
     id         String   @id
     user_id    String
     sales      Int
+    // total_sale Decimal  @db.Decimal(10, 2) add this later
     created_at DateTime @default(now())
 }
 

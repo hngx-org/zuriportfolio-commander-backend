@@ -1,4 +1,4 @@
-import SendResponse from "../helper/sendResponse";
+import SendResponse from '../helper/sendResponse';
 
 export default class BaseController extends SendResponse {
   constructor() {
