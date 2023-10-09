@@ -18,3 +18,13 @@ export interface AddProductPayloadType {
   shopId: string;
   userId: string; //! remove this once auth is working
 }
+
+export interface AddPromotionPayloadType {
+  user_id: string;
+  promotion_type: string;
+  discount_type: string;
+  quantity: number;
+  amount: number;
+  product_id: string;
+  min_cart_price: number;
+}

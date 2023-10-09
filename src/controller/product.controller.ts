@@ -54,7 +54,7 @@ export default class ProductController extends BaseController {
 
     if (isError) {
       logger.error(`Error uploading image: ${errorMsg}`);
-    }
+      }
 
     // check if user has a shop
     const shopExists = await prisma.shop.findFirst({

@@ -31,3 +31,13 @@ export const createShopSchema = Joi.object({
   name: Joi.string().required(),
   merchant_id: Joi.string().required(),
 });
+
+export const promotionSchema = Joi.object({
+  user_id: Joi.string().required(),
+  promotion_type: Joi.string().required(),
+  discount_type: Joi.string().required(),
+  quantity: Joi.number().integer().required(),
+  amount: Joi.number().integer().required(),
+  product_id: Joi.string().required(),
+  min_cart_price: Joi.number().integer().required(),
+});
