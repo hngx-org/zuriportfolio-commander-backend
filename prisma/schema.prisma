@@ -181,14 +181,14 @@ model track_promotion {
 model shop {
     id                  String       @id @unique
     merchant_id         String
-    product_id          String // this wont be needed, adding it so i dont get error with prod DB
+    product_id          String? // this wont be needed, adding it so i dont get error with prod DB
     name                String
     policy_confirmation Boolean?
     restricted          String       @default("no")
     admin_status        ADMIN_STATUS @default(pending)
     is_deleted          shop_status  @default(active)
-    reviewed            Boolean
-    rating              Float
+    reviewed            Boolean?
+    rating              Float?
 
     created_at DateTime @default(now())
     updated_at DateTime @default(now())

@@ -24,7 +24,7 @@ export default class ProductController extends BaseController {
 
     // Check if the product exists
     if (!existingProduct) {
-      return res.status(404).json({ error: 'Product not found' });
+      return this.error(res, '--product/not-found', 'Product not found', 404);
     }
 
     // Update the is_published field to true
@@ -37,13 +37,7 @@ export default class ProductController extends BaseController {
       },
     });
 
-    const payload = {
-      message: 'Product published successfully',
-      statusCode: 200,
-      data: updatedProduct,
-    };
-
-    this.success(res, '--publish/success', payload.message, payload.statusCode, payload.data);
+    this.success(res, '--publish/success', 'Product published successfully', 201);
   }
 
   async addProduct(req: Request, res: Response) {
@@ -55,7 +49,7 @@ export default class ProductController extends BaseController {
       return this.error(res, '--product/invalid-fields', error?.message ?? 'product image is missing.', 400, null);
     }
     // upload image to cloudinary
-    const { name, currency, description, discountPrice, price, quantity, tax, category, shopId } = payload;
+    const { name, currency, userId, description, discountPrice, price, quantity, tax, category, shopId } = payload;
     const { isError, errorMsg, image } = await uploadSingleImage(file);
 
     if (isError) {
@@ -73,13 +67,15 @@ export default class ProductController extends BaseController {
       return this.error(res, '--product/shop-notfound', 'Failed to crete product, shop not found.', 404);
     }
 
+    // check if user exists
+
     const placeHolderImg = image ?? 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
     const product = await prisma.product.create({
       data: {
         id: shortUUID.generate(),
         name,
-        shop_id: 'sdcsdcsdc',
-        user_id: 'sdcsdcsdc',
+        shop_id: shopId,
+        user_id: userId,
         currency,
         description,
         discount_price: discountPrice ?? 0,

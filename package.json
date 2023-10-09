@@ -9,7 +9,7 @@
     "build": "npx rimraf ./dist && tsc",
     "dbPush": "prisma db push",
     "migrate": "prisma migrate dev",
-    "start": "npm run generate:prisma && node ./dist/server.js",
+    "start": "npm run generate && node ./dist/server.js",
     "watch": "tsc --watch",
     "format": "npx prettier --write ."
   },

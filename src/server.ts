@@ -4,6 +4,7 @@ import UserRoute from './routes/user.route';
 import RevenueRoute from './routes/revenue.route';
 import OrderRoute from './routes/order.route';
 import DiscountRoute from './routes/discount.route';
+import ShopRoute from './routes/shop.route';
 
 const server = new App();
 
@@ -13,5 +14,6 @@ server.initializedRoutes([
   new ProductRoute(),
   new RevenueRoute(),
   new DiscountRoute(),
+  new ShopRoute(),
 ]);
 server.listen();

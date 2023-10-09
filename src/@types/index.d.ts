@@ -15,4 +15,5 @@ export interface AddProductPayloadType {
   currency: string;
   category: string;
   shopId: string;
+  userId: string; //! remove this once auth is working
 }
