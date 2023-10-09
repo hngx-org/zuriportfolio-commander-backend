@@ -98,27 +98,80 @@ export default class ProductController extends BaseController {
     this.success(res, 'Product Added', 'Product has been added successfully', 201, product);
   }
 
-  async addProductDraft(req: Request, res: Response) {
-    // Validates product details
-    const { error, value } = productSchema.validate(req.body);
+async addProductDraft(req: Request, res: Response) {
+    const productId = req.params.productId;
 
-    // returns error in case of wroong user details
-    if (error) {
-      return this.error(res, 'Validation Error', error.details[0].message, 400, null);
-    }
-
-    // creates new product as draft
-    const product = await prisma.product.create({
-      data: {
-        ...value,
-        isPublished: false,
+    // Find the product by ID
+    const currentProduct = await prisma.product.findUnique({
+      where: {
+        id: productId,
       },
     });
+    
+    // Check if the product exists
+    if (!currentProduct) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
 
-    this.success(res, 'Product Added', 'Product has been added as Draft', 201, product);
-  }
+    const file = req.file ?? null;
+    const payload: AddProductPayloadType = JSON.parse(req.body.json);
 
-  async unpublishProduct(req: Request, res: Response) {
+    const { error, value } = productSchema.validate(payload);
+    if (error) {
+      return this.error(res, '--product/invalid-fields', error?.message ?? 'Important product details is missing.', 400, null);
+    }
+    
+    // upload image to cloudinary
+    const { name, currency, description, discountPrice, price, quantity, tax, category} = payload;
+
+    if (file) {
+      const { isError, errorMsg, image } = await uploadSingleImage(file);
+    }
+
+    if (isError) {
+      logger.error(`Error uploading image: ${errorMsg}`);
+    }
+
+    const placeHolderImg = image ?? null;
+    
+    // Update the is_published field to true saving as draft
+    if (placeHolderImg) {
+      const updatedProduct = await prisma.product.update({
+        where: {
+          id: productId,
+        },
+        data: {
+          ...payload,
+          is_published: false,
+          image: {
+            update: {
+              url: placeHolderImg,
+            },
+          },
+        },
+      });
+    } else {
+      const updatedProduct = await prisma.product.update({
+        where: {
+          id: productId,
+        },
+        data: {
+          ...payload,
+          is_published: false,
+        },
+      });
+    }
+
+    const payload = {
+      message: 'Product updated and saved as draft',
+      statusCode: 200,
+      data: updatedProduct,
+    };
+
+    this.success(res, 'Product saved as Daft', payload.message, payload.statusCode, payload.data);
+}
+
+async unpublishProduct(req: Request, res: Response) {
     const productId = req.params.productId;
     // Update the is_published field to false
     const updatedProduct = await prisma.product.update({
