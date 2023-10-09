@@ -17,7 +17,6 @@ export default class OrderController extends BaseController {
     const order = await prisma.order.findFirst({
       where: {
         id: orderId,
-        status: 'complete',
       },
       include: {
         merchant: true,

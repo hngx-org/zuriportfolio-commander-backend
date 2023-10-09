@@ -12,7 +12,7 @@ export default class OrderRoute {
   }
 
   initializeRoutes() {
-    this.router.post(
+    this.router.get(
       `${this.path}/sales-report/:order_id`,
       useCatchErrors(this.OrderController.getOrder.bind(this.OrderController)),
     );
