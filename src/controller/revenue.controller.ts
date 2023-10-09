@@ -28,7 +28,7 @@ export default class RevenueController extends BaseController {
 
     const existingRevenue = await prisma.revenue.findFirst({
       where: {
-        userId: order.merchantId,
+        user_id: order.merchantId,
       },
     });
 
@@ -43,12 +43,6 @@ export default class RevenueController extends BaseController {
       });
     }
 
-    this.success(
-      res,
-      "revenues",
-      "Revenue updated successfully",
-      200,
-      existingRevenue 
-    );
+    this.success(res, 'revenues', 'Revenue updated successfully', 200, existingRevenue);
   }
 }
