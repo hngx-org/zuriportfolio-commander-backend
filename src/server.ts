@@ -1,13 +1,17 @@
 import ProductRoute from './routes/product.Route';
 import App from './app';
 import UserRoute from './routes/user.route';
-import GetAllOrdersRoute from './routes/get_all_orders.route';
-import GetAllDiscountRoute from './routes/get_all_discount.route';
-import RevenueRoute from "./routes/revenew.route";
+import RevenueRoute from './routes/revenue.route';
 import OrderRoute from './routes/order.route';
-import CreateDiscountRoute from './routes/createDiscount.route';
+import DiscountRoute from './routes/discount.route';
 
 const server = new App();
 
-server.initializedRoutes([new UserRoute(), new OrderRoute(), new ProductRoute(), new GetAllOrdersRoute(), new GetAllDiscountRoute(), new RevenueRoute(), new CreateDiscountRoute()]);
+server.initializedRoutes([
+  new UserRoute(),
+  new OrderRoute(),
+  new ProductRoute(),
+  new RevenueRoute(),
+  new DiscountRoute(),
+]);
 server.listen();

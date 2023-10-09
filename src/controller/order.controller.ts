@@ -17,8 +17,7 @@ export default class OrderController extends BaseController {
     const order = await prisma.order.findFirst({
       where: {
         id: orderId,
-        status: "complete",
-
+        status: 'complete',
       },
       include: {
         merchant: true,
@@ -36,7 +35,23 @@ export default class OrderController extends BaseController {
       '--product/updated',
       'product updated successfully',
       200,
-      { data: order }, // Include the order data in the response
+      { data: order } // Include the order data in the response
     );
+  }
+
+  async getAllOrders(req: Request, res: Response) {
+    const userId = req.params.id; // get the user id from the request params
+
+    if (!userId) {
+      this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
+    }
+
+    const orders = await prisma.order.findMany({
+      where: {
+        id: userId,
+      },
+    });
+
+    this.success(res, '--order/all', 'orders fetched successfully', 200, orders);
   }
 }
