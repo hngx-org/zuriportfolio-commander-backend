@@ -145,10 +145,10 @@ model promotion {
     discount_type  Discount_type @default(Percentage)
     quantity       Int
     amount         Float
-    product_id     String        @unique
+    product_id     String?       @unique
     valid_from     DateTime
     valid_to       DateTime
-    min_cart_price Int
+    min_cart_price Int?          @default(0)
     created_at     DateTime      @default(now())
     updated_at     DateTime      @default(now())
 
