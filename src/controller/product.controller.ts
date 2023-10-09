@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import BaseController from './base.controller'; // Assuming you have a BaseController
+import BaseController from './base.controller'; 
 import { productSchema } from '../helper/validate';
 
 const prisma = new PrismaClient();
