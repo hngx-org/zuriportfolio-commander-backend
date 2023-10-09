@@ -14,7 +14,7 @@ export default class RevenueRoute {
   initializeRoutes() {
     this.router.patch(
       `${this.path}/update`,
-      useCatchErrors(this.revenueController.updateRevenue.bind(this.revenueController))
+      useCatchErrors(this.revenueController.updateRevenue.bind(this.revenueController)),
     );
   }
 }

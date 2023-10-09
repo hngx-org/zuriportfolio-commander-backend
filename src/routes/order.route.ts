@@ -14,7 +14,7 @@ export default class OrderRoute {
   initializeRoutes() {
     this.router.post(
       `${this.path}/sales-report/:order_id`,
-      useCatchErrors(this.OrderController.getOrder.bind(this.OrderController))
+      useCatchErrors(this.OrderController.getOrder.bind(this.OrderController)),
     );
 
     this.router.get(`${this.path}`, useCatchErrors(this.OrderController.getAllOrders.bind(this.OrderController)));
