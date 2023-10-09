@@ -6,7 +6,7 @@
     "test": "",
     "dev": "nodemon",
     "generate": "prisma generate",
-    "build": "sh ./build/build.sh && tsc",
+    "build": "npx rimraf && tsc",
     "dbPush": "prisma db push",
     "migrate": "prisma migrate dev",
     "start": "npm run generate:prisma && node ./dist/server.js",
