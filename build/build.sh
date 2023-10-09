@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# 
+
 # Remove the "dist" directory if it exists
 if [ -d "../dist" ]; then
   rm -rf dist
