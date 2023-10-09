@@ -100,10 +100,11 @@ export default class ProductController extends BaseController {
 
   async addProductDraft(req: Request, res: Response) {
     const file = req.file ?? null;
+    const product_id = req.params['productId'];
     const payload: AddProductPayloadType = JSON.parse(req.body.json);
 
     const { error, value } = productSchema.validate(payload);
-    if (error) {
+    if (error || typeof product_id === 'undefined') {
       return this.error(
         res,
         '--product/invalid-fields',
@@ -121,39 +122,67 @@ export default class ProductController extends BaseController {
       logger.error(`Error uploading image: ${errorMsg}`);
     }
 
+    // check if product exists
+    const prodExists = await prisma.product.findFirst({ where: { id: product_id } });
+
     const placeHolderImg = image ?? 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
-    const productId = shortUUID.generate();
-    const product = await prisma.product.create({
-      data: {
-        id: productId,
-        name,
-        shop_id: shopId,
-        user_id: userId,
-        currency,
-        description,
-        discount_price: discountPrice ?? 0,
-        quantity,
-        price,
-        tax: tax ?? 0,
-        categories: {
-          create: {
-            name: category,
+
+    if (!prodExists) {
+      await prisma.product.create({
+        data: {
+          id: product_id,
+          name,
+          shop_id: shopId,
+          user_id: userId,
+          currency,
+          description,
+          discount_price: discountPrice ?? 0,
+          quantity,
+          price,
+          tax: tax ?? 0,
+          categories: {
+            create: {
+              name: category,
+            },
+          },
+          image: {
+            create: {
+              url: placeHolderImg,
+            },
           },
         },
-        image: {
-          create: {
-            url: placeHolderImg,
+      });
+    } else {
+      await prisma.product.update({
+        where: {
+          id: product_id,
+        },
+        data: {
+          id: product_id,
+          name,
+          shop_id: shopId,
+          user_id: userId,
+          currency,
+          description,
+          discount_price: discountPrice ?? 0,
+          quantity,
+          price,
+          tax: tax ?? 0,
+          categories: {
+            create: {
+              name: category,
+            },
+          },
+          image: {
+            create: {
+              url: placeHolderImg,
+            },
           },
         },
-      },
-    });
+      });
+    }
 
-    // product Id is returned back incase they try re-saving it as draft
-    // but I think the usual method is redirecting the user back to a page
-    // after saving as draft so they don't have to click on the save-as-draft
-    // button twice.
-
-    this.success(res, '--product/save-as-draft', 'Product updated and saved as draft', 201, { productId });
+    this.success(res, '--product/save-as-draft', 'Product updated and saved as draft', 201);
   }
 
   async unpublishProduct(req: Request, res: Response) {

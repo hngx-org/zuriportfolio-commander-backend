@@ -29,6 +29,7 @@ export default class ProductRoute {
     );
     this.router.post(
       `${this.path}/:productId/draft`,
+      upload.single('image'),
       useCatchErrors(this.productController.addProductDraft.bind(this.productController))
     );
     this.router.patch(

@@ -6,6 +6,7 @@ export interface Routes {
 }
 
 export interface AddProductPayloadType {
+  product_id?: string;
   name: string;
   description: string;
   quantity: number;
