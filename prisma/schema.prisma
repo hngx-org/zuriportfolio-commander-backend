@@ -105,7 +105,7 @@ model product {
 
     image           product_image[]
     categories      product_category[]
-    promotion       promotion?
+    promotion       promotion[]
     track_promotion track_promotion[]
     //   rating
     // shop
@@ -145,7 +145,7 @@ model promotion {
     discount_type  Discount_type @default(Percentage)
     quantity       Int
     amount         Float
-    product_id     String?       @unique
+    product_id     String
     valid_from     DateTime
     valid_to       DateTime
     min_cart_price Int?          @default(0)
