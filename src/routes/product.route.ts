@@ -36,5 +36,13 @@ export default class ProductRoute {
       `${this.path}/unpublish/:productId`,
       useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
     );
+    this.router.get(
+      `${this.path}/`,
+      useCatchErrors(this.productController.getAllProducts.bind(this.productController))
+    )
+    this.router.delete(
+      `${this.path}/:productId`,
+      useCatchErrors(this.productController.deleteProduct.bind(this.productController))
+    )
   }
 }
