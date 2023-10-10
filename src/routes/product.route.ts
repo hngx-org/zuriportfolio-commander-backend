@@ -37,12 +37,12 @@ export default class ProductRoute {
       useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
     );
     this.router.get(
-      `${this.path}/`,
+      `${this.path}/all`,
       useCatchErrors(this.productController.getAllProducts.bind(this.productController))
-    )
+    );
     this.router.delete(
       `${this.path}/:productId`,
       useCatchErrors(this.productController.deleteProduct.bind(this.productController))
-    )
+    );
   }
 }
