@@ -93,9 +93,13 @@ export default class ProductController extends BaseController {
           },
         },
       },
+      include: { image: true },
     });
 
-    this.success(res, 'Product Added', 'Product has been added successfully', 201, product);
+    this.success(res, 'Product Added', 'Product has been added successfully', 201, {
+      ...product,
+      image: product.image,
+    });
   }
 
   async addProductDraft(req: Request, res: Response) {
