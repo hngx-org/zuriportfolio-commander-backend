@@ -209,27 +209,40 @@ export default class ProductController extends BaseController {
   }
 
 
-async getAllProducts(req: Request, res: Response) {
-  const products = await prisma.product.findMany();
+  async getAllProducts(req: Request, res: Response) {
 
-  if (products === null) {
-    return this.error(res, "--product/all", "No product has been created", 404)
+      const userId = req.body.userId;  
+
+      const products = await prisma.product.findMany({
+        where: {
+          user_id: userId, 
+        },
+      });
+        return this.success(res, "All Products Shown", "Products have been listed", 200, products);
+      
   }
-  this.success(res, "All Products shown", "Product has been outlisted", 200, products);
-}
-async deleteProduct(req: Request, res: Response) {
-  const productId = req.params.productId;
+
+  async deleteProduct(req: Request, res: Response) {
+    const productId = req.params.productId;
   
-  if (!productId) {
-    this.error(res, "--product/deleteproduct", "Product not found", 404)
-  } 
+    // Check if the product exists before attempting to delete it
+    const product = await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+  
+    if (!product) {
+      return this.error(res, "--product/deleteproduct", "Product not found", 404);
+    }
+  
+    // If the product exists, proceed with deletion
     const deletedProduct = await prisma.product.delete({
       where: {
         id: productId,
       },
     });
-    if (deletedProduct) {
-      this.success(res, 'Product Deleted', 'Product has been deleted successfully', 200, deletedProduct);
-    } 
+  
+    return this.success(res, 'Product Deleted', 'Product has been deleted successfully', 200, deletedProduct);
   }
 }
