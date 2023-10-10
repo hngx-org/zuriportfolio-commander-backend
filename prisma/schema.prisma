@@ -115,7 +115,7 @@ model product_image {
     id        Int     @id @default(autoincrement())
     productId String
     url       String
-    product   product @relation(fields: [productId], references: [id])
+    product   product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model product_category {
@@ -125,7 +125,7 @@ model product_category {
     product_id         String
     status             STATUS @default(pending)
 
-    product product @relation(fields: [product_id], references: [id])
+    product product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
 model promo_product {
@@ -135,7 +135,7 @@ model promo_product {
     description String
     created_at  DateTime @default(now())
 
-    user user @relation(fields: [user_id], references: [id])
+    user user @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model promotion {
@@ -152,8 +152,8 @@ model promotion {
     created_at     DateTime      @default(now())
     updated_at     DateTime      @default(now())
 
-    user    user     @relation(fields: [user_id], references: [id])
-    product product? @relation(fields: [product_id], references: [id])
+    user    user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    product product? @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
 model revenue {
@@ -174,8 +174,8 @@ model track_promotion {
     type       Discount_type // this isn't needed
     created_at DateTime      @default(now())
 
-    user    user     @relation(fields: [user_id], references: [id])
-    product product? @relation(fields: [product_id], references: [id])
+    user    user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    product product? @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
 model shop {
@@ -193,7 +193,7 @@ model shop {
     created_at DateTime @default(now())
     updated_at DateTime @default(now())
 
-    merchant user @relation(fields: [merchant_id], references: [id])
+    merchant user @relation(fields: [merchant_id], references: [id], onDelete: Cascade)
 }
 
 model store_traffic {
