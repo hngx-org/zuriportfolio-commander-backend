@@ -207,4 +207,29 @@ export default class ProductController extends BaseController {
 
     this.success(res, 'Product Unpublished', 'Product has been unpublished successfully', 201, updatedProduct);
   }
+
+
+async getAllProducts(req: Request, res: Response) {
+  const products = await prisma.product.findMany();
+
+  if (products === null) {
+    return this.error(res, "--product/all", "No product has been created", 404)
+  }
+  this.success(res, "All Products shown", "Product has been outlisted", 200, products);
+}
+async deleteProduct(req: Request, res: Response) {
+  const productId = req.params.productId;
+  
+  if (!productId) {
+    this.error(res, "--product/deleteproduct", "Product not found", 404)
+  } 
+    const deletedProduct = await prisma.product.delete({
+      where: {
+        id: productId,
+      },
+    });
+    if (deletedProduct) {
+      this.success(res, 'Product Deleted', 'Product has been deleted successfully', 200, deletedProduct);
+    } 
+  }
 }
