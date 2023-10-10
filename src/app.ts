@@ -5,6 +5,10 @@ import bodyParser from 'body-parser';
 import logger from './config/logger';
 import HandleErrors from './middlewares/error';
 import { Routes } from './@types';
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yaml';
+import swaggerFile from './doc/swagger';
 
 export default class App {
   public app: express.Application;
@@ -26,12 +30,18 @@ export default class App {
     this.app.use(requestLogger);
     this.app.use(
       cors({
-        origin: ['http://127.0.0.1:3000', 'http://localhost:3000', '*'],
+        origin: ['http://127.0.0.1:3000', 'http://localhost:8080', '*'],
         credentials: true,
-      }),
+      })
     );
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
+  }
+
+  initSwaggerUI() {
+    // handle swagger-doc
+    const swaggerDocument = YAML.parse(swaggerFile);
+    this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   }
 
   listen() {
@@ -48,6 +58,8 @@ export default class App {
     routes.forEach((route) => {
       this.app.use('/api', route.router);
     });
+
+    this.initSwaggerUI();
 
     this.app.all('*', (req, res) => {
       return res.status(404).json({

@@ -121,7 +121,7 @@ CREATE TABLE "promotion" (
     "product_id" TEXT NOT NULL,
     "valid_from" TIMESTAMP(3) NOT NULL,
     "valid_to" TIMESTAMP(3) NOT NULL,
-    "min_cart_price" INTEGER NOT NULL,
+    "min_cart_price" INTEGER DEFAULT 0,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -155,14 +155,14 @@ CREATE TABLE "track_promotion" (
 CREATE TABLE "shop" (
     "id" TEXT NOT NULL,
     "merchant_id" TEXT NOT NULL,
-    "product_id" TEXT NOT NULL,
+    "product_id" TEXT,
     "name" TEXT NOT NULL,
     "policy_confirmation" BOOLEAN,
     "restricted" TEXT NOT NULL DEFAULT 'no',
     "admin_status" "ADMIN_STATUS" NOT NULL DEFAULT 'pending',
     "is_deleted" "shop_status" NOT NULL DEFAULT 'active',
-    "reviewed" BOOLEAN NOT NULL,
-    "rating" DOUBLE PRECISION NOT NULL,
+    "reviewed" BOOLEAN,
+    "rating" DOUBLE PRECISION,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -207,9 +207,6 @@ CREATE UNIQUE INDEX "user_id_key" ON "user"("id");
 CREATE UNIQUE INDEX "product_id_key" ON "product"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "promotion_product_id_key" ON "promotion"("product_id");
-
--- CreateIndex
 CREATE UNIQUE INDEX "revenue_id_key" ON "revenue"("id");
 
 -- CreateIndex
@@ -225,28 +222,28 @@ ALTER TABLE "order" ADD CONSTRAINT "order_merchantId_fkey" FOREIGN KEY ("merchan
 ALTER TABLE "order" ADD CONSTRAINT "order_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "product_image" ADD CONSTRAINT "product_image_productId_fkey" FOREIGN KEY ("productId") REFERENCES "product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "product_image" ADD CONSTRAINT "product_image_productId_fkey" FOREIGN KEY ("productId") REFERENCES "product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "product_category" ADD CONSTRAINT "product_category_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "product_category" ADD CONSTRAINT "product_category_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "promo_product" ADD CONSTRAINT "promo_product_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "promo_product" ADD CONSTRAINT "promo_product_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "promotion" ADD CONSTRAINT "promotion_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "promotion" ADD CONSTRAINT "promotion_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "promotion" ADD CONSTRAINT "promotion_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "promotion" ADD CONSTRAINT "promotion_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "revenue" ADD CONSTRAINT "revenue_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "track_promotion" ADD CONSTRAINT "track_promotion_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "track_promotion" ADD CONSTRAINT "track_promotion_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "track_promotion" ADD CONSTRAINT "track_promotion_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "track_promotion" ADD CONSTRAINT "track_promotion_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "shop" ADD CONSTRAINT "shop_merchant_id_fkey" FOREIGN KEY ("merchant_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "shop" ADD CONSTRAINT "shop_merchant_id_fkey" FOREIGN KEY ("merchant_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
