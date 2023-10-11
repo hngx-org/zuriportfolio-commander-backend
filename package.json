@@ -34,8 +34,7 @@
     "swagger-ui-express": "^5.0.0",
     "validate": "^5.2.0",
     "winston": "^3.8.2",
-    "yaml": "^2.3.2",
-    "yamljs": "^0.3.0"
+    "yaml": "^2.3.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
