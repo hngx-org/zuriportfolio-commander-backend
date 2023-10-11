@@ -40,7 +40,7 @@ enum shop_status {
 }
 
 model user {
-    id                   String            @id @unique
+    id                   String            @id @unique @default(uuid())
     username             String
     first_name           String
     last_name            String
