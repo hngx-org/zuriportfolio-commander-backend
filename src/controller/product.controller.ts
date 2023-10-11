@@ -264,6 +264,6 @@ export default class ProductController extends BaseController {
       },
     });
 
-    return this.success(res, 'Product Deleted', 'Product has been deleted successfully', 200);
+    return this.success(res, '--product_delete/success', 'Product has been deleted successfully', 200);
   }
 }
