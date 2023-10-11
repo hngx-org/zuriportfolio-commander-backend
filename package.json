@@ -4,7 +4,7 @@
   "main": "./dist/server.js",
   "scripts": {
     "test": "",
-    "dev": "nodemon",
+    "dev": "nodemon src/server.ts",
     "generate": "prisma generate",
     "build": "npx rimraf ./dist && tsc",
     "dbPush": "prisma db push",
