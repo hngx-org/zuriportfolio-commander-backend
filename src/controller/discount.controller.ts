@@ -31,7 +31,6 @@ export default class DiscountController extends BaseController {
         product_id: product_id,
         valid_from: valid_from,
         valid_to: valid_to,
-        min_cart_price: min_cart_price,
       },
     });
     this.success(res, 'user created discount', 'Discount created successfully', 200, createdDiscount);
