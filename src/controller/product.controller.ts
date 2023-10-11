@@ -4,8 +4,9 @@ import { productSchema } from '../helper/validate';
 import { uploadSingleImage } from '../helper/uploadImage';
 import logger from '../config/logger';
 import { AddProductPayloadType } from '@types';
-import shortUUID from 'short-uuid';
+import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
+import { isUUID } from '../helper';
 
 export default class ProductController extends BaseController {
   constructor() {
@@ -72,7 +73,7 @@ export default class ProductController extends BaseController {
     const placeHolderImg = image ?? 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
     const product = await prisma.product.create({
       data: {
-        id: shortUUID.generate(),
+        id: uuidv4(),
         name,
         shop_id: shopId,
         user_id: userId,
@@ -114,7 +115,7 @@ export default class ProductController extends BaseController {
         '--product/invalid-fields',
         error?.message ?? 'Important product details is missing.',
         400,
-        null
+        null,
       );
     }
 
@@ -212,41 +213,57 @@ export default class ProductController extends BaseController {
     this.success(res, 'Product Unpublished', 'Product has been unpublished successfully', 201, updatedProduct);
   }
 
-
   async getAllProducts(req: Request, res: Response) {
+    const userId = (req as any).user?.id;
 
-      const userId = req.body.userId;  
-
-      const products = await prisma.product.findMany({
-        where: {
-          user_id: userId, 
-        },
-      });
-        return this.success(res, "All Products Shown", "Products have been listed", 200, products);
-      
+    const products = await prisma.product.findMany({
+      where: {
+        user_id: userId,
+      },
+    });
+    return this.success(res, 'All Products Shown', 'Products have been listed', 200, products);
   }
 
   async deleteProduct(req: Request, res: Response) {
-    const productId = req.params.productId;
-  
-    // Check if the product exists before attempting to delete it
-    const product = await prisma.product.findUnique({
-      where: {
-        id: productId,
-      },
-    });
-  
-    if (!product) {
-      return this.error(res, "--product/deleteproduct", "Product not found", 404);
+    const productId = req.params['product_id'];
+    const userId = (req as any).user['id'];
+
+    if (typeof productId === 'undefined') {
+      return this.error(res, '--product_delete/invalid-fields', 'Invalid field provided.', 400);
     }
-  
+
+    // check if field parameter is a uuid
+    if (!isUUID(productId)) {
+      return this.error(
+        res,
+        '--product_delete/invalid-field',
+        'product id is invalid, expected product_id in uuid format.',
+        400,
+      );
+    }
+
+    // Check if the product exists before attempting to delete it
+    const product = await prisma.product.findFirst({
+      where: {
+        id: productId,
+        user_id: userId,
+      },
+    });
+
+    if (!product) {
+      return this.error(res, '--product_delete/product-notfound', 'Product not found', 404);
+    }
+
     // If the product exists, proceed with deletion
-    const deletedProduct = await prisma.product.delete({
+    await prisma.product.update({
       where: {
         id: productId,
       },
+      data: {
+        is_deleted: 'temporary',
+      },
     });
-  
-    return this.success(res, 'Product Deleted', 'Product has been deleted successfully', 200, deletedProduct);
+
+    return this.success(res, '--product_delete/success', 'Product has been deleted successfully', 200);
   }
 }
