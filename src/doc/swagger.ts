@@ -9,8 +9,9 @@ servers:
     description: Zuriportfolio shop internal / external api.
   - url: https://zuriportfolio-shop-internal-api.onrender.com/api
     description: Production server
+
 paths:
-  /product/all:
+  /products/:
     get:
       summary: Retrieve all products
       description: Returns the list of created products by a user
@@ -25,8 +26,6 @@ paths:
                 type: array
                 items: 
                   type: string
-
-
 components:
   securitySchemes:
     BearerAuth:

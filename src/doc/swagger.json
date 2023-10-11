@@ -1,0 +1,110 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Zuriportfolio Shop API",
+    "description": "Zuriportfolio shop internal / external api.",
+    "version": "0.1.9"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/api",
+      "description": "Zuriportfolio shop internal / external api."
+    },
+    {
+      "url": "https://zuriportfolio-shop-internal-api.onrender.com/api",
+      "description": "Production server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "products",
+      "description": "Products"
+    }
+  ],
+
+  "paths": {
+    "/products": {
+      "post": {
+        "tags": ["products"],
+        "summary": "Create a new product",
+        "description": "",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Product"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "petstore_auth": ["write:pets", "read:pets"]
+          }
+        ]
+      }
+    }
+  },
+
+  "components": {
+    "schemas": {
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "optional": true
+          },
+          "shop_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "category": {
+            "type": "integer"
+          },
+          "image_id": {
+            "type": "integer"
+          },
+          "price": {
+            "type": "number"
+          },
+          "discount_price": {
+            "type": "number"
+          },
+          "tax": {
+            "type": "number"
+          },
+          "admin_status": {
+            "type": "string"
+          },
+          "rating_id": {
+            "type": "integer"
+          },
+          "currency": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
