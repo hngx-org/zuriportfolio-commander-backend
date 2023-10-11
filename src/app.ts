@@ -8,7 +8,9 @@ import { Routes } from './@types';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yaml';
+
 import swaggerFile from './doc/swagger';
+import swagggerJson from './doc/swagger.json';
 
 export default class App {
   public app: express.Application;
@@ -19,6 +21,7 @@ export default class App {
     this.app = express();
     this.port = process.env.PORT ?? 8080;
     this.initializeMiddlewares();
+    this.initSwaggerUI();
   }
 
   initDB() {
@@ -40,8 +43,8 @@ export default class App {
 
   initSwaggerUI() {
     // handle swagger-doc
-    const swaggerDocument = YAML.parse(swaggerFile);
-    this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+    // const swaggerDocument = YAML.parse(swaggerYamlFile);
+    this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swagggerJson));
   }
 
   listen() {
