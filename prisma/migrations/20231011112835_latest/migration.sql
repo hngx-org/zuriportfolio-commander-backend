@@ -40,20 +40,32 @@ CREATE TABLE "user" (
 -- CreateTable
 CREATE TABLE "order" (
     "id" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
-    "quantity" INTEGER NOT NULL,
-    "amount" DOUBLE PRECISION NOT NULL,
+    "customer_id" TEXT NOT NULL,
     "subtotal" DOUBLE PRECISION,
     "VAT" DOUBLE PRECISION,
-    "productId" TEXT NOT NULL,
-    "merchantId" TEXT NOT NULL,
-    "customerId" TEXT NOT NULL,
-    "promo_id" TEXT NOT NULL,
+    "discount" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "status" "STATUS" NOT NULL DEFAULT 'pending',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "order_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "order_item" (
+    "id" TEXT NOT NULL,
+    "order_id" TEXT NOT NULL,
+    "product_id" TEXT NOT NULL,
+    "merchant_id" TEXT NOT NULL,
+    "customer_id" TEXT NOT NULL,
+    "order_price" DOUBLE PRECISION NOT NULL,
+    "order_VAT" DOUBLE PRECISION NOT NULL,
+    "order_discount" DOUBLE PRECISION NOT NULL,
+    "promo_id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "order_item_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -214,6 +226,9 @@ CREATE UNIQUE INDEX "user_id_key" ON "user"("id");
 CREATE UNIQUE INDEX "order_id_key" ON "order"("id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "order_item_id_key" ON "order_item"("id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "product_id_key" ON "product"("id");
 
 -- CreateIndex
@@ -226,13 +241,16 @@ CREATE UNIQUE INDEX "track_promotion_id_key" ON "track_promotion"("id");
 CREATE UNIQUE INDEX "shop_id_key" ON "shop"("id");
 
 -- AddForeignKey
-ALTER TABLE "order" ADD CONSTRAINT "order_merchantId_fkey" FOREIGN KEY ("merchantId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "order" ADD CONSTRAINT "order_customer_id_fkey" FOREIGN KEY ("customer_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "order" ADD CONSTRAINT "order_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "order_item" ADD CONSTRAINT "order_item_merchant_id_fkey" FOREIGN KEY ("merchant_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "order" ADD CONSTRAINT "order_promo_id_fkey" FOREIGN KEY ("promo_id") REFERENCES "promotion"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "order_item" ADD CONSTRAINT "order_item_customer_id_fkey" FOREIGN KEY ("customer_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "order_item" ADD CONSTRAINT "order_item_promo_id_fkey" FOREIGN KEY ("promo_id") REFERENCES "promotion"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "product" ADD CONSTRAINT "product_shop_id_fkey" FOREIGN KEY ("shop_id") REFERENCES "shop"("id") ON DELETE CASCADE ON UPDATE CASCADE;

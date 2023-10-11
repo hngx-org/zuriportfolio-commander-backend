@@ -40,50 +40,62 @@ enum shop_status {
 }
 
 model user {
-    id              String            @id @unique
-    username        String
-    first_name      String
-    last_name       String
-    email           String
-    section_order   String?
-    password        String?
-    provider        String?
-    is_verified     Boolean           @default(false)
-    two_factor_auth Boolean           @default(false)
-    location        String?
-    country         String?
-    profile_pic     String?
-    refreshToken    String
-    createdAt       DateTime          @default(now())
-    orders          order[]           @relation(name: "merchant_orders")
-    customer        order[]           @relation(name: "customer_orders")
-    revenue         revenue[]
-    promotion       promotion[]
-    track_promotion track_promotion[]
-    shop            shop[]
-    promo_product   promo_product[]
-    activities      activity[]
+    id                   String            @id @unique
+    username             String
+    first_name           String
+    last_name            String
+    email                String
+    section_order        String?
+    password             String?
+    provider             String?
+    is_verified          Boolean           @default(false)
+    two_factor_auth      Boolean           @default(false)
+    location             String?
+    country              String?
+    profile_pic          String?
+    refreshToken         String
+    createdAt            DateTime          @default(now())
+    order_items          order_item[]      @relation(name: "merchant_orders")
+    customer_orders      order[]           @relation(name: "customer_orders")
+    customer_order_items order_item[]      @relation(name: "customer_orders")
+    revenue              revenue[]
+    promotion            promotion[]
+    track_promotion      track_promotion[]
+    shop                 shop[]
+    promo_product        promo_product[]
+    activities           activity[]
 }
 
 model order {
-    id         String   @id @unique
-    type       String
-    quantity   Int
-    amount     Float
-    subtotal   Float?
-    VAT        Float?
-    productId  String
-    merchantId String
-    customerId String
-    promo_id   String
-    status     STATUS   @default(pending)
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @default(now())
+    id          String   @id @unique
+    customer_id String
+    subtotal    Float?
+    VAT         Float?
+    discount    Float    @default(0)
+    status      STATUS   @default(pending)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @default(now())
 
-    merchant     user           @relation(name: "merchant_orders", fields: [merchantId], references: [id])
-    customer     user           @relation(name: "customer_orders", fields: [customerId], references: [id])
-    promo        promotion      @relation(fields: [promo_id], references: [id])
+    customer     user           @relation(name: "customer_orders", fields: [customer_id], references: [id])
     sales_report sales_report[]
+}
+
+model order_item {
+    id             String   @id @unique
+    order_id       String
+    product_id     String
+    merchant_id    String
+    customer_id    String
+    order_price    Float
+    order_VAT      Float
+    order_discount Float
+    promo_id       String
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @default(now())
+
+    merchant user      @relation(name: "merchant_orders", fields: [merchant_id], references: [id])
+    customer user      @relation(name: "customer_orders", fields: [customer_id], references: [id])
+    promo    promotion @relation(fields: [promo_id], references: [id])
 }
 
 model product {
@@ -166,7 +178,7 @@ model promotion {
     user          user              @relation(fields: [user_id], references: [id], onDelete: Cascade)
     product       product?          @relation(fields: [product_id], references: [id], onDelete: Cascade)
     tracked_promo track_promotion[]
-    orders        order[]
+    order_items   order_item[]
 }
 
 model revenue {
