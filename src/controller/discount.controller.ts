@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
 import prisma from '../config/prisma';
-import shortUUID from 'short-uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 export default class DiscountController extends BaseController {
   constructor() {
@@ -22,7 +22,7 @@ export default class DiscountController extends BaseController {
     } = req.body;
     const createdDiscount = await prisma.promotion.create({
       data: {
-        id: shortUUID.generate(),
+        id: uuidv4(),
         user_id: user_id,
         promotion_type: promotion_type,
         discount_type: discount_type,

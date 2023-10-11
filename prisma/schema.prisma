@@ -40,7 +40,7 @@ enum shop_status {
 }
 
 model user {
-    id                   String            @id @unique
+    id                   String            @id @unique @default(uuid())
     username             String
     first_name           String
     last_name            String
@@ -53,7 +53,7 @@ model user {
     location             String?
     country              String?
     profile_pic          String?
-    refreshToken         String
+    refresh_token        String
     createdAt            DateTime          @default(now())
     order_items          order_item[]      @relation(name: "merchant_orders")
     customer_orders      order[]           @relation(name: "customer_orders")
