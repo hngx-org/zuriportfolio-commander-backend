@@ -4,7 +4,6 @@ import prisma from '../config/prisma';
 
 // import { PrismaClient } from '@prisma/client';
 
-
 // const prisma = new PrismaClient();
 
 export default class OrderController extends BaseController {
@@ -57,7 +56,6 @@ export default class OrderController extends BaseController {
     this.success(res, '--order/all', 'orders fetched successfully', 200, orders);
   }
 
-
   async getOrderByProductName(req: Request | any, res: Response | any) {
     const { name } = req.params;
     const { page = 1, pageSize = 10 } = req.query;
@@ -77,10 +75,10 @@ export default class OrderController extends BaseController {
         skip: (+page - 1) * +pageSize,
         take: +pageSize,
       });
-  
-      this.success(res, '--order/all', 'orders fetched successfully', 200, orderItems);
+
+      this.success(res, '--orders/all', 'orders fetched successfully', 200, orderItems);
     } catch (error) {
-      return this.error(res, '--order/internal-server-error', 'Internal server Error', 500);
+      return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
     }
   }
 }

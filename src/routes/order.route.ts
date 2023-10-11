@@ -25,8 +25,5 @@ export default class OrderRoute {
       isAuthenticated,
       useCatchErrors(this.OrderController.getOrderByProductName.bind(this.OrderController)),
     );
-
-
-
   }
 }
