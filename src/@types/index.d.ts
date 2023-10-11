@@ -18,3 +18,10 @@ export interface AddProductPayloadType {
   shopId: string;
   userId: string; //! remove this once auth is working
 }
+
+export interface AuthenticatedMiddleware {
+  status: number;
+  authorized: boolean;
+  message: string;
+  user: { id: string };
+}
