@@ -4,7 +4,7 @@ import { productSchema } from '../helper/validate';
 import { uploadSingleImage } from '../helper/uploadImage';
 import logger from '../config/logger';
 import { AddProductPayloadType } from '@types';
-import shortUUID from 'short-uuid';
+import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
 
 export default class ProductController extends BaseController {
@@ -72,7 +72,7 @@ export default class ProductController extends BaseController {
     const placeHolderImg = image ?? 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
     const product = await prisma.product.create({
       data: {
-        id: shortUUID.generate(),
+        id: uuidv4(),
         name,
         shop_id: shopId,
         user_id: userId,
@@ -212,41 +212,38 @@ export default class ProductController extends BaseController {
     this.success(res, 'Product Unpublished', 'Product has been unpublished successfully', 201, updatedProduct);
   }
 
-
   async getAllProducts(req: Request, res: Response) {
+    const userId = req.body.userId;
 
-      const userId = req.body.userId;  
-
-      const products = await prisma.product.findMany({
-        where: {
-          user_id: userId, 
-        },
-      });
-        return this.success(res, "All Products Shown", "Products have been listed", 200, products);
-      
+    const products = await prisma.product.findMany({
+      where: {
+        user_id: userId,
+      },
+    });
+    return this.success(res, 'All Products Shown', 'Products have been listed', 200, products);
   }
 
   async deleteProduct(req: Request, res: Response) {
     const productId = req.params.productId;
-  
+
     // Check if the product exists before attempting to delete it
     const product = await prisma.product.findUnique({
       where: {
         id: productId,
       },
     });
-  
+
     if (!product) {
-      return this.error(res, "--product/deleteproduct", "Product not found", 404);
+      return this.error(res, '--product/deleteproduct', 'Product not found', 404);
     }
-  
+
     // If the product exists, proceed with deletion
     const deletedProduct = await prisma.product.delete({
       where: {
         id: productId,
       },
     });
-  
+
     return this.success(res, 'Product Deleted', 'Product has been deleted successfully', 200, deletedProduct);
   }
 }
