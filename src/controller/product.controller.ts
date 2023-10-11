@@ -115,7 +115,7 @@ export default class ProductController extends BaseController {
         '--product/invalid-fields',
         error?.message ?? 'Important product details is missing.',
         400,
-        null
+        null,
       );
     }
 
@@ -238,7 +238,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_delete/invalid-field',
         'product id is invalid, expected product_id in uuid format.',
-        400
+        400,
       );
     }
 
