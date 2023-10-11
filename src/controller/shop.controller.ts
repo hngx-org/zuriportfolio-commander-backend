@@ -41,4 +41,22 @@ export default class ShopController extends BaseController {
 
     this.success(res, '--shop/created', 'shop created', 200, created);
   }
+
+  async deleteShop(req: Request, res: Response) {
+    const { id } = req.params;
+    const shop = await prisma.shop.findUnique({
+      where: { id },
+    });
+
+    if (!shop) {
+      return this.error(res, '--shop/not-found', 'shop not found', 404);
+    }
+
+    await prisma.shop.delete({
+      where: { id },
+    });
+
+    this.success(res, '--shop/deleted', 'shop deleted', 200, null);
+  }
 }
+
