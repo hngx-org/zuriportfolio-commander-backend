@@ -114,7 +114,7 @@ export default class ProductController extends BaseController {
         '--product/invalid-fields',
         error?.message ?? 'Important product details is missing.',
         400,
-        null
+        null,
       );
     }
 
@@ -213,7 +213,7 @@ export default class ProductController extends BaseController {
   }
 
   async getAllProducts(req: Request, res: Response) {
-    const userId = req.body.userId;
+    const userId = (req as any).user?.id;
 
     const products = await prisma.product.findMany({
       where: {

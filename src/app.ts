@@ -31,7 +31,7 @@ export default class App {
       cors({
         origin: ['http://127.0.0.1:3000', 'http://localhost:8080', '*'],
         credentials: true,
-      })
+      }),
     );
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
