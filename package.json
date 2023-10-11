@@ -4,12 +4,12 @@
   "main": "./dist/server.js",
   "scripts": {
     "test": "",
-    "dev": "nodemon",
+    "dev": "nodemon src/server.ts",
     "generate": "prisma generate",
     "build": "npx rimraf ./dist && tsc",
     "dbPush": "prisma db push",
     "migrate": "prisma migrate dev",
-    "start": "npm run generate && node ./dist/server.js",
+    "start": "node ./dist/server.js",
     "watch": "tsc --watch",
     "format": "npx prettier --write ."
   },
@@ -19,6 +19,9 @@
   "description": "Scaffolded using prospark",
   "dependencies": {
     "@prisma/client": "^5.4.1",
+    "@types/swagger-jsdoc": "^6.0.1",
+    "@types/swagger-ui-express": "^4.1.4",
+    "axios": "^1.5.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "cloudinary": "^1.41.0",
@@ -27,9 +30,12 @@
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.0",
     "multer": "^1.4.5-lts.1",
-    "short-uuid": "^4.2.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
+    "uuid": "^9.0.1",
     "validate": "^5.2.0",
-    "winston": "^3.8.2"
+    "winston": "^3.8.2",
+    "yaml": "^2.3.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",

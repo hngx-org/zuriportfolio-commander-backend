@@ -3,7 +3,7 @@ import BaseController from './base.controller';
 import { createShopSchema, productSchema } from '../helper/validate';
 import logger from '../config/logger';
 import { AddProductPayloadType } from '@types';
-import shortUUID from 'short-uuid';
+import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
 
 export default class ShopController extends BaseController {
@@ -19,7 +19,7 @@ export default class ShopController extends BaseController {
     }
 
     const { name, merchant_id } = payload;
-    const id = shortUUID.generate();
+    const id = uuidv4();
 
     //! check if user exists
     const userExists = await prisma.user.findFirst({
