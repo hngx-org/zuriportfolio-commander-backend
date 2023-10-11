@@ -14,7 +14,7 @@ export default class ProductController extends BaseController {
 
   async publishProduct(req: Request, res: Response) {
     const productId = req.params.productId;
-
+    
     // Find the product by ID
     const existingProduct = await prisma.product.findUnique({
       where: {

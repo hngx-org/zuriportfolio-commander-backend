@@ -31,3 +31,4 @@ export const createShopSchema = Joi.object({
   name: Joi.string().required(),
   merchant_id: Joi.string().required(),
 });
+
