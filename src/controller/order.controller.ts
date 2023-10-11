@@ -1,10 +1,8 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
-import prisma from '../config/prisma';
+import { PrismaClient } from '@prisma/client';
 
-// import { PrismaClient } from '@prisma/client';
-
-// const prisma = new PrismaClient();
+const prisma = new PrismaClient();
 
 export default class OrderController extends BaseController {
   constructor() {
