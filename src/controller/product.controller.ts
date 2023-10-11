@@ -99,7 +99,7 @@ export default class ProductController extends BaseController {
 
     this.success(res, 'Product Added', 'Product has been added successfully', 201, {
       ...product,
-      image: product.image,
+      // image: product.image,
     });
   }
 

@@ -1,8 +1,11 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../config/prisma';
 
-const prisma = new PrismaClient();
+// import { PrismaClient } from '@prisma/client';
+
+
+// const prisma = new PrismaClient();
 
 export default class OrderController extends BaseController {
   constructor() {
@@ -19,7 +22,7 @@ export default class OrderController extends BaseController {
         id: orderId,
       },
       include: {
-        merchant: true,
+        // merchant: true,
         customer: true,
       },
     });
@@ -52,5 +55,32 @@ export default class OrderController extends BaseController {
     });
 
     this.success(res, '--order/all', 'orders fetched successfully', 200, orders);
+  }
+
+
+  async getOrderByProductName(req: Request | any, res: Response | any) {
+    const { name } = req.params;
+    const { page = 1, pageSize = 10 } = req.query;
+    try {
+      const orderItems = await prisma.order_item.findMany({
+        include: {
+          product: true,
+        },
+        where: {
+          product: {
+            name: {
+              contains: name,
+              mode: 'insensitive', // Case-insensitive search
+            },
+          },
+        },
+        skip: (+page - 1) * +pageSize,
+        take: +pageSize,
+      });
+  
+      this.success(res, '--order/all', 'orders fetched successfully', 200, orderItems);
+    } catch (error) {
+      return this.error(res, '--order/internal-server-error', 'Internal server Error', 500);
+    }
   }
 }

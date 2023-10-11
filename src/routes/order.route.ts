@@ -1,6 +1,7 @@
 import express from 'express';
 import useCatchErrors from '../error/catchErrors';
 import OrderController from '../controller/order.controller';
+import { isAuthenticated } from '../middlewares/auth';
 
 export default class OrderRoute {
   router = express.Router();
@@ -18,5 +19,14 @@ export default class OrderRoute {
     );
 
     this.router.get(`${this.path}`, useCatchErrors(this.OrderController.getAllOrders.bind(this.OrderController)));
+
+    this.router.get(
+      `${this.path}/search/:name`,
+      isAuthenticated,
+      useCatchErrors(this.OrderController.getOrderByProductName.bind(this.OrderController)),
+    );
+
+
+
   }
 }
