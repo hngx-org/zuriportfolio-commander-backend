@@ -81,14 +81,24 @@
         ]
       }
     },
-    "/product/{product_id}": {
+    "/product/{productId}": {
       "patch": {
         "tags": [
           "Product"
         ],
         "summary": "Update a product",
         "description": "Update a specific product.",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "ID of product to update",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "",
           "content": {
@@ -96,31 +106,15 @@
               "schema": {
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/Product"
+                    "$ref": "#/components/schemas/UpdateProduct"
                   }
                 ]
-              },
-              "example": {
-                "shop_id": "8eb618e6-134c-4ec7-94b0-b0143d9e0cfc",
-                "name": "Nike Shoe",
-                "description": "Comfortable and beautiful",
-                "quantity": 50,
-                "category": 3,
-                "image": "https://file-link.com",
-                "price": 5000,
-                "discount_price": 4500,
-                "tax": 200,
-                "admin_status": "pending",
-                "currency": "Naira"
               }
             },
-            "application/x-www-form-urlencoded": {
+            "application/octet-stream": {
               "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Product"
-                  }
-                ]
+                "type": "string",
+                "format": "binary"
               }
             }
           },
@@ -186,7 +180,9 @@
     },
     "/product/categories": {
       "post": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "summary": "Create a product category",
         "description": "Create a parent or subcategory.",
         "requestBody": {
@@ -320,7 +316,9 @@
     "/shop": {
       "post": {
         "summary": "Create a shop",
-        "tags": ["Shop"],
+        "tags": [
+          "Shop"
+        ],
         "requestBody": {
           "description": "Shop data",
           "required": true,
@@ -651,349 +649,349 @@
           }
         }
       }
-    }
-  },
-  "/api/product/categories": {
-    "get": {
-      "summary": "Retrieve Product Categories",
-      "description": "Get a list of all product categories along with their subcategories.",
-      "responses": {
-        "200": {
-          "description": "Successful response",
-          "content": {
-            "application/json": {
-              "example": [
-                {
-                  "id": 11,
-                  "name": "Electronics",
-                  "product_id": "11",
-                  "createdAt": "2023-10-11T21:25:23.0000Z",
-                  "sub_categories": [
-                    {
-                      "id": 101,
-                      "name": "Smartphones",
-                      "parent_category_id": 1011,
-                      "createdAt": "2023-10-11T21:25:23.0000Z"
+    },
+    "/api/product/categories": {
+      "get": {
+        "summary": "Retrieve Product Categories",
+        "description": "Get a list of all product categories along with their subcategories.",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 11,
+                    "name": "Electronics",
+                    "product_id": "11",
+                    "createdAt": "2023-10-11T21:25:23.0000Z",
+                    "sub_categories": [
+                      {
+                        "id": 101,
+                        "name": "Smartphones",
+                        "parent_category_id": 1011,
+                        "createdAt": "2023-10-11T21:25:23.0000Z"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "/auth/signup": {
+        "post": {
+          "tags": [
+            "Authentication"
+          ],
+          "summary": "User Signup",
+          "description": "Allows a user to sign up.",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "firstName": {
+                      "type": "string",
+                      "example": "John"
+                    },
+                    "lastName": {
+                      "type": "string",
+                      "example": "Doe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "example": "sicoj92691@elixirsd.com"
+                    },
+                    "password": {
+                      "type": "string",
+                      "format": "password",
+                      "example": "myPassword2021"
                     }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "User successfully signed up."
+            },
+            "400": {
+              "description": "Bad request. Please check the request parameters."
+            },
+            "500": {
+              "description": "Internal server error."
+            }
+          }
+        }
+      },
+      "/auth/login": {
+        "post": {
+          "tags": [
+            "Authentication"
+          ],
+          "summary": "User Login",
+          "description": "Allows a user to log in.",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "example": "sicoj92691@elixirsd.com"
+                    },
+                    "password": {
+                      "type": "string",
+                      "format": "password",
+                      "example": "myPassword2021"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "User successfully logged in."
+            },
+            "401": {
+              "description": "Unauthorized. Incorrect email or password."
+            },
+            "500": {
+              "description": "Internal server error."
+            }
+          }
+        }
+      },
+      "/auth/verify-email": {
+        "post": {
+          "tags": [
+            "Authentication"
+          ],
+          "summary": "Verify Email",
+          "description": "Handles the verification and confirmation of the authenticity of a user's email address.",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "42e2a46a-e56f-4e4d-be0e-0675b7026f58"
+                    }
+                  },
+                  "required": [
+                    "token"
                   ]
                 }
-              ]
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Email verification successful."
+            },
+            "400": {
+              "description": "Bad request. Please check the request parameters."
+            },
+            "401": {
+              "description": "Unauthorized. Token is invalid or has expired."
+            },
+            "500": {
+              "description": "Internal server error."
             }
           }
         }
-      }
-    },
-    "/auth/signup": {
-      "post": {
-        "tags": [
-          "Authentication"
-        ],
-        "summary": "User Signup",
-        "description": "Allows a user to sign up.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "firstName": {
-                    "type": "string",
-                    "example": "John"
+      },
+      "/auth/send-verification": {
+        "post": {
+          "tags": [
+            "Authentication"
+          ],
+          "summary": "Send Verification Code",
+          "description": "Sends a verification code to the user's email for account activation.",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "first_name": {
+                      "type": "string",
+                      "example": "John"
+                    },
+                    "last_name": {
+                      "type": "string",
+                      "example": "Doe"
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "johndoe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "example": "sicoj92691@elixirsd.com"
+                    },
+                    "password": {
+                      "type": "string",
+                      "format": "password",
+                      "example": "myPassword2021"
+                    },
+                    "refresh_token": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "42e2a46a-e56f-4e4d-be0e-0675b7026f58"
+                    }
                   },
-                  "lastName": {
-                    "type": "string",
-                    "example": "Doe"
-                  },
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "example": "sicoj92691@elixirsd.com"
-                  },
-                  "password": {
-                    "type": "string",
-                    "format": "password",
-                    "example": "myPassword2021"
-                  }
+                  "required": [
+                    "first_name",
+                    "last_name",
+                    "username",
+                    "email",
+                    "password",
+                    "refresh_token"
+                  ]
                 }
               }
             }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "User successfully signed up."
           },
-          "400": {
-            "description": "Bad request. Please check the request parameters."
-          },
-          "500": {
-            "description": "Internal server error."
+          "responses": {
+            "200": {
+              "description": "Verification code sent successfully."
+            },
+            "400": {
+              "description": "Bad request. Please check the request parameters."
+            },
+            "401": {
+              "description": "Unauthorized. Refresh token is invalid or has expired."
+            },
+            "500": {
+              "description": "Internal server error."
+            }
           }
         }
-      }
-    },
-    "/auth/login": {
-      "post": {
-        "tags": [
-          "Authentication"
-        ],
-        "summary": "User Login",
-        "description": "Allows a user to log in.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "example": "sicoj92691@elixirsd.com"
+      },
+      "/auth/confirm-verification": {
+        "post": {
+          "tags": [
+            "Authentication"
+          ],
+          "summary": "Confirm Verification Code",
+          "description": "Verifies the verification code against the stored code for the user in the database.",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "example": "sicoj92691@elixirsd.com"
+                    },
+                    "verificationCode": {
+                      "type": "string",
+                      "example": "3903"
+                    }
                   },
-                  "password": {
-                    "type": "string",
-                    "format": "password",
-                    "example": "myPassword2021"
-                  }
+                  "required": [
+                    "email",
+                    "verificationCode"
+                  ]
                 }
               }
             }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User successfully logged in."
           },
-          "401": {
-            "description": "Unauthorized. Incorrect email or password."
-          },
-          "500": {
-            "description": "Internal server error."
+          "responses": {
+            "200": {
+              "description": "Verification code confirmed successfully."
+            },
+            "400": {
+              "description": "Bad request. Please check the request parameters."
+            },
+            "401": {
+              "description": "Unauthorized. Verification code is invalid or has expired."
+            },
+            "500": {
+              "description": "Internal server error."
+            }
           }
         }
-      }
-    },
-    "/auth/verify-email": {
-      "post": {
-        "tags": [
-          "Authentication"
-        ],
-        "summary": "Verify Email",
-        "description": "Handles the verification and confirmation of the authenticity of a user's email address.",
-        "requestBody": {
-          "content": {
-            "application/json": {
+      },
+      "/order/status/{order_id}": {
+        "patch": {
+          "tags": [
+            "Order"
+          ],
+          "summary": "Update Order Status",
+          "description": "Update the status of a specific order.",
+          "parameters": [
+            {
+              "name": "order_id",
+              "in": "path",
+              "description": "Order ID",
+              "required": true,
               "schema": {
-                "type": "object",
-                "properties": {
-                  "token": {
-                    "type": "string",
-                    "format": "uuid",
-                    "example": "42e2a46a-e56f-4e4d-be0e-0675b7026f58"
-                  }
-                },
-                "required": [
-                  "token"
-                ]
+                "type": "string"
               }
             }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Email verification successful."
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "complete",
+                        "failed"
+                      ],
+                      "example": "complete"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                }
+              }
+            }
           },
-          "400": {
-            "description": "Bad request. Please check the request parameters."
+          "responses": {
+            "200": {
+              "description": "Order status updated successfully."
+            },
+            "400": {
+              "description": "Bad request. Please check the request parameters or status value."
+            },
+            "401": {
+              "description": "Unauthorized. Token is invalid or action is not permitted."
+            },
+            "404": {
+              "description": "Order not found."
+            },
+            "500": {
+              "description": "Internal server error."
+            }
           },
-          "401": {
-            "description": "Unauthorized. Token is invalid or has expired."
-          },
-          "500": {
-            "description": "Internal server error."
-          }
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ]
         }
-      }
-    },
-    "/auth/send-verification": {
-      "post": {
-        "tags": [
-          "Authentication"
-        ],
-        "summary": "Send Verification Code",
-        "description": "Sends a verification code to the user's email for account activation.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "first_name": {
-                    "type": "string",
-                    "example": "John"
-                  },
-                  "last_name": {
-                    "type": "string",
-                    "example": "Doe"
-                  },
-                  "username": {
-                    "type": "string",
-                    "example": "johndoe"
-                  },
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "example": "sicoj92691@elixirsd.com"
-                  },
-                  "password": {
-                    "type": "string",
-                    "format": "password",
-                    "example": "myPassword2021"
-                  },
-                  "refresh_token": {
-                    "type": "string",
-                    "format": "uuid",
-                    "example": "42e2a46a-e56f-4e4d-be0e-0675b7026f58"
-                  }
-                },
-                "required": [
-                  "first_name",
-                  "last_name",
-                  "username",
-                  "email",
-                  "password",
-                  "refresh_token"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Verification code sent successfully."
-          },
-          "400": {
-            "description": "Bad request. Please check the request parameters."
-          },
-          "401": {
-            "description": "Unauthorized. Refresh token is invalid or has expired."
-          },
-          "500": {
-            "description": "Internal server error."
-          }
-        }
-      }
-    },
-    "/auth/confirm-verification": {
-      "post": {
-        "tags": [
-          "Authentication"
-        ],
-        "summary": "Confirm Verification Code",
-        "description": "Verifies the verification code against the stored code for the user in the database.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "example": "sicoj92691@elixirsd.com"
-                  },
-                  "verificationCode": {
-                    "type": "string",
-                    "example": "3903"
-                  }
-                },
-                "required": [
-                  "email",
-                  "verificationCode"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Verification code confirmed successfully."
-          },
-          "400": {
-            "description": "Bad request. Please check the request parameters."
-          },
-          "401": {
-            "description": "Unauthorized. Verification code is invalid or has expired."
-          },
-          "500": {
-            "description": "Internal server error."
-          }
-        }
-      }
-    },
-    "/order/status/{order_id}": {
-      "patch": {
-        "tags": [
-          "Order"
-        ],
-        "summary": "Update Order Status",
-        "description": "Update the status of a specific order.",
-        "parameters": [
-          {
-            "name": "order_id",
-            "in": "path",
-            "description": "Order ID",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "status": {
-                    "type": "string",
-                    "enum": [
-                      "pending",
-                      "complete",
-                      "failed"
-                    ],
-                    "example": "complete"
-                  }
-                },
-                "required": [
-                  "status"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Order status updated successfully."
-          },
-          "400": {
-            "description": "Bad request. Please check the request parameters or status value."
-          },
-          "401": {
-            "description": "Unauthorized. Token is invalid or action is not permitted."
-          },
-          "404": {
-            "description": "Order not found."
-          },
-          "500": {
-            "description": "Internal server error."
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
       }
     }
   },
@@ -1063,23 +1061,136 @@
           "currency": "USD"
         }
       },
-
+      "UpdateProductData": {
+        "type": "object",
+        "properties": {
+          "newData": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "required": true
+              },
+              "description": {
+                "type": "string",
+                "required": true
+              },
+              "quantity": {
+                "type": "integer",
+                "required": true
+              },
+              "categoryId": {
+                "type": "integer",
+                "required": true
+              },
+              "price": {
+                "type": "number",
+                "required": true
+              },
+              "discountPrice": {
+                "type": "number",
+                "required": true
+              },
+              "tax": {
+                "type": "number",
+                "required": true
+              },
+              "currency": {
+                "type": "string",
+                "required": true
+              },
+              "adminStatus": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "review",
+                  "approved",
+                  "blacklist"
+                ],
+                "required": true
+              }
+            }
+          }
+        },
+        "example": {
+          "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
+          "newData": {
+            "name": "Nike Wears",
+            "description": "Comfortable and beautifully Designed",
+            "quantity": 53,
+            "price": 5000,
+            "discountPrice": 4500,
+            "tax": 200,
+            "currency": "Naira",
+            "categoryId": 1,
+            "adminStatus": "approved"
+          }
+        }
+      },
+      "UpdateProduct": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "newData": {
+            "$ref": "#/components/schemas/UpdateProductData"
+          }
+        },
+        "required": [
+          "userId"
+        ],
+        "example": {
+          "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
+          "newData": {
+            "name": "Nike Wears",
+            "description": "Comfortable and beautifully Designed",
+            "quantity": 53,
+            "price": 5000,
+            "discountPrice": 4500,
+            "tax": 200,
+            "currency": "Naira",
+            "categoryId": 1,
+            "adminStatus": "approved"
+          }
+        }
+      },
+      "UpdateProductWithImage": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "array"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "newData": {
+            "$ref": "#/components/schemas/UpdateProductData"
+          }
+        }
+      },
       "GetProduct": {
         "type": "object",
         "properties": {}
       },
-
       "CreateCategory": {
         "type": "object",
         "properties": {
           "parent_id": {
-            "type": ["integer", "null", "undefined", ""]
+            "type": [
+              "integer",
+              "null",
+              "undefined",
+              ""
+            ]
           },
           "name": {
             "type": "string"
           }
         },
-        "required": ["name"]
+        "required": [
+          "name"
+        ]
       },
       "ProductCategory": {
         "type": "object",

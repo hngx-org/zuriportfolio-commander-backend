@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
-import { createCategorySchema, productSchema } from '../helper/validate';
+import { createCategorySchema, productSchema, updateProductSchema } from '../helper/validate';
 import { uploadSingleImage } from '../helper/uploadImage';
 import logger from '../config/logger';
-import { AddProductPayloadType } from '@types';
+import { AddProductPayloadType, UpdateProductPayloadType } from '@types';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
 import { isUUID } from '../helper';
@@ -350,13 +350,13 @@ export default class ProductController extends BaseController {
     const file = req.file ?? null;
     const userId = (req as any).body.user_id;
     const productId = req.params['productId'];
-    const payload: AddProductPayloadType = req.body.newData;
-    console.log(productId)
+    const payload: UpdateProductPayloadType = file == null ? req.body.newData : JSON.parse(req.body.newData);
 
     // Checks if the product exists before attempting update
     const product = await prisma.product.findUnique({
       where: {
-        id: productId
+        id: productId,
+        user_id: userId
       },
     });
 
@@ -366,15 +366,17 @@ export default class ProductController extends BaseController {
     }
 
     // Validates the new product details
-    const { error } = productSchema.validate(payload);
-    if (error || typeof productId === 'undefined') {
-      return this.error(
-        res,
-        '--product/invalid-fields',
-        error?.message ?? 'Important product details is missing.',
-        400,
-        null
-      );
+    if (payload != null) {
+      const { error } = updateProductSchema.validate(payload);
+      if (error || typeof productId === 'undefined') {
+        return this.error(
+          res,
+          '--product/invalid-fields',
+          error?.message ?? 'Important product details is missing.',
+          400,
+          null
+        );
+      }
     }
 
     // upload image to cloudinary
@@ -387,24 +389,42 @@ export default class ProductController extends BaseController {
       }
     }
 
-    const { name, currency, description, discountPrice, price, quantity, tax, categoryId } = payload;
+    const { name, currency, description, discountPrice, price, quantity, tax, categoryId, adminStatus } = payload;
+
+    const validAdminStatus = ['pending', 'approved', 'review', 'blacklist'];
+    const validAdminStatusEnum = {
+      pending: 'pending',
+      approved: 'approved',
+      review: 'review',
+      blacklist: 'blacklist'
+    };
+
+    if (!validAdminStatus.includes(adminStatus.toLowerCase())) {
+      return this.error(res, '--product/invalid-admin-status', 'Invalid Admin status', 400);
+    }
+
 
     // If the product exists, proceed with deletion
-    const updatedProduct = await prisma.product.update({
-      where: {
-        id: productId,
-      },
-      data: {
-        name,
-        description,
-        discount_price: parseFloat(discountPrice),
-        quantity: parseInt(quantity),
-        price: parseFloat(price),
-        tax: parseFloat(tax),
-        currency,
-        category_id: parseInt(categoryId)
-      }
-    });
+    let updatedProduct: any;
+    if (payload != null) {
+      updatedProduct = await prisma.product.update({
+        where: {
+          id: productId,
+        },
+        data: {
+          name,
+          description,
+          discount_price: parseFloat(discountPrice),
+          quantity: parseInt(quantity),
+          price: parseFloat(price),
+          tax: parseFloat(tax),
+          currency,
+          category_id: parseInt(categoryId),
+          admin_status: validAdminStatusEnum[adminStatus]
+        }
+      });
+    }
+
 
     if (imageFile != null) {
       await prisma.product.update({
@@ -421,13 +441,13 @@ export default class ProductController extends BaseController {
       });
     }
 
-    return this.success(res, 'Product Updated', 'Product has been updated successfully', 201, updatedProduct);
+    return this.success(res, 'Product Updated', 'Product has been updated successfully', 201, updatedProduct ?? `Image uploaded successfully ${imageFile.url}`);
   }
 
   async addProductCategory(req: Request, res: Response) {
     const payload = req.body;
     console.log(payload)
-    const { error, value } = crea.validate(payload);
+    const { error, value } = createCategorySchema.validate(payload);
     if (error) {
       return this.error(res, '--productCategory/invalid-fields', error?.message ?? 'missing category details.', 400, null);
     }

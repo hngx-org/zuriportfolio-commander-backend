@@ -24,9 +24,9 @@ export default class ProductRoute {
       useCatchErrors(this.productController.publishProduct.bind(this.productController))
     );
     this.router.patch(
-      `${this.path}:productId`,
+      `${this.path}/:productId`,
       upload.single('image'),
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.productController.updateProduct.bind(this.productController))
     );
     this.router.patch(
@@ -36,7 +36,7 @@ export default class ProductRoute {
     this.router.post(
       `${this.path}/add`,
       upload.single('image'),
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.productController.addProduct.bind(this.productController))
     );
     this.router.post(

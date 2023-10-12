@@ -13,6 +13,18 @@ export const productSchema = Joi.object({
   categoryId: Joi.number().required(),
 });
 
+export const updateProductSchema = Joi.object({
+  name: Joi.string().required(),
+  description: Joi.string().required(),
+  quantity: Joi.number().integer().required(),
+  price: Joi.number().required(),
+  discountPrice: Joi.number().optional(),
+  tax: Joi.number().optional(),
+  currency: Joi.string().required(),
+  categoryId: Joi.number().required(),
+  adminStatus: Joi.string()
+});
+
 export const saveProductDraftSchema = Joi.object({
   product_id: Joi.string().required(),
   name: Joi.string().required(),
