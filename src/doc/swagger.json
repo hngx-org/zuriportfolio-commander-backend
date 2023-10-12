@@ -82,6 +82,61 @@
         ]
       }
     },
+      "/product/categories": {
+        "post": {
+          "tags": ["Product"],
+          "summary": "Create a product category",
+          "description": "Create a parent or subcategory.",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateCategory"
+                },
+                "example": {
+                  "name": "Software Enginering",
+                  "parent_id": null
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Category created successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CategoryResponse"
+                  },
+                  "example": {
+                    "parentCategory": {
+                      "$ref": "#/components/schemas/ProductCategory"
+                    },
+                    "subCategory": {
+                      "$ref": "#/components/schemas/ProductSubCategory"
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request. Please check the request parameters."
+            },
+            "401": {
+              "description": "Unauthorized. Token is invalid or action is not permitted."
+            },
+            "500": {
+              "description": "Internal server error."
+            }
+          },
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ]
+        }
+      }
+    ,
     "/auth/signup": {
       "post": {
         "tags": ["Authentication"],
@@ -399,10 +454,75 @@
           }
         }
       },
+      
       "GetProduct": {
         "type": "object",
         "properties": {}
+      },
+
+      "CreateCategory": {
+        "type": "object",
+        "properties": {
+          "parent_id": {
+            "type": ["integer", "null", "undefined",""]
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["name"]
+      },
+      "ProductCategory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ProductSubCategory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentCategory": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CategoryResponse": {
+        "type": "object",
+        "properties": {
+          "parentCategory": {
+            "$ref": "#/components/schemas/ProductCategory"
+          },
+          "subCategory": {
+            "$ref": "#/components/schemas/ProductSubCategory"
+          },
+          "name": {
+            "$ref": "#/components/schemas/CreateCategory/properties/name"
+          }  
+        }
       }
+
     },
     "securitySchemes": {
       "BearerAuth": {
@@ -412,4 +532,5 @@
       }
     }
   }
+  
 }

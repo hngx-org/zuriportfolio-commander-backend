@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
-import { productSchema } from '../helper/validate';
+import { createCategorySchema, productSchema } from '../helper/validate';
 import { uploadSingleImage } from '../helper/uploadImage';
 import logger from '../config/logger';
 import { AddProductPayloadType } from '@types';
@@ -15,7 +15,7 @@ export default class ProductController extends BaseController {
 
   async publishProduct(req: Request, res: Response) {
     const productId = req.params.productId;
-    
+
     // Find the product by ID
     const existingProduct = await prisma.product.findUnique({
       where: {
@@ -110,7 +110,7 @@ export default class ProductController extends BaseController {
         '--product/invalid-fields',
         error?.message ?? 'Important product details is missing.',
         400,
-        null
+        null,
       );
     }
 
@@ -223,7 +223,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_delete/invalid-field',
         'product id is invalid, expected product_id in uuid format.',
-        400
+        400,
       );
     }
 
@@ -250,5 +250,47 @@ export default class ProductController extends BaseController {
     });
 
     return this.success(res, '--product_delete/success', 'Product has been deleted successfully', 200);
+  }
+
+  async createCategory(req: Request, res: Response) {
+    const userId = (req as any).user['id'];
+    console.log(userId);
+    // const userId = "d7955c27-4d61-4cd6-a6bb-e6402151d51f"
+    const { error, value } = createCategorySchema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+    const { parent_id, name } = value;
+
+    // Checking if parent_id is null to determine if it's a parent or subcategory
+    if (parent_id === null || parent_id === undefined || parent_id == "") {
+      // Creating a parent category
+      const parentCategory = await prisma.product_category.create({
+        data: {
+          name,
+          user: {
+            connect: {
+              id: userId
+            },
+        },
+      }});
+
+      return this.success(res, '--created-parentCategory/success', `${name} created successfully`, 201, {
+        parentCategory,
+      });
+    }
+ //create a subCategory
+    const subCategory = await prisma.product_sub_category.create({
+      data: {
+        name,
+        parent_category: {
+          connect: {
+            id: parent_id,
+          },
+        },
+      },
+    });
+    return this.success(res, '--created-subCategory/success', `${name} created successfully`, 201, { subCategory });
   }
 }
