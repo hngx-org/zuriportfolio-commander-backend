@@ -63,30 +63,35 @@ export default class OrderController extends BaseController {
 
     let startDate: Date;
     let endDate: Date = new Date(); // default to cuo the current date
+    endDate.setHours(23, 59, 59, 999);
 
     switch (timeframe) {
       case 'today':
         startDate = new Date();
+        startDate.setHours(0, 0, 0, 0);
         break;
       case 'yesterday':
         startDate = new Date();
+        startDate.setHours(0, 0, 0, 0);
         startDate.setDate(startDate.getDate() - 1);
         endDate.setDate(endDate.getDate() - 1);
         break;
       case 'one-weeks-ago':
         startDate = new Date();
+        startDate.setHours(0, 0, 0, 0);
         startDate.setDate(startDate.getDate() - 7);
         break;
         break;
       case 'two-weeks-ago':
         startDate = new Date();
+        startDate.setHours(0, 0, 0, 0);
         startDate.setDate(startDate.getDate() - 14);
         break;
 
       default:
         res.status(400).json({ error: 'Invalid timeframe' });
     }
-
+    console.log(startDate, endDate);
     const orderCount = await prisma.order.count({
       where: {
         createdAt: {
@@ -95,7 +100,7 @@ export default class OrderController extends BaseController {
         },
       },
     });
-    this.success(res, 'order Added', 'order has been added successfully', 201, {
+    this.success(res, 'order Counted', ` successfully returned orders within ${timeframe} `, 201, {
       orderCount,
     });
   }
