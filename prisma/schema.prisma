@@ -40,7 +40,7 @@ enum shop_status {
 }
 
 model user {
-    id                   String            @id @unique @default(uuid())
+    id                   String             @id @unique @default(uuid())
     username             String
     first_name           String
     last_name            String
@@ -48,22 +48,23 @@ model user {
     section_order        String?
     password             String?
     provider             String?
-    is_verified          Boolean           @default(false)
-    two_factor_auth      Boolean           @default(false)
+    is_verified          Boolean            @default(false)
+    two_factor_auth      Boolean            @default(false)
     location             String?
     country              String?
     profile_pic          String?
     refresh_token        String
-    createdAt            DateTime          @default(now())
-    order_items          order_item[]      @relation(name: "merchant_orders")
-    customer_orders      order[]           @relation(name: "customer_orders")
-    customer_order_items order_item[]      @relation(name: "customer_orders")
+    createdAt            DateTime           @default(now())
+    order_items          order_item[]       @relation(name: "merchant_orders")
+    customer_orders      order[]            @relation(name: "customer_orders")
+    customer_order_items order_item[]       @relation(name: "customer_orders")
     revenue              revenue[]
     promotion            promotion[]
     track_promotion      track_promotion[]
     shop                 shop[]
     promo_product        promo_product[]
     activities           activity[]
+    categories           product_category[]
 }
 
 model order {
@@ -99,21 +100,22 @@ model order_item {
 }
 
 model product {
-    id             String         @id @unique
-    user_id        String
-    shop_id        String
-    name           String
-    description    String
-    quantity       Int
-    price          Float
-    discount_price Float
-    tax            Float
-    admin_status   ADMIN_STATUS   @default(pending)
-    is_published   Boolean        @default(false)
-    is_deleted     product_status @default(active)
-    currency       String
-    createdAt      DateTime       @default(now())
-    updatedAt      DateTime       @default(now())
+    id                  String         @id @unique
+    user_id             String
+    shop_id             String
+    product_category_id Int?
+    name                String
+    description         String
+    quantity            Int
+    price               Float
+    discount_price      Float
+    tax                 Float
+    admin_status        ADMIN_STATUS   @default(pending)
+    is_published        Boolean        @default(false)
+    is_deleted          product_status @default(active)
+    currency            String
+    createdAt           DateTime       @default(now())
+    updatedAt           DateTime       @default(now())
 
     image           product_image[]
     promotion       promotion[]
@@ -131,11 +133,14 @@ model product_image {
 }
 
 model product_category {
-    id        Int      @id @default(autoincrement())
-    name      String
+    id      Int    @id @default(autoincrement())
+    name    String
+    user_id String
+
     createdAt DateTime @default(now())
 
     sub_categories product_sub_category[]
+    user           user                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model product_sub_category {
