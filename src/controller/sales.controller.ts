@@ -3,10 +3,12 @@ import BaseController from './base.controller';
 import { PrismaClient } from '@prisma/client';
 import logger from '../config/logger';
 
+import prisma from '../config/prisma';
+
 export default class SalesController extends BaseController {
   constructor() {
     super();
-  } l
+  }
 
   async getAllReport(req: Request, res: Response) {
     try {
