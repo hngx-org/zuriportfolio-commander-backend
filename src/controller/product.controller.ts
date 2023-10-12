@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
 import { createCategorySchema, productSchema } from '../helper/validate';
-import { uploadSingleImage } from '../helper/uploadImage';
-import logger from '../config/logger';
+import { uploadSingleImage } from '../helper/uploadImage';import logger from '../config/logger';
 import { AddProductPayloadType } from '@types';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
