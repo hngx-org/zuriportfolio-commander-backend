@@ -13,5 +13,10 @@ export default class ShopRoute {
 
   initializeRoutes() {
     this.router.post(`${this.path}/create`, useCatchErrors(this.shopController.createShop.bind(this.shopController)));
+
+    this.router.patch(
+      `${this.path}/:shop_id`,
+      useCatchErrors(this.shopController.updateShop.bind(this.shopController))
+    );
   }
 }
