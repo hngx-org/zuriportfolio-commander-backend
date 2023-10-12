@@ -147,6 +147,60 @@
         ]
       }
     },
+    "/product/createcategories": {
+      "post": {
+        "tags": ["Product"],
+        "summary": "Create a product category",
+        "description": "Create a parent or subcategory.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategory"
+              },
+              "example": {
+                "name": "Software Enginering",
+                "parent_id": null
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Category created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                },
+                "example": {
+                  "parentCategory": {
+                    "$ref": "#/components/schemas/ProductCategory"
+                  },
+                  "subCategory": {
+                    "$ref": "#/components/schemas/ProductSubCategory"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/discount": {
       "post": {
         "summary": "Create a discount",
@@ -568,6 +622,63 @@
           }
         ]
       }
+    },  
+    "/order/status/{order_id}": {
+      "patch": {
+        "tags": ["Order"],
+        "summary": "Update Order Status",
+        "description": "Update the status of a specific order.",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "description": "Order ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ], 
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["pending", "complete", "failed"],
+                    "example": "complete"
+                  }
+                },
+                "required": ["status"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order status updated successfully."
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters or status value."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "404": {
+            "description": "Order not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -636,6 +747,7 @@
           "currency": "USD"
         }
       },
+
       "GetProduct": {
         "type": "object",
         "properties": {}
@@ -732,6 +844,10 @@
             "type": "string"
           },
           "currency": {
+          "name": {
+            "type": "string"
+          },
+          "user": {
             "type": "string"
           },
           "createdAt": {
@@ -744,6 +860,69 @@
           }
         },
         "required": ["id", "user_id", "shop_id", "name", "price", "createdAt", "updatedAt"]
+      }
+      },
+      "ProductSubCategory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentCategory": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreateCategory": {
+        "type": "object",
+        "properties": {
+          "parent_id": {
+            "type": ["integer", "null", "undefined", ""]
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["name"]
+      },
+      "ProductCategory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CategoryResponse": {
+        "type": "object",
+        "property": {
+          "parentCategory": {
+            "$ref": "#/components/schemas/ProductCategory"
+          },
+          "subCategory": {
+            "$ref": "#/components/schemas/ProductSubCategory"
+          },
+          "name": {
+            "$ref": "#/components/schemas/CreateCategory/properties/name"
+          }
+        }
       }
     },
     "securitySchemes": {

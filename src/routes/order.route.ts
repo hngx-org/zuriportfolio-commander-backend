@@ -19,7 +19,11 @@ export default class OrderRoute {
     );
 
     this.router.get(`${this.path}`, useCatchErrors(this.OrderController.getAllOrders.bind(this.OrderController)));
-
+    this.router.patch(
+      `${this.path}/status/:order_id`, isAuthenticated,
+      useCatchErrors(this.OrderController.updateOrderStatus.bind(this.OrderController)),
+    );
+    
     this.router.get(
       `${this.path}/search/:name`,
       // isAuthenticated,
