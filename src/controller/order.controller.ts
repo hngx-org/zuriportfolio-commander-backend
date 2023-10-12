@@ -79,16 +79,16 @@ export default class OrderController extends BaseController {
    
   }
 
-
   async getOrderByProductName(req: Request | any, res: Response | any) {
+    const userId = (req as any).user['id'];
+    
     const { name } = req.params;
     const { page = 1, pageSize = 10 } = req.query;
-    
+  
     const orderItems = await prisma.order_item.findMany({
-      include: {
-        product: true,
-      },
+     
       where: {
+        merchant_id: userId,
         product: {
           name: {
             contains: name,
@@ -96,15 +96,70 @@ export default class OrderController extends BaseController {
           },
         },
       },
+      select: {
+        order_id: true,
+        order_price: true,
+        createdAt: true,
+        merchant: {
+          select: {
+            revenue:{
+              select:{
+                amount: true,
+              }
+            },
+            customer_orders: {
+              select: {
+                sales_report: {
+                  select:{
+                    sales: true,
+                  }
+                },
+                status: true,
+              },
+            },
+          },
+        },
+        customer: {
+          select: {
+            username: true,
+
+          },
+        },
+        product: {
+          select: {
+            
+            price: true,
+            name: true,
+            categories:{
+              select:{
+                name: true,
+              }
+            },
+          },
+        },
+
+      },
       skip: (+page - 1) * +pageSize,
       take: +pageSize,
     });
-
+  
     if (!orderItems) {
       return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
     }
-
+  
     this.success(res, '--orders/all', 'orders fetched successfully', 200, orderItems);
+  }
+  
+  
+
+  async getOrderBy(req: Request | any, res: Response | any) {
+    const { name } = req.params;
+    const { page = 1, pageSize = 10 } = req.query;
+    
+    const orderItems = await prisma.order_item.findMany({
+
+    })
+
   }
   async updateOrderStatus(req: Request, res: Response) {
     const userId = (req as any).user['id'];
