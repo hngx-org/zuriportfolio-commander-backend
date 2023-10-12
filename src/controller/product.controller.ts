@@ -115,7 +115,7 @@ export default class ProductController extends BaseController {
         '--product/invalid-fields',
         error?.message ?? 'Important product details is missing.',
         400,
-        null,
+        null
       );
     }
 
@@ -213,15 +213,43 @@ export default class ProductController extends BaseController {
     this.success(res, 'Product Unpublished', 'Product has been unpublished successfully', 201, updatedProduct);
   }
 
+  // Get all products for a user
   async getAllProducts(req: Request, res: Response) {
-    const userId = (req as any).user?.id;
+    try {
+      const userId = (req as any).user?.id;
 
-    const products = await prisma.product.findMany({
-      where: {
-        user_id: userId,
-      },
-    });
-    return this.success(res, 'All Products Shown', 'Products have been listed', 200, products);
+      if (!userId) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'User ID is missing in the request.',
+        });
+      }
+
+      const products = await prisma.product.findMany({
+        where: {
+          user_id: userId,
+        },
+      });
+
+      if (products.length === 0) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'No products found for this user.',
+        });
+      }
+
+      return res.status(200).json({
+        status: 'success',
+        message: 'All Products Shown',
+        data: products,
+      });
+    } catch (error) {
+      console.error('Error in getAllProducts:', error);
+      return res.status(500).json({
+        status: 'error',
+        message: 'Internal server error',
+      });
+    }
   }
 
   async deleteProduct(req: Request, res: Response) {
@@ -238,7 +266,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_delete/invalid-field',
         'product id is invalid, expected product_id in uuid format.',
-        400,
+        400
       );
     }
 
