@@ -42,10 +42,10 @@ export default class ProductController extends BaseController {
   }
 
   async addProduct(req: Request, res: Response) {
+    // const userId = (req as any).user?.id;
     const file = req.file ?? null;
-
-    const payload: AddProductPayloadType = req.body;
-
+    const userId = 'd7955c27-4d61-4cd6-a6bb-e6402151d51f';
+    const payload: AddProductPayloadType = JSON.parse(req.body.json);
     const { error, value } = productSchema.validate(payload);
 
     if (error || !file) {
@@ -54,33 +54,42 @@ export default class ProductController extends BaseController {
 
     // upload image to cloudinary
     //TODO get userId from Auth
-    const { name, currency, userId, description, discountPrice, price, quantity, tax, categoryId, shopId } = payload;
+    const { name, currency, description, discountPrice, price, quantity, tax, categoryId } = payload;
+
+    // check if user has a shop
+    const shopExists = await prisma.shop.findFirst({
+      where: {
+        merchant_id: userId,
+      },
+    });
+
+    if (shopExists === null) {
+      return this.error(res, '--product/shop-notfound', 'Failed to crete product, shop not found.', 404);
+    }
+
+    // check if category exists
+    const category = await prisma.product_category.findFirst({
+      where: { id: +categoryId },
+    });
+
+    if (category === null) {
+      return this.error(res, '--product/category-notfound', 'Failed to crete product, category do not exist.', 404);
+    }
+
     const { isError, errorMsg, image } = await uploadSingleImage(file);
 
     if (isError) {
       logger.error(`Error uploading image: ${errorMsg}`);
     }
 
-    // check if user has a shop
-    const shopExists = await prisma.shop.findFirst({
-      where: {
-        id: shopId,
-      },
-    });
-
-    if (!shopExists) {
-      return this.error(res, '--product/shop-notfound', 'Failed to crete product, shop not found.', 404);
-    }
-
     // check if user exists
-
     const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
-    //const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
+
     const product = await prisma.product.create({
       data: {
         id: uuidv4(),
         name,
-        shop_id: shopId,
+        shop_id: shopExists.id,
         user_id: userId,
         currency,
         description,
@@ -89,10 +98,6 @@ export default class ProductController extends BaseController {
         price: parseFloat(price),
         tax: parseFloat(tax),
         category_id: parseInt(categoryId),
-        discount_price: discountPrice ?? 0,
-        quantity,
-        price,
-        tax: tax ?? 0,
         image: {
           create: {
             url: image.url ?? placeHolderImg,

@@ -57,11 +57,11 @@ export default class App {
       this.app.use('/api', route.router);
     });
 
-      this.app.use('/', (req, res) => {
+    this.app.use('/', (req, res) => {
       res.json({ message: 'api endpoint is working' });
     });
 
-     this.app.use('/api', (req, res) => {
+    this.app.use('/api', (req, res) => {
       res.json({ message: 'api endpoint is working' });
     });
 

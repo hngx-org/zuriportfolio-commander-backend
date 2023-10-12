@@ -59,4 +59,3 @@ export default class ShopController extends BaseController {
     this.success(res, '--shop/deleted', 'shop deleted', 200, null);
   }
 }
-
