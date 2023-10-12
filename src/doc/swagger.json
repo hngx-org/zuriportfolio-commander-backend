@@ -19,17 +19,11 @@
       "description": "Authentication server"
     }
   ],
-  "tags": [
-    {
-      "name": "products",
-      "description": "Products"
-    }
-  ],
 
   "paths": {
     "/products": {
       "get": {
-        "tags": ["products"],
+        "tags": ["Product"],
         "summary": "Fetch all products",
         "description": "",
         "responses": {
@@ -42,6 +36,43 @@
                 }
               }
             }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/product/{product_id}": {
+      "delete": {
+        "tags": ["Product"],
+        "summary": "Delete a product",
+        "description": "Delete a specific product.",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "description": "Product id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Action authorized successfully."
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "500": {
+            "description": "Internal server error."
           }
         },
         "security": [
@@ -270,6 +301,48 @@
           },
           "401": {
             "description": "Unauthorized. Verification code is invalid or has expired."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/authorize": {
+      "post": {
+        "tags": ["Authorization"],
+        "summary": "Authorize Action",
+        "description": "Authorizes an action based on the provided token and action type.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJlNzU3N2ZhLWMyZWItNDVmNS1iZTZlLWM2ZD9zZGZjNmI1NyIsImlhdCI6MTY5NzAxNzkwOH0.FvN-FQwPUY5sLHNqGh7DhhAC_CxtIjKqbSaFwXebsoU"
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": ["permissions", "use coupon"],
+                    "example": "use coupon"
+                  }
+                },
+                "required": ["token", "action"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Action authorized successfully."
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
           },
           "500": {
             "description": "Internal server error."

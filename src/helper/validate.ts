@@ -8,7 +8,7 @@ export const productSchema = Joi.object({
   discountPrice: Joi.optional(),
   tax: Joi.optional(),
   currency: Joi.string().required(),
-  category: Joi.string().required(),
+  category_id: Joi.string().required(),
   shopId: Joi.string().required(), // once auth is done, remove this
   userId: Joi.string().required(), // same as this.
 });
