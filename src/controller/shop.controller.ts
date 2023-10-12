@@ -18,7 +18,8 @@ export default class ShopController extends BaseController {
       return this.error(res, '--shop/invalid-fields', error?.message ?? 'missing shop details.', 400, null);
     }
 
-    const { name, merchant_id } = payload;
+    const merchant_id = (req as any).user?.id;
+    const { name } = payload;
     const id = uuidv4();
 
     //! check if user exists

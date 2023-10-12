@@ -7,9 +7,9 @@ export default class RevenueRoute {
   revenueController = new RevenueController();
   path = '/revenues';
 
-  constructor() {
-    this.initializeRoutes();
-  }
+  //   constructor() {
+  //     this.initializeRoutes();
+  //   }
 
   initializeRoutes() {
     this.router.patch(
