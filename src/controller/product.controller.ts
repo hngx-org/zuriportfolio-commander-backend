@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
-import { productSchema } from '../helper/validate';
+import { createCategorySchema, productSchema } from '../helper/validate';
 import { uploadSingleImage } from '../helper/uploadImage';
 import logger from '../config/logger';
 import { AddProductPayloadType } from '@types';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
 import { isUUID } from '../helper';
+import { TestUserId } from '../config/test';
 
 export default class ProductController extends BaseController {
   constructor() {
@@ -42,50 +43,64 @@ export default class ProductController extends BaseController {
   }
 
   async addProduct(req: Request, res: Response) {
+    const userId = (req as any).user?.id ?? TestUserId;
     const file = req.file ?? null;
-    const payload: AddProductPayloadType = JSON.parse(req.body.json);
-
+    const payload: AddProductPayloadType = req.body;
     const { error, value } = productSchema.validate(payload);
+
     if (error || !file) {
       return this.error(res, '--product/invalid-fields', error?.message ?? 'product image is missing.', 400, null);
     }
+
     // upload image to cloudinary
-    const { name, currency, userId, description, discountPrice, price, quantity, tax, category, shopId } = payload;
+    //TODO get userId from Auth
+    const { name, currency, description, discountPrice, price, quantity, tax, categoryId } = payload;
+
+    // check if user has a shop
+    const shopExists = await prisma.shop.findFirst({
+      where: {
+        merchant_id: userId,
+      },
+    });
+
+    if (shopExists === null) {
+      return this.error(res, '--product/shop-notfound', 'Failed to crete product, shop not found.', 404);
+    }
+
+    // check if category exists
+    const category = await prisma.product_category.findFirst({
+      where: { id: +categoryId },
+    });
+
+    if (category === null) {
+      return this.error(res, '--product/category-notfound', 'Failed to crete product, category do not exist.', 404);
+    }
+
     const { isError, errorMsg, image } = await uploadSingleImage(file);
 
     if (isError) {
       logger.error(`Error uploading image: ${errorMsg}`);
     }
 
-    // check if user has a shop
-    const shopExists = await prisma.shop.findFirst({
-      where: {
-        id: shopId,
-      },
-    });
-
-    if (!shopExists) {
-      return this.error(res, '--product/shop-notfound', 'Failed to crete product, shop not found.', 404);
-    }
-
     // check if user exists
+    const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
 
-    const placeHolderImg = image ?? 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
     const product = await prisma.product.create({
       data: {
         id: uuidv4(),
         name,
-        shop_id: shopId,
+        shop_id: shopExists.id,
         user_id: userId,
         currency,
         description,
-        discount_price: discountPrice ?? 0,
-        quantity,
-        price,
-        tax: tax ?? 0,
+        discount_price: parseFloat(discountPrice),
+        quantity: parseInt(quantity),
+        price: parseFloat(price),
+        tax: parseFloat(tax),
+        category_id: parseInt(categoryId),
         image: {
           create: {
-            url: placeHolderImg,
+            url: image.url ?? placeHolderImg,
           },
         },
       },
@@ -114,7 +129,7 @@ export default class ProductController extends BaseController {
       );
     }
 
-    // upload image to cloudinary
+    /*  // upload image to cloudinary
     const { name, currency, description, discountPrice, price, quantity, tax, category, shopId, userId } = payload;
     const { isError, errorMsg, image } = await uploadSingleImage(file);
 
@@ -172,7 +187,7 @@ export default class ProductController extends BaseController {
       });
     }
 
-    this.success(res, '--product/save-as-draft', 'Product updated and saved as draft', 201);
+    this.success(res, '--product/save-as-draft', 'Product updated and saved as draft', 201); */
   }
 
   async unpublishProduct(req: Request, res: Response) {
@@ -199,19 +214,40 @@ export default class ProductController extends BaseController {
   }
 
   async getAllProducts(req: Request, res: Response) {
-    const userId = (req as any).user?.id;
+    const userId = (req as any).user?.id ?? TestUserId;
 
     const products = await prisma.product.findMany({
       where: {
-        user_id: userId,
+        AND: {
+          user_id: userId,
+          is_deleted: 'active',
+        },
       },
+      include: { image: true },
     });
-    return this.success(res, 'All Products Shown', 'Products have been listed', 200, products);
+    const allProd = [];
+    if (products.length > 0) {
+      for (const p of products) {
+        const cat = await prisma.product_category.findFirst({
+          where: { id: p.category_id },
+          include: { sub_categories: true },
+        });
+        allProd.push({
+          name: p.name,
+          id: p.id,
+          category: {
+            ...cat,
+          },
+          image: p.image,
+        });
+      }
+    }
+    return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
   }
 
   async deleteProduct(req: Request, res: Response) {
     const productId = req.params['product_id'];
-    const userId = (req as any).user['id'];
+    const userId = (req as any).user?.id ?? TestUserId;
 
     if (typeof productId === 'undefined') {
       return this.error(res, '--product_delete/invalid-fields', 'Invalid field provided.', 400);
@@ -250,5 +286,79 @@ export default class ProductController extends BaseController {
     });
 
     return this.success(res, '--product_delete/success', 'Product has been deleted successfully', 200);
+  }
+
+  async createCategory(req: Request, res: Response) {
+    const userId = (req as any).user?.id ?? TestUserId;
+    const { error, value } = createCategorySchema.validate(req.body);
+
+    if (error) {
+      return this.error(res, '--product_category/invalid-category data', 'Please provide a valid category name.', 400);
+    }
+    const { parent_id, name } = value;
+    const lowercaseName = name.toLowerCase();
+    const existingCategory = await prisma.product_category.findFirst({
+      where: {
+        name: lowercaseName,
+      },
+    });
+    if (existingCategory) {
+      return this.error(
+        res,
+        '--product_category/category-exists',
+        `Category with name '${lowercaseName}' already exists. Please choose a different name.`,
+        409
+      );
+    }
+
+    // Checking if parent_id is null to determine if it's a parent or subcategory
+    if (parent_id === null || parent_id === undefined || parent_id == '') {
+      // Creating a parent category
+      const parentCategory = await prisma.product_category.create({
+        data: {
+          name: lowercaseName,
+          user: {
+            connect: {
+              id: userId,
+            },
+          },
+        },
+      });
+
+      return this.success(res, '--created-parentCategory/success', `${lowercaseName} created successfully`, 201, {
+        parentCategory,
+      });
+    }
+    //create a subCategory
+    const subCategory = await prisma.product_sub_category.create({
+      data: {
+        name: lowercaseName,
+        parent_category: {
+          connect: {
+            id: parent_id,
+          },
+        },
+      },
+    });
+    return this.success(res, '--created-subCategory/success', `${lowercaseName} created successfully`, 201, {
+      subCategory,
+    });
+  }
+
+  async getAllCategories(req: Request | any, res: Response | any) {
+    try {
+      const userId = (req as any).user?.id ?? TestUserId;
+      const categories = await prisma.product_category.findMany({
+        where: {
+          user_id: userId,
+        },
+        include: {
+          sub_categories: true,
+        },
+      });
+      this.success(res, '--categories/all', 'categories fetched successfully', 200, categories);
+    } catch (error) {
+      return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
+    }
   }
 }

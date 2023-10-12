@@ -1,6 +1,7 @@
 import express from 'express';
 import useCatchErrors from '../error/catchErrors';
 import DiscountController from '../controller/discount.controller';
+import { isAuthenticated } from '../middlewares/auth';
 
 export default class DiscountRoute {
   router = express.Router();
@@ -13,13 +14,14 @@ export default class DiscountRoute {
 
   initializeRoutes() {
     this.router.post(
-      `${this.path}/create`,
-      useCatchErrors(this.discountController.createDiscount.bind(this.discountController)),
+      `${this.path}`,
+      // isAuthenticated,
+      useCatchErrors(this.discountController.createDiscount.bind(this.discountController))
     );
 
     this.router.get(
       `${this.path}/all`,
-      useCatchErrors(this.discountController.getAllDiscount.bind(this.discountController)),
+      useCatchErrors(this.discountController.getAllDiscount.bind(this.discountController))
     );
   }
 }
