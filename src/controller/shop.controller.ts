@@ -5,6 +5,7 @@ import logger from '../config/logger';
 import { AddProductPayloadType } from '@types';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
+import { TestUserId } from '../config/test';
 
 export default class ShopController extends BaseController {
   constructor() {
@@ -13,12 +14,11 @@ export default class ShopController extends BaseController {
 
   async createShop(req: Request, res: Response) {
     const payload = req.body;
+    const merchant_id = (req as any).user?.id ?? TestUserId;
     const { error, value } = createShopSchema.validate(payload);
     if (error) {
       return this.error(res, '--shop/invalid-fields', error?.message ?? 'missing shop details.', 400, null);
     }
-
-    const merchant_id = (req as any).user?.id;
     const { name } = payload;
     const id = uuidv4();
 
@@ -45,16 +45,27 @@ export default class ShopController extends BaseController {
 
   async deleteShop(req: Request, res: Response) {
     const { id } = req.params;
-    const shop = await prisma.shop.findUnique({
-      where: { id },
+    const merchant_id = (req as any).user?.id ?? TestUserId;
+    const shop = await prisma.shop.findFirst({
+      where: {
+        AND: {
+          merchant_id,
+          id,
+        },
+      },
     });
 
-    if (!shop) {
+    if (shop === null) {
       return this.error(res, '--shop/not-found', 'shop not found', 404);
     }
 
-    await prisma.shop.delete({
-      where: { id },
+    await prisma.shop.update({
+      where: {
+        id,
+      },
+      data: {
+        is_deleted: 'temporary',
+      },
     });
 
     this.success(res, '--shop/deleted', 'shop deleted', 200, null);

@@ -993,6 +993,51 @@
           ]
         }
       }
+    },
+    "/orders/average": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Fetch the average order value for today",
+        "parameters": [
+          {
+            "name": "timeframe",
+            "in": "query",
+            "description": "Timeframe for calculating the average order value. Should be 'today'.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["today"],
+              "example": "today"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AverageOrderValue"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {

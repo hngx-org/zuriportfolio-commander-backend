@@ -15,7 +15,7 @@ export default class OrderRoute {
   initializeRoutes() {
     this.router.get(
       `${this.path}/sales-report/:order_id`,
-      useCatchErrors(this.OrderController.getOrder.bind(this.OrderController)),
+      useCatchErrors(this.OrderController.getOrder.bind(this.OrderController))
     );
 
     this.router.get(
@@ -28,10 +28,13 @@ export default class OrderRoute {
       isAuthenticated,
       useCatchErrors(this.OrderController.getAverageOrderValue.bind(this.OrderController)
       ));
+    this.router.get(`${this.path}`, useCatchErrors(this.OrderController.getAllOrders.bind(this.OrderController)));
 
-    // this.router.patch(
-    //   `${this.path}/status/:order_id`, isAuthenticated,
-    //   useCatchErrors(this.OrderController.updateOrderStatus.bind(this.OrderController)),
-    // );
+    this.router.patch(
+      `${this.path}/status/:order_id`,
+      // isAuthenticated,
+      useCatchErrors(this.OrderController.updateOrderStatus.bind(this.OrderController))
+    );
+
   }
 }
