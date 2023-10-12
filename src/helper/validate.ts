@@ -5,8 +5,8 @@ export const productSchema = Joi.object({
   description: Joi.string().required(),
   quantity: Joi.number().integer().required(),
   price: Joi.number().required(),
-  discountPrice: Joi.optional(),
-  tax: Joi.optional(),
+  discountPrice: Joi.number().optional(),
+  tax: Joi.number().optional(),
   currency: Joi.string().required(),
   categoryId: Joi.number().required(),
   shopId: Joi.string().required(), // once auth is done, remove this

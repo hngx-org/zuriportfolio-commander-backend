@@ -51,6 +51,7 @@ export default class ProductController extends BaseController {
     if (error || !file) {
       return this.error(res, '--product/invalid-fields', error?.message ?? 'product image is missing.', 400, null);
     }
+
     // upload image to cloudinary
     //TODO get userId from Auth
     const { name, currency, userId, description, discountPrice, price, quantity, tax, categoryId, shopId } = payload;
@@ -67,7 +68,6 @@ export default class ProductController extends BaseController {
       },
     });
 
-    console.log(shopExists);
     if (!shopExists) {
       return this.error(res, '--product/shop-notfound', 'Failed to crete product, shop not found.', 404);
     }
@@ -84,10 +84,10 @@ export default class ProductController extends BaseController {
         user_id: userId,
         currency,
         description,
-        discount_price: parseFloat(discountPrice) ?? 0,
+        discount_price: parseFloat(discountPrice),
         quantity: parseInt(quantity),
         price: parseFloat(price),
-        tax: parseFloat(tax) ?? 0,
+        tax: parseFloat(tax),
         category_id: parseInt(categoryId),
         image: {
           create: {
@@ -116,11 +116,11 @@ export default class ProductController extends BaseController {
         '--product/invalid-fields',
         error?.message ?? 'Important product details is missing.',
         400,
-        null,
+        null
       );
     }
 
-    // upload image to cloudinary
+    /*  // upload image to cloudinary
     const { name, currency, description, discountPrice, price, quantity, tax, category, shopId, userId } = payload;
     const { isError, errorMsg, image } = await uploadSingleImage(file);
 
