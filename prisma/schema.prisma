@@ -134,9 +134,8 @@ model product {
     shop             shop             @relation(fields: [shop_id], references: [id], onDelete: Cascade)
     product_category product_category @relation(fields: [category_id], references: [id], onDelete: NoAction)
     user             user             @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
+    order_item       order_item[]
     //   rating
-    order_item order_item[]
 }
 
 model product_image {
