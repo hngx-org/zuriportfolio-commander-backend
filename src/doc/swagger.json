@@ -349,6 +349,39 @@
           }
         }
       }
+    },
+    "/orders": {
+      "get": {
+        "tags": ["Order"],
+        "summary": "Gets all order count withing a timeframe",
+        "description": "Gets all order count withing a timeframe: today, yesterday,one-week-ago and two-weeks-ago",
+        "parameters": [
+          {
+            "name": "timeframe",
+            "in": "query",
+            "description": " counts of order made within a timeframe",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ordersCount"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
 
@@ -402,6 +435,9 @@
       "GetProduct": {
         "type": "object",
         "properties": {}
+      },
+      "ordersCount": {
+        "type": "number"
       }
     },
     "securitySchemes": {

@@ -76,7 +76,7 @@ export default class OrderController extends BaseController {
         startDate.setDate(startDate.getDate() - 1);
         endDate.setDate(endDate.getDate() - 1);
         break;
-      case 'one-weeks-ago':
+      case 'one-week-ago':
         startDate = new Date();
         startDate.setHours(0, 0, 0, 0);
         startDate.setDate(startDate.getDate() - 7);
@@ -100,7 +100,7 @@ export default class OrderController extends BaseController {
         },
       },
     });
-    this.success(res, 'order Counted', ` successfully returned orders within ${timeframe} `, 201, {
+    this.success(res, 'order Counted', ` successfully returned orders within ${timeframe} `, 200, {
       orderCount,
     });
   }
