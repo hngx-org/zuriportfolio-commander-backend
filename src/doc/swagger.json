@@ -493,6 +493,30 @@
         }
       }
     },
+    "/shops": {
+      "get": {
+        "tags": ["Shops"],
+        "summary": "Fetch all shops",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shops"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
 
     "/auth/signup": {
       "post": {

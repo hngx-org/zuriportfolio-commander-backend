@@ -58,4 +58,13 @@ export default class ShopController extends BaseController {
 
     this.success(res, '--shop/deleted', 'shop deleted', 200, null);
   }
+
+  async getAllShops(req: Request, res: Response) {
+    const shops = await prisma.shop.findMany();
+    if (shops.length > 0) {
+      this.success(res, 'All shops', 'Shops have been listed successfully', 200, shops);
+    } else {
+      this.error(res, '--shops-notfound', 'Shops not found', 404);
+    }
+  }
 }
