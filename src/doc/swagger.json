@@ -115,60 +115,60 @@
         ]
       }
     },
-      "/product/categories": {
-        "post": {
-          "tags": ["Product"],
-          "summary": "Create a product category",
-          "description": "Create a parent or subcategory.",
-          "requestBody": {
+    "/product/categories": {
+      "post": {
+        "tags": ["Product"],
+        "summary": "Create a product category",
+        "description": "Create a parent or subcategory.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategory"
+              },
+              "example": {
+                "name": "Software Enginering",
+                "parent_id": null
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Category created successfully.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CreateCategory"
+                  "$ref": "#/components/schemas/CategoryResponse"
                 },
                 "example": {
-                  "name": "Software Enginering",
-                  "parent_id": null
-                }
-              }
-            }
-          },
-          "responses": {
-            "201": {
-              "description": "Category created successfully.",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/CategoryResponse"
+                  "parentCategory": {
+                    "$ref": "#/components/schemas/ProductCategory"
                   },
-                  "example": {
-                    "parentCategory": {
-                      "$ref": "#/components/schemas/ProductCategory"
-                    },
-                    "subCategory": {
-                      "$ref": "#/components/schemas/ProductSubCategory"
-                    }
+                  "subCategory": {
+                    "$ref": "#/components/schemas/ProductSubCategory"
                   }
                 }
               }
-            },
-            "400": {
-              "description": "Bad request. Please check the request parameters."
-            },
-            "401": {
-              "description": "Unauthorized. Token is invalid or action is not permitted."
-            },
-            "500": {
-              "description": "Internal server error."
             }
           },
-          "security": [
-            {
-              "BearerAuth": []
-            }
-          ]
-        }
-      },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/discount": {
       "post": {
         "summary": "Create a discount",
@@ -842,7 +842,7 @@
           "currency": "USD"
         }
       },
-      
+
       "GetProduct": {
         "type": "object",
         "properties": {}
@@ -852,7 +852,7 @@
         "type": "object",
         "properties": {
           "parent_id": {
-            "type": ["integer", "null", "undefined",""]
+            "type": ["integer", "null", "undefined", ""]
           },
           "name": {
             "type": "string"
@@ -907,10 +907,9 @@
           },
           "name": {
             "$ref": "#/components/schemas/CreateCategory/properties/name"
-          }  
+          }
         }
       }
-
     },
     "securitySchemes": {
       "BearerAuth": {
@@ -920,5 +919,4 @@
       }
     }
   }
-  
 }

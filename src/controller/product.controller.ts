@@ -274,31 +274,46 @@ export default class ProductController extends BaseController {
     const { error, value } = createCategorySchema.validate(req.body);
 
     if (error) {
-      return res.status(400).json({ error: error.message });
+      return this.error(res, '--product_category/invalid-category data', 'Please provide a valid category name.', 400);
     }
     const { parent_id, name } = value;
+    const lowercaseName = name.toLowerCase();
+    const existingCategory = await prisma.product_category.findFirst({
+      where: {
+        name: lowercaseName,
+      },
+    });
+    if (existingCategory) {
+      return this.error(
+        res,
+        '--product_category/category-exists',
+        `Category with name '${lowercaseName}' already exists. Please choose a different name.`,
+        409,
+      );
+    }
 
     // Checking if parent_id is null to determine if it's a parent or subcategory
-    if (parent_id === null || parent_id === undefined || parent_id == "") {
+    if (parent_id === null || parent_id === undefined || parent_id == '') {
       // Creating a parent category
       const parentCategory = await prisma.product_category.create({
         data: {
-          name,
+          name: lowercaseName,
           user: {
             connect: {
-              id: userId
+              id: userId,
             },
+          },
         },
-      }});
+      });
 
-      return this.success(res, '--created-parentCategory/success', `${name} created successfully`, 201, {
+      return this.success(res, '--created-parentCategory/success', `${lowercaseName} created successfully`, 201, {
         parentCategory,
       });
     }
- //create a subCategory
+    //create a subCategory
     const subCategory = await prisma.product_sub_category.create({
       data: {
-        name,
+        name: lowercaseName,
         parent_category: {
           connect: {
             id: parent_id,
@@ -306,9 +321,11 @@ export default class ProductController extends BaseController {
         },
       },
     });
-    return this.success(res, '--created-subCategory/success', `${name} created successfully`, 201, { subCategory });
-   }
-   
+    return this.success(res, '--created-subCategory/success', `${lowercaseName} created successfully`, 201, {
+      subCategory,
+    });
+  }
+
   async getAllCategories(req: Request | any, res: Response | any) {
     try {
       const categories = await prisma.product_category.findMany({
