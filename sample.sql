@@ -1,3 +1,4 @@
+-- Active: 1674492101262@@127.0.0.1@3306@bank
 CREATE TYPE "STATUS" AS ENUM (
   'pending',
   'complete',
