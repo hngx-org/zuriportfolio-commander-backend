@@ -45,22 +45,6 @@
         ]
       }
     },
-    "/orders/search/{name}": {
-      "get": {
-        "tags": ["Orders"],
-        "summary": "Search Order By Product Name",
-        "description": "",
-        "parameters": [
-          {
-            "name": "name",
-            "in": "path",
-            "description": "Product name",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
     "/product/add": {
       "post": {
         "tags": ["Product"],
@@ -398,7 +382,49 @@
           }
         }
       }
-    }
+    },
+    "/orders/search/{name}": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Search Order By Product Name",
+        "description": "",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Product name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/searchOrder"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Please check the request parameters."
+          },
+          "403": {
+            "description": "Forbidden. Token is invalid or action is not permitted."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
   },
 
   "/api/product/categories": {
