@@ -11,8 +11,7 @@
     "migrate": "prisma migrate dev",
     "start": "node ./dist/server.js",
     "watch": "tsc --watch",
-    "format": "npx prettier --write .",
-    "seed": "ts-node prisma/seed.ts"
+    "format": "npx prettier --write ."
   },
   "keywords": [],
   "author": "",

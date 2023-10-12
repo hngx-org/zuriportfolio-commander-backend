@@ -85,11 +85,6 @@ export default class ProductController extends BaseController {
         quantity,
         price,
         tax: tax ?? 0,
-        categories: {
-          create: {
-            name: category,
-          },
-        },
         image: {
           create: {
             url: placeHolderImg,
@@ -117,7 +112,7 @@ export default class ProductController extends BaseController {
         '--product/invalid-fields',
         error?.message ?? 'Important product details is missing.',
         400,
-        null,
+        null
       );
     }
 
@@ -147,11 +142,6 @@ export default class ProductController extends BaseController {
           quantity,
           price,
           tax: tax ?? 0,
-          categories: {
-            create: {
-              name: category,
-            },
-          },
           image: {
             create: {
               url: placeHolderImg,
@@ -175,11 +165,6 @@ export default class ProductController extends BaseController {
           quantity,
           price,
           tax: tax ?? 0,
-          categories: {
-            create: {
-              name: category,
-            },
-          },
           image: {
             create: {
               url: placeHolderImg,
@@ -240,7 +225,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_delete/invalid-field',
         'product id is invalid, expected product_id in uuid format.',
-        400,
+        400
       );
     }
 
@@ -268,6 +253,42 @@ export default class ProductController extends BaseController {
 
     return this.success(res, '--product_delete/success', 'Product has been deleted successfully', 200);
   }
-  
-  
+  async getAllCategories(req: Request | any, res: Response | any) {
+    try {
+      const categories = await prisma.product_category.findMany({
+        include: {
+          sub_categories: true,
+        },
+      });
+      this.success(res, '--categories/all', 'categories fetched successfully', 200, categories);
+    } catch (error) {
+      return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
+    }
+  }
+
+  async getOrderByProductName(req: Request | any, res: Response | any) {
+    const { name } = req.params;
+    const { page = 1, pageSize = 10 } = req.query;
+    try {
+      const orderItems = await prisma.order_item.findMany({
+        include: {
+          product: true,
+        },
+        where: {
+          product: {
+            name: {
+              contains: name,
+              mode: 'insensitive', // Case-insensitive search
+            },
+          },
+        },
+        skip: (+page - 1) * +pageSize,
+        take: +pageSize,
+      });
+
+      this.success(res, '--orders/all', 'orders fetched successfully', 200, orderItems);
+    } catch (error) {
+      return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
+    }
+  }
 }
