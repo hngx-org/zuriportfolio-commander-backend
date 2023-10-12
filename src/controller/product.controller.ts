@@ -115,7 +115,7 @@ export default class ProductController extends BaseController {
         '--product/invalid-fields',
         error?.message ?? 'Important product details is missing.',
         400,
-        null,
+        null
       );
     }
 
@@ -224,46 +224,46 @@ export default class ProductController extends BaseController {
     return this.success(res, 'All Products Shown', 'Products have been listed', 200, products);
   }
 
-  async deleteProduct(req: Request, res: Response) {
-    const productId = req.params['product_id'];
-    const userId = (req as any).user['id'];
+  // async deleteProduct(req: Request, res: Response) {
+  //   const productId = req.params['product_id'];
+  //   const userId = (req as any).user['id'];
 
-    if (typeof productId === 'undefined') {
-      return this.error(res, '--product_delete/invalid-fields', 'Invalid field provided.', 400);
-    }
+  //   if (typeof productId === 'undefined') {
+  //     return this.error(res, '--product_delete/invalid-fields', 'Invalid field provided.', 400);
+  //   }
 
-    // check if field parameter is a uuid
-    if (!isUUID(productId)) {
-      return this.error(
-        res,
-        '--product_delete/invalid-field',
-        'product id is invalid, expected product_id in uuid format.',
-        400,
-      );
-    }
+  //   // check if field parameter is a uuid
+  //   if (!isUUID(productId)) {
+  //     return this.error(
+  //       res,
+  //       '--product_delete/invalid-field',
+  //       'product id is invalid, expected product_id in uuid format.',
+  //       400
+  //     );
+  //   }
 
-    // Check if the product exists before attempting to delete it
-    const product = await prisma.product.findFirst({
-      where: {
-        id: productId,
-        user_id: userId,
-      },
-    });
+  //   // Check if the product exists before attempting to delete it
+  //   const product = await prisma.product.findFirst({
+  //     where: {
+  //       id: productId,
+  //       user_id: userId,
+  //     },
+  //   });
 
-    if (!product) {
-      return this.error(res, '--product_delete/product-notfound', 'Product not found', 404);
-    }
+  //   if (!product) {
+  //     return this.error(res, '--product_delete/product-notfound', 'Product not found', 404);
+  //   }
 
-    // If the product exists, proceed with deletion
-    await prisma.product.update({
-      where: {
-        id: productId,
-      },
-      data: {
-        is_deleted: 'temporary',
-      },
-    });
+  //   // If the product exists, proceed with deletion
+  //   await prisma.product.update({
+  //     where: {
+  //       id: productId,
+  //     },
+  //     data: {
+  //       is_deleted: Promo_type.Discount,
+  //     },
+  //   });
 
-    return this.success(res, '--product_delete/success', 'Product has been deleted successfully', 200);
-  }
+  //   return this.success(res, '--product_delete/success', 'Product has been deleted successfully', 200);
+  // }
 }

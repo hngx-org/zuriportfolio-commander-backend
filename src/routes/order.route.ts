@@ -14,9 +14,16 @@ export default class OrderRoute {
   initializeRoutes() {
     this.router.get(
       `${this.path}/sales-report/:order_id`,
-      useCatchErrors(this.OrderController.getOrder.bind(this.OrderController)),
+      useCatchErrors(this.OrderController.getOrder.bind(this.OrderController))
     );
 
     this.router.get(`${this.path}`, useCatchErrors(this.OrderController.getAllOrders.bind(this.OrderController)));
+
+    this.router.post(`${this.path}`, useCatchErrors(this.OrderController.createOrder.bind(this.OrderController)));
+
+    this.router.get(
+      `${this.path}/timeframe`,
+      useCatchErrors(this.OrderController.getOrderTimeframe.bind(this.OrderController))
+    );
   }
 }
