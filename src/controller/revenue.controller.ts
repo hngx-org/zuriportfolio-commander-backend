@@ -24,11 +24,11 @@ export default class RevenueController extends BaseController {
       return res.status(400).json({ error: 'Order is not completed' });
     }
 
-    const revenueAmount = order.amount;
+    //const revenueAmount = order.amount;
 
     const existingRevenue = await prisma.revenue.findFirst({
       where: {
-        user_id: order.merchantId,
+        //user_id: order.merchantId,
       },
     });
 
@@ -38,7 +38,7 @@ export default class RevenueController extends BaseController {
           id: existingRevenue.id,
         },
         data: {
-          amount: existingRevenue.amount + revenueAmount,
+          //amount: existingRevenue.amount + revenueAmount,
         },
       });
     }

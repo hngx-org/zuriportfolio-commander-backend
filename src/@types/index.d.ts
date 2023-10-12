@@ -18,3 +18,14 @@ export interface AddProductPayloadType {
   shopId: string;
   userId: string; //! remove this once auth is working
 }
+
+
+declare module 'express-serve-static-core' {
+  export interface Request {
+    user: {
+      id: string; // You can define the properties you need here
+      // Add any other user properties you want to access
+    };
+  }
+}
+

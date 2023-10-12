@@ -19,7 +19,7 @@ export default class OrderController extends BaseController {
         id: orderId,
       },
       include: {
-        merchant: true,
+        //merchant: true,
         customer: true,
       },
     });
@@ -38,19 +38,45 @@ export default class OrderController extends BaseController {
     );
   }
 
-  async getAllOrders(req: Request, res: Response) {
-    const userId = req.params.id; // get the user id from the request params
-
+  async getAllOrders(req: Request | any, res: Response | any) {
+    try{
+    //const userId = (req as any).user?.id;
+    const userId = "00b0b915a-f5a7-47d8-85a3-57c11d34c7v5";
     if (!userId) {
-      this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
-    }
+       return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
+     }
 
-    const orders = await prisma.order.findMany({
-      where: {
-        id: userId,
+    const orders = await prisma.user.findMany({
+      where : {
+        id : userId, 
       },
+      include : {
+      order_items : {
+        where :{
+          merchant_id : userId,
+        },
+        include : {
+          customer : {
+            include : {
+              customer_order_items : {
+                include : {
+                   
+                }
+              }
+            }
+          }
+        }
+      }
+
+      }
+
+     
     });
 
-    this.success(res, '--order/all', 'orders fetched successfully', 200, orders);
+    return this.success(res, '--order/all', 'orders fetched successfully', 200, orders);
+  } catch (error) {
+    console.error(error);
+    return this.error(res, '--order/all', 'An error occurred', 500, 'internal server error');
+  }
   }
 }
