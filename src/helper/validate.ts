@@ -1,16 +1,16 @@
 import Joi from 'joi';
 
+const customUUIDPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+
 export const productSchema = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().required(),
   quantity: Joi.number().integer().required(),
   price: Joi.number().required(),
-  discountPrice: Joi.optional(),
-  tax: Joi.optional(),
+  discountPrice: Joi.number().optional(),
+  tax: Joi.number().optional(),
   currency: Joi.string().required(),
-  category_id: Joi.string().required(),
-  shopId: Joi.string().required(), // once auth is done, remove this
-  userId: Joi.string().required(), // same as this.
+  categoryId: Joi.number().required(),
 });
 
 export const saveProductDraftSchema = Joi.object({
@@ -32,12 +32,17 @@ export const createShopSchema = Joi.object({
   merchant_id: Joi.string().required(),
 });
 
-export const promotionSchema = Joi.object({
-  user_id: Joi.string().required(),
-  promotion_type: Joi.string().required(),
+export const createDiscountSchema = Joi.object({
   discount_type: Joi.string().required(),
-  quantity: Joi.number().integer().required(),
-  amount: Joi.number().integer().required(),
-  product_id: Joi.string().required(),
-  min_cart_price: Joi.number().integer().required(),
+  amount: Joi.number().required(),
+  quantity: Joi.number().min(1).required(),
+  maximum_discount_price: Joi.number().optional(),
+  product_ids: Joi.array()
+    .items(Joi.string().pattern(customUUIDPattern))
+    .messages({
+      'string.pattern.base': 'product_id has an invalid uuid.',
+    })
+    .required(),
+  valid_from: Joi.date().required(),
+  valid_to: Joi.date().required(),
 });
