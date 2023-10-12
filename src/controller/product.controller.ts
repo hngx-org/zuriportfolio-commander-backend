@@ -77,7 +77,6 @@ export default class ProductController extends BaseController {
     }
 
     const { isError, errorMsg, image } = await uploadSingleImage(file);
-    console.log(image)
 
     if (isError) {
       logger.error(`Error uploading image: ${errorMsg}`);
@@ -290,15 +289,15 @@ export default class ProductController extends BaseController {
 
   async updateProduct(req: Request, res: Response) {
     const file = req.file ?? null;
-    const userId = (req as any).user_id;
-    const productId = req.params.productId;
-    const payload: AddProductPayloadType = JSON.parse(req.body.newData);
+    const userId = (req as any).body.user_id;
+    const productId = req.params['productId'];
+    const payload: AddProductPayloadType = req.body.newData;
+    console.log(productId)
 
     // Checks if the product exists before attempting update
     const product = await prisma.product.findUnique({
       where: {
-        id: productId,
-        user_id: userId
+        id: productId
       },
     });
 
@@ -320,14 +319,16 @@ export default class ProductController extends BaseController {
     }
 
     // upload image to cloudinary
-    const { isError, errorMsg, image } = await uploadSingleImage(file);
-    if (isError) {
-      logger.error(`Error uploading image: ${errorMsg}`);
+    let imageFile = null;
+    if (file != null) {
+      const { isError, errorMsg, image } = await uploadSingleImage(file);
+      imageFile = image
+      if (isError) {
+        logger.error(`Error uploading image: ${errorMsg}`);
+      }
     }
 
-    const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
     const { name, currency, description, discountPrice, price, quantity, tax, categoryId } = payload;
-
 
     // If the product exists, proceed with deletion
     const updatedProduct = await prisma.product.update({
@@ -336,21 +337,30 @@ export default class ProductController extends BaseController {
       },
       data: {
         name,
-        user_id: userId,
-        currency,
         description,
         discount_price: parseFloat(discountPrice),
         quantity: parseInt(quantity),
         price: parseFloat(price),
         tax: parseFloat(tax),
-        category_id: parseInt(categoryId),
-        image: {
-          create: {
-            url: image.url ?? placeHolderImg
-          },
-        },
+        currency,
+        category_id: parseInt(categoryId)
       }
     });
+
+    if (imageFile != null) {
+      await prisma.product.update({
+        where: {
+          id: productId,
+        },
+        data: {
+          image: {
+            create: {
+              url: imageFile.url
+            },
+          },
+        }
+      });
+    }
 
     return this.success(res, 'Product Updated', 'Product has been updated successfully', 201, updatedProduct);
   }

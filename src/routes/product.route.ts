@@ -23,6 +23,16 @@ export default class ProductRoute {
       `${this.path}/publish/:productId`,
       useCatchErrors(this.productController.publishProduct.bind(this.productController))
     );
+    this.router.patch(
+      `${this.path}:productId`,
+      upload.single('image'),
+      // isAuthenticated,
+      useCatchErrors(this.productController.updateProduct.bind(this.productController))
+    );
+    this.router.patch(
+      `${this.path}/unpublish/:productId`,
+      useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
+    );
     this.router.post(
       `${this.path}/add`,
       upload.single('image'),
@@ -40,11 +50,6 @@ export default class ProductRoute {
       // isAuthenticated,
       useCatchErrors(this.productController.addProductCategory.bind(this.productController))
     );
-    this.router.patch(
-      `${this.path}/unpublish/:productId`,
-      useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
-    );
-
     this.router.get(
       `${this.path}s/all`,
       // isAuthenticated,
@@ -55,20 +60,14 @@ export default class ProductRoute {
       // isAuthenticated,
       useCatchErrors(this.productController.getAllProducts.bind(this.productController))
     );
+    this.router.get(
+      `${this.path}/categories`,
+      useCatchErrors(this.productController.getAllCategories.bind(this.productController))
+    );
     this.router.delete(
       `${this.path}/:product_id`,
       isAuthenticated,
       useCatchErrors(this.productController.deleteProduct.bind(this.productController))
-    );
-    this.router.patch(
-      `${this.path}/:productId`,
-      upload.single('image'),
-      // isAuthenticated,
-      useCatchErrors(this.productController.updateProduct.bind(this.productController))
-    );
-    this.router.get(
-      `${this.path}/categories`,
-      useCatchErrors(this.productController.getAllCategories.bind(this.productController))
     );
   }
 }
