@@ -47,5 +47,9 @@ export default class ProductRoute {
       isAuthenticated,
       useCatchErrors(this.productController.deleteProduct.bind(this.productController)),
     );
+    this.router.get(
+      `${this.path}/categories`,
+      useCatchErrors(this.productController.getAllCategories.bind(this.productController))
+    );
   }
 }
