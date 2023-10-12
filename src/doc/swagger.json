@@ -550,10 +550,7 @@
           }
         }
       }
-    }
-  },
-
-  "/api/product/categories": {
+    },"/api/product/categories": {
     "get": {
       "summary": "Retrieve Product Categories",
       "description": "Get a list of all product categories along with their subcategories.",
@@ -810,7 +807,8 @@
           }
         }
       }
-    },  "/order/status/{order_id}": {
+    },  
+    "/order/status/{order_id}": {
       "patch": {
         "tags": ["Order"],
         "summary": "Update Order Status",
@@ -866,9 +864,53 @@
           }
         ]
       }
+    } 
+  },
+  "/sales/reports": {
+      "get": {
+        "tags": ["Sales"],
+        "summary": "Retrieve Sales Reports",
+        "description": "Get sales reports based on timeframes.",
+        "parameters": [
+          {
+            "name": "timeframe",
+            "in": "query",
+            "description": "Comma-separated list of timeframes (e.g., 12m,3m,1yr,7d,24hr)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesReport"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
-
   "components": {
     "schemas": {
       "AddProduct": {
@@ -1002,6 +1044,28 @@
             "$ref": "#/components/schemas/CreateCategory/properties/name"
           }
         }
+      },
+      "SalesReport": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "sales": {
+            "type": "integer"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "user_id", "sales", "order_id", "createdAt"]
       }
     },
     "securitySchemes": {
