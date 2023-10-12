@@ -840,35 +840,42 @@
         }
       }
     },
-    "/authorize": {
-      "post": {
+    "/order/status/{order_id}": {
+      "patch": {
         "tags": [
-          "Authorization"
+          "Order"
         ],
-        "summary": "Authorize Action",
-        "description": "Authorizes an action based on the provided token and action type.",
+        "summary": "Update Order Status",
+        "description": "Update the status of a specific order.",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "description": "Order ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "token": {
-                    "type": "string",
-                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJlNzU3N2ZhLWMyZWItNDVmNS1iZTZlLWM2ZD9zZGZjNmI1NyIsImlhdCI6MTY5NzAxNzkwOH0.FvN-FQwPUY5sLHNqGh7DhhAC_CxtIjKqbSaFwXebsoU"
-                  },
-                  "action": {
+                  "status": {
                     "type": "string",
                     "enum": [
-                      "permissions",
-                      "use coupon"
+                      "pending",
+                      "complete",
+                      "failed"
                     ],
-                    "example": "use coupon"
+                    "example": "complete"
                   }
                 },
                 "required": [
-                  "token",
-                  "action"
+                  "status"
                 ]
               }
             }
@@ -876,18 +883,26 @@
         },
         "responses": {
           "200": {
-            "description": "Action authorized successfully."
+            "description": "Order status updated successfully."
           },
           "400": {
-            "description": "Bad request. Please check the request parameters."
+            "description": "Bad request. Please check the request parameters or status value."
           },
           "401": {
             "description": "Unauthorized. Token is invalid or action is not permitted."
           },
+          "404": {
+            "description": "Order not found."
+          },
           "500": {
             "description": "Internal server error."
           }
-        }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
       }
     }
   },
