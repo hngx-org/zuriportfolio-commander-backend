@@ -7,6 +7,7 @@ import { AddProductPayloadType } from '@types';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
 import { isUUID } from '../helper';
+import { TestUserId } from '../config/test';
 
 export default class ProductController extends BaseController {
   constructor() {
@@ -43,6 +44,10 @@ export default class ProductController extends BaseController {
 
   async addProduct(req: Request, res: Response) {
   // //   const file = req.file ?? null;
+    const userId = (req as any).user?.id ?? TestUserId;
+    const file = req.file ?? null;
+    const payload: AddProductPayloadType = req.body;
+    const { error, value } = productSchema.validate(payload);
 
   // //   const payload: AddProductPayloadType = req.body;
 
@@ -130,7 +135,7 @@ export default class ProductController extends BaseController {
         '--product/invalid-fields',
         error?.message ?? 'Important product details is missing.',
         400,
-        null,
+        null
       );
     }
 
@@ -219,19 +224,40 @@ export default class ProductController extends BaseController {
   }
 
   async getAllProducts(req: Request, res: Response) {
-    const userId = (req as any).user?.id;
+    const userId = (req as any).user?.id ?? TestUserId;
 
     const products = await prisma.product.findMany({
       where: {
-        user_id: userId,
+        AND: {
+          user_id: userId,
+          is_deleted: 'active',
+        },
       },
+      include: { image: true },
     });
-    return this.success(res, 'All Products Shown', 'Products have been listed', 200, products);
+    const allProd = [];
+    if (products.length > 0) {
+      for (const p of products) {
+        const cat = await prisma.product_category.findFirst({
+          // where: { id: p.category_id },
+          include: { sub_categories: true },
+        });
+        allProd.push({
+          name: p.name,
+          id: p.id,
+          category: {
+            ...cat,
+          },
+          // image: p.image,
+        });
+      }
+    }
+    return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
   }
 
   async deleteProduct(req: Request, res: Response) {
     const productId = req.params['product_id'];
-    const userId = (req as any).user['id'];
+    const userId = (req as any).user?.id ?? TestUserId;
 
     if (typeof productId === 'undefined') {
       return this.error(res, '--product_delete/invalid-fields', 'Invalid field provided.', 400);
@@ -243,7 +269,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_delete/invalid-field',
         'product id is invalid, expected product_id in uuid format.',
-        400,
+        400
       );
     }
 
@@ -296,6 +322,28 @@ export default class ProductController extends BaseController {
   //       409,
   //     );
   //   }
+  async createCategory(req: Request, res: Response) {
+    const userId = (req as any).user?.id ?? TestUserId;
+    const { error, value } = createCategorySchema.validate(req.body);
+
+    if (error) {
+      return this.error(res, '--product_category/invalid-category data', 'Please provide a valid category name.', 400);
+    }
+    const { parent_id, name } = value;
+    const lowercaseName = name.toLowerCase();
+    const existingCategory = await prisma.product_category.findFirst({
+      where: {
+        name: lowercaseName,
+      },
+    });
+    if (existingCategory) {
+      return this.error(
+        res,
+        '--product_category/category-exists',
+        `Category with name '${lowercaseName}' already exists. Please choose a different name.`,
+        409
+      );
+    }
 
   //   // Checking if parent_id is null to determine if it's a parent or subcategory
   //   if (parent_id === null || parent_id === undefined || parent_id == '') {
@@ -333,7 +381,11 @@ export default class ProductController extends BaseController {
 
   async getAllCategories(req: Request | any, res: Response | any) {
     try {
+      const userId = (req as any).user?.id ?? TestUserId;
       const categories = await prisma.product_category.findMany({
+        where: {
+          user_id: userId,
+        },
         include: {
           sub_categories: true,
         },
@@ -344,29 +396,5 @@ export default class ProductController extends BaseController {
     }
   }
 
-  async getOrderByProductName(req: Request | any, res: Response | any) {
-    const { name } = req.params;
-    const { page = 1, pageSize = 10 } = req.query;
-    try {
-      const orderItems = await prisma.order_item.findMany({
-        include: {
-          product: true,
-        },
-        where: {
-          product: {
-            name: {
-              contains: name,
-              mode: 'insensitive', // Case-insensitive search
-            },
-          },
-        },
-        skip: (+page - 1) * +pageSize,
-        take: +pageSize,
-      });
-
-      this.success(res, '--orders/all', 'orders fetched successfully', 200, orderItems);
-    } catch (error) {
-      return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
-    }
-  }
-}
+  
+}}

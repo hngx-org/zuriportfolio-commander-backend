@@ -15,13 +15,13 @@ export default class DiscountRoute {
   initializeRoutes() {
     this.router.post(
       `${this.path}`,
-      isAuthenticated,
-      useCatchErrors(this.discountController.createDiscount.bind(this.discountController)),
+      // isAuthenticated,
+      useCatchErrors(this.discountController.createDiscount.bind(this.discountController))
     );
 
     this.router.get(
       `${this.path}/all`,
-      useCatchErrors(this.discountController.getAllDiscount.bind(this.discountController)),
+      useCatchErrors(this.discountController.getAllDiscount.bind(this.discountController))
     );
   }
 }

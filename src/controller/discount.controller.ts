@@ -7,6 +7,7 @@ import { createDiscountSchema } from '../helper/validate';
 import { CreateDiscountType } from '../@types';
 import { validateDateRange } from '../helper';
 import logger from '../config/logger';
+import { TestUserId } from '../config/test';
 
 export default class DiscountController extends BaseController {
   constructor() {
@@ -37,7 +38,7 @@ export default class DiscountController extends BaseController {
   }
 
   async createDiscount(req: Request, res: Response) {
-    const userId = (req as any).user?.id;
+    const userId = (req as any).user?.id ?? TestUserId;
     // const userId = 'dcb5b46a-9391-474c-9e69-fe37cfe821e9';
     const validateSchema = createDiscountSchema.validate(req.body);
     if (validateSchema.error) {
@@ -132,9 +133,17 @@ export default class DiscountController extends BaseController {
     // });
   }
 
-  async getAllDiscount(req: Request, res: Response) {
-    const userId = req.params.id; // get the user id from the request params
+  async trackDiscount(req: Request, res: Response) {
+    const userId = (req as any).user?.id ?? TestUserId;
+    // const userId = 'dcb5b46a-9391-474c-9e69-fe37cfe821e9';
+    const validateSchema = createDiscountSchema.validate(req.body);
+    if (validateSchema.error) {
+      return this.error(res, '--discount/invalid-fields', validateSchema.error.message, 400);
+    }
+  }
 
+  async getAllDiscount(req: Request, res: Response) {
+    const userId = (req as any).user?.id ?? TestUserId;
     if (!userId) {
       this.error(res, '--discount/all', 'This user id does not exist', 400, 'user not found');
     }
