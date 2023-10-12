@@ -3,8 +3,6 @@ import BaseController from './base.controller';
 import { PrismaClient } from '@prisma/client';
 import logger from '../config/logger';
 
-const prisma = new PrismaClient();
-
 export default class SalesController extends BaseController {
   constructor() {
     super();
