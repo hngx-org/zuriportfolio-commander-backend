@@ -119,14 +119,15 @@ model product {
     createdAt      DateTime       @default(now())
     updatedAt      DateTime       @default(now())
 
-    image            product_image[]
-    promotion        promotion[]
-    track_promotion  track_promotion[]
-    promo_product    promo_product[]
-    shop             shop              @relation(fields: [shop_id], references: [id], onDelete: Cascade)
-    order_item       order_item[]
-    product_category product_category  @relation(fields: [category_id], references: [id], onDelete: NoAction)
+    image           product_image[]
+    promotion       promotion[]
+    track_promotion track_promotion[]
+    promo_product   promo_product[]
+
+    shop             shop             @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+    product_category product_category @relation(fields: [category_id], references: [id], onDelete: NoAction)
     //   rating
+    order_item       order_item[]
 }
 
 model product_image {

@@ -56,7 +56,7 @@ export default class App {
     routes.forEach((route) => {
       this.app.use('/api', route.router);
     });
-    
+
     this.app.use('/', (req, res) => {
       res.json({ message: 'api endpoint is working' });
     });

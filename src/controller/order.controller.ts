@@ -19,7 +19,6 @@ export default class OrderController extends BaseController {
         id: orderId,
       },
       include: {
-   
         customer: true,
       },
     });
@@ -34,7 +33,7 @@ export default class OrderController extends BaseController {
       '--product/updated',
       'product updated successfully',
       200,
-      { data: order } // Include the order data in the response
+      { data: order }, // Include the order data in the response
     );
   }
 
@@ -79,5 +78,4 @@ export default class OrderController extends BaseController {
       return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
     }
   }
-
 }

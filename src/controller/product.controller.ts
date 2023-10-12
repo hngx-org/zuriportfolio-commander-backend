@@ -8,8 +8,6 @@ import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
 import { isUUID } from '../helper';
 
-
-
 export default class ProductController extends BaseController {
   constructor() {
     super();
@@ -45,14 +43,18 @@ export default class ProductController extends BaseController {
 
   async addProduct(req: Request, res: Response) {
     const file = req.file ?? null;
-    const payload: AddProductPayloadType = JSON.parse(req.body.json);
+
+    const payload: AddProductPayloadType = req.body;
 
     const { error, value } = productSchema.validate(payload);
+
     if (error || !file) {
       return this.error(res, '--product/invalid-fields', error?.message ?? 'product image is missing.', 400, null);
     }
+
     // upload image to cloudinary
-    const { name, currency, userId, description, discountPrice, price, quantity, tax, category, shopId } = payload;
+    //TODO get userId from Auth
+    const { name, currency, userId, description, discountPrice, price, quantity, tax, categoryId, shopId } = payload;
     const { isError, errorMsg, image } = await uploadSingleImage(file);
 
     if (isError) {
@@ -72,7 +74,8 @@ export default class ProductController extends BaseController {
 
     // check if user exists
 
-    const placeHolderImg = image ?? 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
+    const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
+    //const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
     const product = await prisma.product.create({
       data: {
         id: uuidv4(),
@@ -81,13 +84,18 @@ export default class ProductController extends BaseController {
         user_id: userId,
         currency,
         description,
+        discount_price: parseFloat(discountPrice),
+        quantity: parseInt(quantity),
+        price: parseFloat(price),
+        tax: parseFloat(tax),
+        category_id: parseInt(categoryId),
         discount_price: discountPrice ?? 0,
         quantity,
         price,
         tax: tax ?? 0,
         image: {
           create: {
-            url: placeHolderImg,
+            url: image.url ?? placeHolderImg,
           },
         },
       },
@@ -112,11 +120,11 @@ export default class ProductController extends BaseController {
         '--product/invalid-fields',
         error?.message ?? 'Important product details is missing.',
         400,
-        null
+        null,
       );
     }
 
-    // upload image to cloudinary
+    /*  // upload image to cloudinary
     const { name, currency, description, discountPrice, price, quantity, tax, category, shopId, userId } = payload;
     const { isError, errorMsg, image } = await uploadSingleImage(file);
 
@@ -174,7 +182,7 @@ export default class ProductController extends BaseController {
       });
     }
 
-    this.success(res, '--product/save-as-draft', 'Product updated and saved as draft', 201);
+    this.success(res, '--product/save-as-draft', 'Product updated and saved as draft', 201); */
   }
 
   async unpublishProduct(req: Request, res: Response) {
@@ -225,7 +233,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_delete/invalid-field',
         'product id is invalid, expected product_id in uuid format.',
-        400
+        400,
       );
     }
 
