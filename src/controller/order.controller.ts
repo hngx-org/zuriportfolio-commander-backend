@@ -40,43 +40,19 @@ export default class OrderController extends BaseController {
   }
 
   async getAllOrders(req: Request, res: Response) {
-    const userId = "1234";
+    const userId = req.params.id; // get the user id from the request params
 
     if (!userId) {
-      return this.error(res, '--order/all', 'This user id does not exist', 400)
+      this.error(res, '--order/all', 'This user is does not exist', 400, 'user not found');
     }
 
-    const orders = await prisma.user.findMany({
-      where: {
+    const orders = await prisma.order.findMany({
+      where:{
         id: userId
-      },
-      include: {
-        order_items: {
-          where: {
-            merchant_id: userId
-          },
-          include:{
-            customer: {
-              include: {
-                customer_order_items:{
-                  include:{
-                    product: true
-                  }
-                }
-              }
-            }
-          }
-        }
       }
     })
 
-    if (!orders) {
-      return this.error(res, '--order/all', 'Orders not found', 400)
-    }
-
-    this.success(res, '--order/all', 'orders fecthed successfully', 200, orders)
-
-   
+    this.success(res, '--order/all', 'orders fetched successfully', 200, orders)
   }
 
   async getOrderByProductName(req: Request | any, res: Response | any) {

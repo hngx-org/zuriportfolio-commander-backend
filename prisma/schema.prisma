@@ -128,8 +128,8 @@ model product {
     track_promotion track_promotion[]
     promo_product   promo_product[]
 
-    shop shop @relation(fields: [shop_id], references: [id], onDelete: Cascade)
     user user @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    shop shop @relation(fields: [shop_id], references: [id], onDelete: Cascade)
 }
 
 model product_image {

@@ -51,17 +51,12 @@ export default class ProductRoute {
     // this.router.get(
     //   `${this.path}/categories`,
     //   useCatchErrors(this.productController.getAllCategories.bind(this.productController))
-    // ); // clashing route with line 61
-    // this.router.post(
-    //   `${this.path}/categories`,
-    //   isAuthenticated,
-    //   useCatchErrors(this.productController.createCategory.bind(this.productController)),
-    // );
-    // this.router.post(
-    //   `${this.path}/categories`,
-    //   // isAuthenticated,
-    //   useCatchErrors(this.productController.createCategory.bind(this.productController))
-    // ); // clashing route with line 54
+    // );  Please check your controller
+    this.router.post(
+      `${this.path}/categories`,
+      // isAuthenticated,
+      useCatchErrors(this.productController.createCategory.bind(this.productController))
+    ); 
     this.router.post(
       `${this.path}/category`,
       // isAuthenticated,

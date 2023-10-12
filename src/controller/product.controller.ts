@@ -298,30 +298,6 @@ export default class ProductController extends BaseController {
     return this.success(res, '--product_delete/success', 'Product has been deleted successfully', 200);
   }
 
-  // async createCategory(req: Request, res: Response) {
-  //   const userId = (req as any).user['id'];
-  //   console.log(userId);
-  //   // const userId = "d7955c27-4d61-4cd6-a6bb-e6402151d51f"
-  //   const { error, value } = createCategorySchema.validate(req.body);
-
-  //   if (error) {
-  //     return this.error(res, '--product_category/invalid-category data', 'Please provide a valid category name.', 400);
-  //   }
-  //   const { parent_id, name } = value;
-  //   const lowercaseName = name.toLowerCase();
-  //   const existingCategory = await prisma.product_category.findFirst({
-  //     where: {
-  //       name: lowercaseName,
-  //     },
-  //   });
-  //   if (existingCategory) {
-  //     return this.error(
-  //       res,
-  //       '--product_category/category-exists',
-  //       `Category with name '${lowercaseName}' already exists. Please choose a different name.`,
-  //       409,
-  //     );
-  //   }
   async createCategory(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
     const { error, value } = createCategorySchema.validate(req.body);
@@ -345,46 +321,46 @@ export default class ProductController extends BaseController {
       );
     }
 
-  //   // Checking if parent_id is null to determine if it's a parent or subcategory
-  //   if (parent_id === null || parent_id === undefined || parent_id == '') {
-  //     // Creating a parent category
-  //     const parentCategory = await prisma.product_category.create({
-  //       data: {
-  //         name: lowercaseName,
-  //         user: {
-  //           connect: {
-  //             id: userId,
-  //           },
-  //         },
-  //       },
-  //     });
+    // Checking if parent_id is null to determine if it's a parent or subcategory
+    // if (parent_id === null || parent_id === undefined || parent_id == '') {
+    //   // Creating a parent category
+    //   // const parentCategory = await prisma.product_category.create({
+    //   //   data: {
+    //   //     name: lowercaseName,
+    //   //     user: {
+    //   //       connect: {
+    //   //         id: userId,
+    //   //       },
+    //   //     },
+    //   //   },
+    //   // });
 
-  //     return this.success(res, '--created-parentCategory/success', `${lowercaseName} created successfully`, 201, {
-  //       parentCategory,
-  //     });
-  //   }
-  //   //create a subCategory
-  //   const subCategory = await prisma.product_sub_category.create({
-  //     data: {
-  //       name: lowercaseName,
-  //       parent_category: {
-  //         connect: {
-  //           id: parent_id,
-  //         },
-  //       },
-  //     },
-  //   });
-  //   return this.success(res, '--created-subCategory/success', `${lowercaseName} created successfully`, 201, {
-  //     subCategory,
-  //   });
-  // }
+    //   return this.success(res, '--created-parentCategory/success', `${lowercaseName} created successfully`, 201, {
+    //     parentCategory,
+    //   });
+    // }
+    //create a subCategory
+    const subCategory = await prisma.product_sub_category.create({
+      data: {
+        name: lowercaseName,
+        parent_category: {
+          connect: {
+            id: parent_id,
+          },
+        },
+      },
+    });
+    return this.success(res, '--created-subCategory/success', `${lowercaseName} created successfully`, 201, {
+      subCategory,
+    });
+  }
 
   async getAllCategories(req: Request | any, res: Response | any) {
     try {
       const userId = (req as any).user?.id ?? TestUserId;
       const categories = await prisma.product_category.findMany({
         where: {
-          user_id: userId,
+          // user_id: userId,
         },
         include: {
           sub_categories: true,
@@ -395,6 +371,4 @@ export default class ProductController extends BaseController {
       return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
     }
   }
-
-  
-}}
+}
