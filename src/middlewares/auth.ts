@@ -1,3 +1,4 @@
+import { AuthenticatedMiddleware } from '@types';
 import $axios from '../config/axios';
 import logger from '../config/logger';
 import { NextFunction, Request, Response } from 'express';
@@ -9,16 +10,21 @@ export async function isAuthenticated(req: Request, res: Response, next: NextFun
   }
   try {
     // make api call to verify access token
-    const authUrl = `https://auth.akuya.tech/api/auth/signup`;
-    const req = await $axios.post(authUrl, { token });
-    const resp = req.data;
+    const authUrl = `https://auth.akuya.tech/api/authorize`;
+    const request = await $axios.post(authUrl, { token });
+    const resp: AuthenticatedMiddleware = request.data;
 
-    console.log(resp);
+    if (!resp?.authorized) {
+      logger.error(resp);
+      return res.status(403).json({ message: resp?.message });
+    }
 
-    (req as any).user['id'] = {};
+    if (!(req as any).user) (req as any).user = {};
+    (req as any).user.id = resp.user?.id;
     next();
   } catch (err) {
-    logger.error(`Forbidden: ${err.message}`);
-    return res.status(403).json({ message: 'Forbidden' });
+    const msg = err.response?.data?.message ?? err.message;
+    logger.error(`Forbidden: ${msg}`);
+    return res.status(403).json({ message: msg });
   }
 }

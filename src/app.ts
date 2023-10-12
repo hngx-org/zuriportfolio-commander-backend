@@ -31,7 +31,7 @@ export default class App {
       cors({
         origin: ['http://127.0.0.1:3000', 'http://localhost:8080', '*'],
         credentials: true,
-      })
+      }),
     );
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
@@ -55,6 +55,14 @@ export default class App {
     // initialize all routes middleware
     routes.forEach((route) => {
       this.app.use('/api', route.router);
+    });
+
+    this.app.use('/', (req, res) => {
+      res.json({ message: 'api endpoint is working' });
+    });
+
+    this.app.use('/api', (req, res) => {
+      res.json({ message: 'api endpoint is working' });
     });
 
     this.initSwaggerUI();

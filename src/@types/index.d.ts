@@ -9,23 +9,38 @@ export interface AddProductPayloadType {
   product_id?: string;
   name: string;
   description: string;
-  quantity: number;
-  price: number;
-  discountPrice: number;
-  tax: number;
+  quantity: string;
+  price: string;
+  discountPrice: string;
+  tax: string;
   currency: string;
-  category: string;
+  categoryId: string;
   shopId: string;
   userId: string; //! remove this once auth is working
 }
 
-
-declare module 'express-serve-static-core' {
-  export interface Request {
-    user: {
-      id: string; // You can define the properties you need here
-      // Add any other user properties you want to access
-    };
-  }
+export interface AddPromotionPayloadType {
+  user_id: string;
+  promotion_type: string;
+  discount_type: string;
+  quantity: number;
+  amount: number;
+  product_id: string;
+  min_cart_price: number;
+}
+export interface AuthenticatedMiddleware {
+  status: number;
+  authorized: boolean;
+  message: string;
+  user: { id: string };
 }
 
+export interface CreateDiscountType {
+  discount_type: string;
+  amount: number;
+  quantity: number;
+  maximum_discount_price: number;
+  product_ids: string[];
+  valid_from: string;
+  valid_to: string;
+}

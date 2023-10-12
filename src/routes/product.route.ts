@@ -2,6 +2,7 @@ import express from 'express';
 import useCatchErrors from '../error/catchErrors';
 import productController from '../controller/product.controller';
 import Multer from 'multer';
+import { isAuthenticated } from '../middlewares/auth';
 
 const storage = Multer.memoryStorage();
 const upload = Multer({
@@ -25,6 +26,7 @@ export default class ProductRoute {
     this.router.post(
       `${this.path}/add`,
       upload.single('image'),
+      isAuthenticated,
       useCatchErrors(this.productController.addProduct.bind(this.productController))
     );
     this.router.post(
@@ -38,11 +40,17 @@ export default class ProductRoute {
     );
     this.router.get(
       `${this.path}s`,
+      isAuthenticated,
       useCatchErrors(this.productController.getAllProducts.bind(this.productController))
     );
     this.router.delete(
-      `${this.path}/:productId`,
+      `${this.path}/:product_id`,
+      isAuthenticated,
       useCatchErrors(this.productController.deleteProduct.bind(this.productController))
+    );
+    this.router.get(
+      `${this.path}/categories`,
+      useCatchErrors(this.productController.getAllCategories.bind(this.productController))
     );
   }
 }

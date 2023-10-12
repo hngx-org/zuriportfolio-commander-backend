@@ -6,6 +6,7 @@ import logger from '../config/logger';
 import { AddProductPayloadType } from '@types';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
+import { isUUID } from '../helper';
 
 export default class ProductController extends BaseController {
   constructor() {
@@ -41,55 +42,65 @@ export default class ProductController extends BaseController {
   }
 
   async addProduct(req: Request, res: Response) {
+    // const userId = (req as any).user?.id;
     const file = req.file ?? null;
+    const userId = 'd7955c27-4d61-4cd6-a6bb-e6402151d51f';
     const payload: AddProductPayloadType = JSON.parse(req.body.json);
-
     const { error, value } = productSchema.validate(payload);
+
     if (error || !file) {
       return this.error(res, '--product/invalid-fields', error?.message ?? 'product image is missing.', 400, null);
     }
+
     // upload image to cloudinary
-    const { name, currency, userId, description, discountPrice, price, quantity, tax, category, shopId } = payload;
+    //TODO get userId from Auth
+    const { name, currency, description, discountPrice, price, quantity, tax, categoryId } = payload;
+
+    // check if user has a shop
+    const shopExists = await prisma.shop.findFirst({
+      where: {
+        merchant_id: userId,
+      },
+    });
+
+    if (shopExists === null) {
+      return this.error(res, '--product/shop-notfound', 'Failed to crete product, shop not found.', 404);
+    }
+
+    // check if category exists
+    const category = await prisma.product_category.findFirst({
+      where: { id: +categoryId },
+    });
+
+    if (category === null) {
+      return this.error(res, '--product/category-notfound', 'Failed to crete product, category do not exist.', 404);
+    }
+
     const { isError, errorMsg, image } = await uploadSingleImage(file);
 
     if (isError) {
       logger.error(`Error uploading image: ${errorMsg}`);
     }
 
-    // check if user has a shop
-    const shopExists = await prisma.shop.findFirst({
-      where: {
-        id: shopId,
-      },
-    });
-
-    if (!shopExists) {
-      return this.error(res, '--product/shop-notfound', 'Failed to crete product, shop not found.', 404);
-    }
-
     // check if user exists
+    const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
 
-    const placeHolderImg = image ?? 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
     const product = await prisma.product.create({
       data: {
         id: uuidv4(),
         name,
-        shop_id: shopId,
+        shop_id: shopExists.id,
         user_id: userId,
         currency,
         description,
-        discount_price: discountPrice ?? 0,
-        quantity,
-        price,
-        tax: tax ?? 0,
-        categories: {
-          create: {
-            name: category,
-          },
-        },
+        discount_price: parseFloat(discountPrice),
+        quantity: parseInt(quantity),
+        price: parseFloat(price),
+        tax: parseFloat(tax),
+        category_id: parseInt(categoryId),
         image: {
           create: {
-            url: placeHolderImg,
+            url: image.url ?? placeHolderImg,
           },
         },
       },
@@ -118,7 +129,7 @@ export default class ProductController extends BaseController {
       );
     }
 
-    // upload image to cloudinary
+    /*  // upload image to cloudinary
     const { name, currency, description, discountPrice, price, quantity, tax, category, shopId, userId } = payload;
     const { isError, errorMsg, image } = await uploadSingleImage(file);
 
@@ -144,11 +155,6 @@ export default class ProductController extends BaseController {
           quantity,
           price,
           tax: tax ?? 0,
-          categories: {
-            create: {
-              name: category,
-            },
-          },
           image: {
             create: {
               url: placeHolderImg,
@@ -172,11 +178,6 @@ export default class ProductController extends BaseController {
           quantity,
           price,
           tax: tax ?? 0,
-          categories: {
-            create: {
-              name: category,
-            },
-          },
           image: {
             create: {
               url: placeHolderImg,
@@ -186,7 +187,7 @@ export default class ProductController extends BaseController {
       });
     }
 
-    this.success(res, '--product/save-as-draft', 'Product updated and saved as draft', 201);
+    this.success(res, '--product/save-as-draft', 'Product updated and saved as draft', 201); */
   }
 
   async unpublishProduct(req: Request, res: Response) {
@@ -213,7 +214,7 @@ export default class ProductController extends BaseController {
   }
 
   async getAllProducts(req: Request, res: Response) {
-    const userId = req.body.userId;
+    const userId = (req as any).user?.id;
 
     const products = await prisma.product.findMany({
       where: {
@@ -224,26 +225,58 @@ export default class ProductController extends BaseController {
   }
 
   async deleteProduct(req: Request, res: Response) {
-    const productId = req.params.productId;
+    const productId = req.params['product_id'];
+    const userId = (req as any).user['id'];
+
+    if (typeof productId === 'undefined') {
+      return this.error(res, '--product_delete/invalid-fields', 'Invalid field provided.', 400);
+    }
+
+    // check if field parameter is a uuid
+    if (!isUUID(productId)) {
+      return this.error(
+        res,
+        '--product_delete/invalid-field',
+        'product id is invalid, expected product_id in uuid format.',
+        400
+      );
+    }
 
     // Check if the product exists before attempting to delete it
-    const product = await prisma.product.findUnique({
+    const product = await prisma.product.findFirst({
       where: {
         id: productId,
+        user_id: userId,
       },
     });
 
     if (!product) {
-      return this.error(res, '--product/deleteproduct', 'Product not found', 404);
+      return this.error(res, '--product_delete/product-notfound', 'Product not found', 404);
     }
 
     // If the product exists, proceed with deletion
-    const deletedProduct = await prisma.product.delete({
+    await prisma.product.update({
       where: {
         id: productId,
       },
+      data: {
+        is_deleted: 'temporary',
+      },
     });
 
-    return this.success(res, 'Product Deleted', 'Product has been deleted successfully', 200, deletedProduct);
+    return this.success(res, '--product_delete/success', 'Product has been deleted successfully', 200);
+  }
+
+  async getAllCategories(req: Request | any, res: Response | any) {
+    try {
+      const categories = await prisma.product_category.findMany({
+        include: {
+          sub_categories: true,
+        },
+      });
+      this.success(res, '--categories/all', 'categories fetched successfully', 200, categories);
+    } catch (error) {
+      return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
+    }
   }
 }
