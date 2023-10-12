@@ -83,11 +83,6 @@ export default class ProductController extends BaseController {
         quantity,
         price,
         tax: tax ?? 0,
-        categories: {
-          create: {
-            name: category,
-          },
-        },
         image: {
           create: {
             url: placeHolderImg,
@@ -145,11 +140,6 @@ export default class ProductController extends BaseController {
           quantity,
           price,
           tax: tax ?? 0,
-          categories: {
-            create: {
-              name: category,
-            },
-          },
           image: {
             create: {
               url: placeHolderImg,
@@ -173,11 +163,6 @@ export default class ProductController extends BaseController {
           quantity,
           price,
           tax: tax ?? 0,
-          categories: {
-            create: {
-              name: category,
-            },
-          },
           image: {
             create: {
               url: placeHolderImg,
