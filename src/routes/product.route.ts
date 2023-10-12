@@ -26,6 +26,9 @@ export default class ProductRoute {
     this.router.post(
       `${this.path}/add`,
       upload.single('image'),
+
+      // isAuthenticated,
+
       useCatchErrors(this.productController.addProduct.bind(this.productController))
     );
     this.router.post(
@@ -39,13 +42,30 @@ export default class ProductRoute {
     );
     this.router.get(
       `${this.path}s`,
-      isAuthenticated,
+
+      // isAuthenticated,
+
       useCatchErrors(this.productController.getAllProducts.bind(this.productController))
     );
     this.router.delete(
       `${this.path}/:product_id`,
-      isAuthenticated,
+
+      // isAuthenticated,
       useCatchErrors(this.productController.deleteProduct.bind(this.productController))
+    );
+    this.router.get(
+      `${this.path}/categories`,
+      useCatchErrors(this.productController.getAllCategories.bind(this.productController))
+    );
+    this.router.post(
+      `${this.path}/categories`,
+      // isAuthenticated,
+      useCatchErrors(this.productController.createCategory.bind(this.productController))
+    );
+    this.router.post(
+      `${this.path}/category`,
+      // isAuthenticated,
+      useCatchErrors(this.productController.createCategory.bind(this.productController))
     );
   }
 }
