@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
-import { productSchema } from '../helper/validate';
+import { createCategorySchema, productSchema } from '../helper/validate';
 import { uploadSingleImage } from '../helper/uploadImage';
 import logger from '../config/logger';
 import { AddProductPayloadType } from '@types';
@@ -42,50 +42,65 @@ export default class ProductController extends BaseController {
   }
 
   async addProduct(req: Request, res: Response) {
+    // const userId = (req as any).user?.id;
     const file = req.file ?? null;
+    const userId = 'd7955c27-4d61-4cd6-a6bb-e6402151d51f';
     const payload: AddProductPayloadType = JSON.parse(req.body.json);
-
     const { error, value } = productSchema.validate(payload);
+
     if (error || !file) {
       return this.error(res, '--product/invalid-fields', error?.message ?? 'product image is missing.', 400, null);
     }
+
     // upload image to cloudinary
-    const { name, currency, userId, description, discountPrice, price, quantity, tax, category, shopId } = payload;
+    //TODO get userId from Auth
+    const { name, currency, description, discountPrice, price, quantity, tax, categoryId } = payload;
+
+    // check if user has a shop
+    const shopExists = await prisma.shop.findFirst({
+      where: {
+        merchant_id: userId,
+      },
+    });
+
+    if (shopExists === null) {
+      return this.error(res, '--product/shop-notfound', 'Failed to crete product, shop not found.', 404);
+    }
+
+    // check if category exists
+    const category = await prisma.product_category.findFirst({
+      where: { id: +categoryId },
+    });
+
+    if (category === null) {
+      return this.error(res, '--product/category-notfound', 'Failed to crete product, category do not exist.', 404);
+    }
+
     const { isError, errorMsg, image } = await uploadSingleImage(file);
 
     if (isError) {
       logger.error(`Error uploading image: ${errorMsg}`);
     }
 
-    // check if user has a shop
-    const shopExists = await prisma.shop.findFirst({
-      where: {
-        id: shopId,
-      },
-    });
-
-    if (!shopExists) {
-      return this.error(res, '--product/shop-notfound', 'Failed to crete product, shop not found.', 404);
-    }
-
     // check if user exists
+    const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
 
-    const placeHolderImg = image ?? 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
     const product = await prisma.product.create({
       data: {
         id: uuidv4(),
         name,
-        shop_id: shopId,
+        shop_id: shopExists.id,
         user_id: userId,
         currency,
         description,
-        discount_price: discountPrice ?? 0,
-        quantity,
-        price,
-        tax: tax ?? 0,
+        discount_price: parseFloat(discountPrice),
+        quantity: parseInt(quantity),
+        price: parseFloat(price),
+        tax: parseFloat(tax),
+        category_id: parseInt(categoryId),
         image: {
           create: {
-            url: placeHolderImg,
+            url: image.url ?? placeHolderImg,
           },
         },
       },
@@ -110,11 +125,11 @@ export default class ProductController extends BaseController {
         '--product/invalid-fields',
         error?.message ?? 'Important product details is missing.',
         400,
-        null
+        null,
       );
     }
 
-    // upload image to cloudinary
+    /*  // upload image to cloudinary
     const { name, currency, description, discountPrice, price, quantity, tax, category, shopId, userId } = payload;
     const { isError, errorMsg, image } = await uploadSingleImage(file);
 
@@ -172,7 +187,7 @@ export default class ProductController extends BaseController {
       });
     }
 
-    this.success(res, '--product/save-as-draft', 'Product updated and saved as draft', 201);
+    this.success(res, '--product/save-as-draft', 'Product updated and saved as draft', 201); */
   }
 
   async unpublishProduct(req: Request, res: Response) {
@@ -223,7 +238,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_delete/invalid-field',
         'product id is invalid, expected product_id in uuid format.',
-        400
+        400,
       );
     }
 
@@ -250,5 +265,77 @@ export default class ProductController extends BaseController {
     });
 
     return this.success(res, '--product_delete/success', 'Product has been deleted successfully', 200);
+  }
+
+  async createCategory(req: Request, res: Response) {
+    const userId = (req as any).user['id'];
+    console.log(userId);
+    // const userId = "d7955c27-4d61-4cd6-a6bb-e6402151d51f"
+    const { error, value } = createCategorySchema.validate(req.body);
+
+    if (error) {
+      return this.error(res, '--product_category/invalid-category data', 'Please provide a valid category name.', 400);
+    }
+    const { parent_id, name } = value;
+    const lowercaseName = name.toLowerCase();
+    const existingCategory = await prisma.product_category.findFirst({
+      where: {
+        name: lowercaseName,
+      },
+    });
+    if (existingCategory) {
+      return this.error(
+        res,
+        '--product_category/category-exists',
+        `Category with name '${lowercaseName}' already exists. Please choose a different name.`,
+        409,
+      );
+    }
+
+    // Checking if parent_id is null to determine if it's a parent or subcategory
+    if (parent_id === null || parent_id === undefined || parent_id == '') {
+      // Creating a parent category
+      const parentCategory = await prisma.product_category.create({
+        data: {
+          name: lowercaseName,
+          user: {
+            connect: {
+              id: userId,
+            },
+          },
+        },
+      });
+
+      return this.success(res, '--created-parentCategory/success', `${lowercaseName} created successfully`, 201, {
+        parentCategory,
+      });
+    }
+    //create a subCategory
+    const subCategory = await prisma.product_sub_category.create({
+      data: {
+        name: lowercaseName,
+        parent_category: {
+          connect: {
+            id: parent_id,
+          },
+        },
+      },
+    });
+    return this.success(res, '--created-subCategory/success', `${lowercaseName} created successfully`, 201, {
+      subCategory,
+    });
+  }
+
+  async getAllCategories(req: Request | any, res: Response | any) {
+    try {
+      const categories = await prisma.product_category.findMany({
+        include: {
+          sub_categories: true,
+        },
+      });
+      this.success(res, '--categories/all', 'categories fetched successfully', 200, categories);
+    } catch (error) {
+      return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
+    }
   }
 }
