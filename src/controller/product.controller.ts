@@ -228,18 +228,18 @@ export default class ProductController extends BaseController {
     const allProd = [];
     if (products.length > 0) {
       for (const p of products) {
-        const cat = await prisma.product_category.findFirst({
-          where: { id: p.category_id },
-          include: { sub_categories: true },
-        });
-        allProd.push({
-          name: p.name,
-          id: p.id,
-          category: {
-            ...cat,
-          },
-          image: p.image,
-        });
+        // // const cat = await prisma.product_category.findFirst({
+        // //   where: { id: p.category_id },
+        // //   include: { sub_categories: true },
+        // // });
+        // allProd.push({
+        //   name: p.name,
+        //   id: p.id,
+        //   category: {
+        //     ...cat,
+        //   },
+        //   image: p.image,
+        // });
       }
     }
     return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
@@ -349,9 +349,9 @@ export default class ProductController extends BaseController {
     try {
       const userId = (req as any).user?.id ?? TestUserId;
       const categories = await prisma.product_category.findMany({
-        where: {
-          user_id: userId,
-        },
+        // where: {
+        //   user_id: userId,
+        // },
         include: {
           sub_categories: true,
         },

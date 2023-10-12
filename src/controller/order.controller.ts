@@ -41,26 +41,41 @@ export default class OrderController extends BaseController {
   }
 
   async getAllOrders(req: Request | any, res: Response | any) {
-    try{
     //const userId = (req as any).user?.id;
-    const userId = "2";
+    const userId = "1";
     if (!userId) {
        return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
-     }
-
-    const orders = await prisma.order.findMany({
-      where : {
-        customer_id : userId, 
+    }
+    const { page = 1, pageSize = 10 } = req.query;
+    const orders = await prisma.order_item.findMany({
+      where: {
+        merchant_id: userId,
       },
-      include : {
-         customer : true
-      }
+      select: {
+        order_id: true,
+        createdAt: true,
+        merchant: {
+          select: {
+            customer_orders: {
+              select: {
+                status: true,
+              },
+            },
+          },
+        },
+        customer: {
+          select: {
+            username: true,
+          },
+          
+        }
+      },
+      skip: (+page - 1) * +pageSize,
+      take: +pageSize,
     });
-
-    return this.success(res, '--order/all', 'orders fetched successfully', 200, orders);
-  } catch (error) {
-    console.error(error);
+  if (!orders) {
     return this.error(res, '--order/all', 'An error occurred', 500, 'internal server error');
   }
+  return this.success(res, '--order/all', 'orders fetched successfully', 200, orders);
   }
 }
