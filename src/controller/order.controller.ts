@@ -46,29 +46,25 @@ export default class OrderController extends BaseController {
        return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
      }
 
-     const orders = await prisma.user.findMany({
-      where: {
-        id: userId
-      },
-      include: {
-        order_items: {
-          where: {
-            merchant_id: userId
-          },
-          include:{
-            customer: {
-              include: {
-                customer_order_items:{
-                  // include:{
-                  //   product: true
-                  // }
-                }
-              }
-            }
-          }
-        }
-      }
-    })
+     const orders = await prisma.order.findMany({
+        // include: {
+        //   product: {
+        //     select: {
+        //       name: true,
+        //     },
+        //   },
+        //   customer: {
+        //     select: {
+        //       first_name: true,
+        //     },
+        //   },
+        // },
+        // select: {
+        //   id: true,
+        //   createdAt: true,
+        //   status: true,
+        // },
+      });
 
     return this.success(res, '--order/all', 'orders fetched successfully', 200, orders);
   } catch (error) {

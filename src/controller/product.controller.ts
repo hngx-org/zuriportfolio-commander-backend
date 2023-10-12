@@ -295,20 +295,20 @@ export default class ProductController extends BaseController {
     // Checking if parent_id is null to determine if it's a parent or subcategory
     if (parent_id === null || parent_id === undefined || parent_id == '') {
       // Creating a parent category
-      const parentCategory = await prisma.product_category.create({
-        data: {
-          name: lowercaseName,
-          user: {
-            connect: {
-              id: userId,
-            },
-          },
-        },
-      });
+      // const parentCategory = await prisma.product_category.create({
+      //   // data: {
+      //   //   name: lowercaseName,
+      //   //   user: {
+      //   //     connect: {
+      //   //       id: userId,
+      //   //     },
+      //   //   },
+      //   // },
+      // });
 
-      return this.success(res, '--created-parentCategory/success', `${lowercaseName} created successfully`, 201, {
-        parentCategory,
-      });
+      // return this.success(res, '--created-parentCategory/success', `${lowercaseName} created successfully`, 201, {
+      //   parentCategory,
+      // });
     }
     //create a subCategory
     const subCategory = await prisma.product_sub_category.create({
