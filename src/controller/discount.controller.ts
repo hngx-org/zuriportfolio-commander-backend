@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
+
+import { AddPromotionPayloadType } from '@types';
+import { promotionSchema } from '../helper/validate';
 import prisma from '../config/prisma';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -20,6 +23,12 @@ export default class DiscountController extends BaseController {
       valid_to,
       min_cart_price,
     } = req.body;
+    const payload: AddPromotionPayloadType = JSON.parse(req.body.json);
+
+    const { error, value } = promotionSchema.validate(payload);
+    if (error) {
+      return this.error(res, '--discounts/invalid-fields', 'provide valid fields', 400);
+    }
     const createdDiscount = await prisma.promotion.create({
       data: {
         id: uuidv4(),
