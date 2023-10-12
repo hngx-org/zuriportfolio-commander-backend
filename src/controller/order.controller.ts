@@ -17,7 +17,6 @@ export default class OrderController extends BaseController {
         id: orderId,
       },
       include: {
-        merchant: true,
         customer: true,
       },
     });
