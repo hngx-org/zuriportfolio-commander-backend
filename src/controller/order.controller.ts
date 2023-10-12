@@ -10,10 +10,8 @@ export default class OrderController extends BaseController {
   }
 
   async getOrder(req: Request, res: Response) {
-    // Assuming you have the order ID from the request params
-    const orderId = req.params.order_id; // Replace with your actual parameter name
+    const orderId = req.params.order_id;
 
-    // Fetch the order details from the database using Prisma
     const order = await prisma.order.findFirst({
       where: {
         id: orderId,
@@ -25,17 +23,10 @@ export default class OrderController extends BaseController {
     });
 
     if (!order) {
-      return res.status(404).json({ error: 'Order not found' });
+      return res.status(404).json({ message: 'Order not found' });
     }
 
-    // Return the order data as part of the response
-    this.success(
-      res,
-      '--product/updated',
-      'product updated successfully',
-      200,
-      { data: order }, // Include the order data in the response
-    );
+    this.success(res, '--order/single', 'Order fetched successfully', 200, order);
   }
 
   async getAllOrders(req: Request, res: Response) {
