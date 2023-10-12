@@ -11,8 +11,6 @@ export const productSchema = Joi.object({
   tax: Joi.number().optional(),
   currency: Joi.string().required(),
   categoryId: Joi.number().required(),
-  shopId: Joi.string().required(), // once auth is done, remove this
-  userId: Joi.string().required(), // same as this.
 });
 
 export const saveProductDraftSchema = Joi.object({
