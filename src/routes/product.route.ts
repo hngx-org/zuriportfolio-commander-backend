@@ -26,21 +26,33 @@ export default class ProductRoute {
     this.router.post(
       `${this.path}/add`,
       upload.single('image'),
-      isAuthenticated,
+      // isAuthenticated,
       useCatchErrors(this.productController.addProduct.bind(this.productController))
     );
     this.router.post(
       `${this.path}/:productId/draft`,
+      isAuthenticated,
       upload.single('image'),
       useCatchErrors(this.productController.addProductDraft.bind(this.productController))
+    );
+    this.router.post(
+      `${this.path}/category/add`,
+      // isAuthenticated,
+      useCatchErrors(this.productController.addProductCategory.bind(this.productController))
     );
     this.router.patch(
       `${this.path}/unpublish/:productId`,
       useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
     );
+
+    this.router.get(
+      `${this.path}s/all`,
+      // isAuthenticated,
+      useCatchErrors(this.productController.getAllProductsDetail.bind(this.productController))
+    );
     this.router.get(
       `${this.path}s`,
-      isAuthenticated,
+      // isAuthenticated,
       useCatchErrors(this.productController.getAllProducts.bind(this.productController))
     );
     this.router.delete(
@@ -51,7 +63,7 @@ export default class ProductRoute {
     this.router.patch(
       `${this.path}/:productId`,
       upload.single('image'),
-      isAuthenticated,
+      // isAuthenticated,
       useCatchErrors(this.productController.updateProduct.bind(this.productController))
     );
     this.router.get(

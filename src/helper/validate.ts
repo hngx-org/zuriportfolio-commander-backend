@@ -32,6 +32,11 @@ export const createShopSchema = Joi.object({
   merchant_id: Joi.string().required(),
 });
 
+export const addProductCategorySchema = Joi.object({
+  name: Joi.string().required(),
+  user_id: Joi.string().required(),
+});
+
 export const createDiscountSchema = Joi.object({
   discount_type: Joi.string().required(),
   amount: Joi.number().required(),
