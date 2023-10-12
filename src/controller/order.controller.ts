@@ -9,37 +9,39 @@ export default class OrderController extends BaseController {
     super();
   }
 
-  async getOrder(req: Request, res: Response) {
-    // Assuming you have the order ID from the request params
-    const orderId = req.params.order_id; // Replace with your actual parameter name
+  // async getOrder(req: Request, res: Response) {
+  //   // Assuming you have the order ID from the request params
+  //   const orderId = req.params.order_id; // Replace with your actual parameter name
 
-    // Fetch the order details from the database using Prisma
-    const order = await prisma.order.findFirst({
-      where: {
-        id: orderId,
-      },
-      include: {
-        merchant: true,
-        customer: true,
-      },
-    });
+  //   // Fetch the order details from the database using Prisma
+  //   const order = await prisma.order.findFirst({
+  //     where: {
+  //       id: orderId,
+  //     },
+  //     include: {
+  //       merchant: true,
+  //       customer: true,
+  //     },
+  //   });
 
-    if (!order) {
-      return res.status(404).json({ error: 'Order not found' });
-    }
+  //   if (!order) {
+  //     return res.status(404).json({ error: 'Order not found' });
+  //   }
 
-    // Return the order data as part of the response
-    this.success(
-      res,
-      '--product/updated',
-      'product updated successfully',
-      200,
-      { data: order }, // Include the order data in the response
-    );
-  }
+  //   // Return the order data as part of the response
+  //   this.success(
+  //     res,
+  //     '--product/updated',
+  //     'product updated successfully',
+  //     200,
+  //     { data: order }, // Include the order data in the response
+  //   );
+  // }
 
   async getAllOrders(req: Request, res: Response) {
     const userId = req.params.id; // get the user id from the request params
+
+    console.log(userId);
 
     if (!userId) {
       this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
@@ -51,6 +53,50 @@ export default class OrderController extends BaseController {
       },
     });
 
+    console.log(orders);
+
     this.success(res, '--order/all', 'orders fetched successfully', 200, orders);
+  }
+
+  async getOdersCountByTimeframe(req: Request, res: Response) {
+    const { timeframe } = req.query;
+
+    let startDate: Date;
+    let endDate: Date = new Date(); // default to cuo the current date
+
+    switch (timeframe) {
+      case 'today':
+        startDate = new Date();
+        break;
+      case 'yesterday':
+        startDate = new Date();
+        startDate.setDate(startDate.getDate() - 1);
+        endDate.setDate(endDate.getDate() - 1);
+        break;
+      case 'one-weeks-ago':
+        startDate = new Date();
+        startDate.setDate(startDate.getDate() - 7);
+        break;
+        break;
+      case 'two-weeks-ago':
+        startDate = new Date();
+        startDate.setDate(startDate.getDate() - 14);
+        break;
+
+      default:
+        res.status(400).json({ error: 'Invalid timeframe' });
+    }
+
+    const orderCount = await prisma.order.count({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+    });
+    this.success(res, 'order Added', 'order has been added successfully', 201, {
+      orderCount,
+    });
   }
 }
