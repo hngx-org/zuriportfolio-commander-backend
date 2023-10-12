@@ -550,7 +550,8 @@
           }
         }
       }
-    },"/api/product/categories": {
+    },
+    "/api/product/categories": {
     "get": {
       "summary": "Retrieve Product Categories",
       "description": "Get a list of all product categories along with their subcategories.",
@@ -865,17 +866,61 @@
         ]
       }
     } 
-  },
-  "/sales/reports": {
+    },
+    "/sales/reports": {
+        "get": {
+          "tags": ["Sales"],
+          "summary": "Retrieve Sales Reports",
+          "description": "Get sales reports based on timeframes.",
+          "parameters": [
+            {
+              "name": "timeframe",
+              "in": "query",
+              "description": "Comma-separated list of timeframes (e.g., 12m,3m,1yr,7d,24hr)",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SalesReport"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          },
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ]
+        }
+    },
+    "/orders/search/{name}": {
       "get": {
-        "tags": ["Sales"],
-        "summary": "Retrieve Sales Reports",
-        "description": "Get sales reports based on timeframes.",
+        "tags": ["Orders"],
+        "summary": "Search Order By Product Name",
+        "description": "",
         "parameters": [
           {
-            "name": "timeframe",
-            "in": "query",
-            "description": "Comma-separated list of timeframes (e.g., 12m,3m,1yr,7d,24hr)",
+            "name": "name",
+            "in": "path",
+            "description": "Product name",
             "required": true,
             "schema": {
               "type": "string"
@@ -884,23 +929,60 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "successful operation",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SalesReport"
-                }
+                  "$ref": "#/components/schemas/searchOrder"
+                },
+                "example": [
+                  {
+                    "order_id": "1122",
+                    "order_price": 12.22,
+                    "createdAt": "2023-10-11T18:00:52.000Z",
+                    "merchant": {
+                      "revenue": [
+                        {
+                          "amount": 3000.50
+                        }
+                      ],
+                      "customer_orders": [
+                        {
+                          "sales_report": [
+                            {
+                              "sales": "complete"
+                            }
+                          ]
+                        }
+                      ],
+                      "customer": [
+                        {
+                          "username": "Customer1"
+                        }
+                      ],
+                      "product": {
+                        "price": 12.34,
+                        "name": "Longchair",
+                        "categories": [
+                          {
+                            "name": "Software"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
-          "400": {
-            "description": "Bad request"
-          },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized. Please provide an authenticated user."
+          },
+          "403": {
+            "description": "Forbidden. Token is invalid or action is not permitted for provided user."
           },
           "500": {
-            "description": "Internal server error"
+            "description": "Internal server error."
           }
         },
         "security": [
@@ -911,169 +993,279 @@
       }
     }
   },
-  "components": {
-    "schemas": {
-      "AddProduct": {
-        "type": "object",
-        "properties": {
-          "image": {
-            "type": "string",
-            "format": "binary"
+    "components": {
+      "schemas": {
+        "AddProduct": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "string",
+              "format": "binary"
+            },
+            "userId": {
+              "type": "string"
+            },
+            "shopId": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "quantity": {
+              "type": "integer"
+            },
+            "categoryId": {
+              "type": "integer"
+            },
+            "price": {
+              "type": "number"
+            },
+            "discountPrice": {
+              "type": "number"
+            },
+            "tax": {
+              "type": "number"
+            },
+            "currency": {
+              "type": "string"
+            }
           },
-          "userId": {
-            "type": "string"
-          },
-          "shopId": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "quantity": {
-            "type": "integer"
-          },
-          "categoryId": {
-            "type": "integer"
-          },
-          "price": {
-            "type": "number"
-          },
-          "discountPrice": {
-            "type": "number"
-          },
-          "tax": {
-            "type": "number"
-          },
-          "currency": {
-            "type": "string"
+          "required": [
+            "image",
+            "userId",
+            "shopId",
+            "name",
+            "description",
+            "quantity",
+            "categoryId",
+            "price",
+            "discountPrice",
+            "tax",
+            "currency"
+          ],
+          "example": {
+            "userId": "10372883-4ae7-4299-9759-706b3646e7ac",
+            "shopId": "d001d16b-9b1b-4b69-b037-2344325466ea",
+            "categoryId": 1,
+            "name": "HNGX polo",
+            "description": "Red",
+            "quantity": 4,
+            "price": 500,
+            "discount_price": 455,
+            "tax": 2.2,
+            "currency": "USD"
           }
         },
-        "required": [
-          "image",
-          "userId",
-          "shopId",
-          "name",
-          "description",
-          "quantity",
-          "categoryId",
-          "price",
-          "discountPrice",
-          "tax",
-          "currency"
-        ],
-        "example": {
-          "userId": "10372883-4ae7-4299-9759-706b3646e7ac",
-          "shopId": "d001d16b-9b1b-4b69-b037-2344325466ea",
-          "categoryId": 1,
-          "name": "HNGX polo",
-          "description": "Red",
-          "quantity": 4,
-          "price": 500,
-          "discount_price": 455,
-          "tax": 2.2,
-          "currency": "USD"
-        }
-      },
 
-      "GetProduct": {
-        "type": "object",
-        "properties": {}
-      },
+        "GetProduct": {
+          "type": "object",
+          "properties": {}
+        },
 
-      "CreateCategory": {
-        "type": "object",
-        "properties": {
-          "parent_id": {
-            "type": ["integer", "null", "undefined", ""]
+        "CreateCategory": {
+          "type": "object",
+          "properties": {
+            "parent_id": {
+              "type": ["integer", "null", "undefined", ""]
+            },
+            "name": {
+              "type": "string"
+            }
           },
-          "name": {
-            "type": "string"
+          "required": ["name"]
+        },
+        "ProductCategory": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "user": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            }
           }
         },
-        "required": ["name"]
-      },
-      "ProductCategory": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "user": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "ProductSubCategory": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "parentCategory": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "CategoryResponse": {
-        "type": "object",
-        "properties": {
-          "parentCategory": {
-            "$ref": "#/components/schemas/ProductCategory"
-          },
-          "subCategory": {
-            "$ref": "#/components/schemas/ProductSubCategory"
-          },
-          "name": {
-            "$ref": "#/components/schemas/CreateCategory/properties/name"
-          }
-        }
-      },
-      "SalesReport": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "user_id": {
-            "type": "string"
-          },
-          "sales": {
-            "type": "integer"
-          },
-          "order_id": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
+        "ProductSubCategory": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "parentCategory": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            }
           }
         },
-        "required": ["id", "user_id", "sales", "order_id", "createdAt"]
-      }
-    },
-    "securitySchemes": {
-      "BearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+        "CategoryResponse": {
+          "type": "object",
+          "properties": {
+            "parentCategory": {
+              "$ref": "#/components/schemas/ProductCategory"
+            },
+            "subCategory": {
+              "$ref": "#/components/schemas/ProductSubCategory"
+            },
+            "name": {
+              "$ref": "#/components/schemas/CreateCategory/properties/name"
+            }
+          }
+        },
+        "SalesReport": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "user_id": {
+              "type": "string"
+            },
+            "sales": {
+              "type": "integer"
+            },
+            "order_id": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": ["id", "user_id", "sales", "order_id", "createdAt"]
+        },
+        "searchOrder": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "order_id": {
+              "type": "string"
+            },
+            "product_id": {
+              "type": "string"
+            },
+            "merchant_id": {
+              "type": "string"
+            },
+            "customer_id": {
+              "type": "string"
+            },
+            "order_price": {
+              "type": "number",
+              "format": "float"
+            },
+            "order_VAT": {
+              "type": "number",
+              "format": "float"
+            },
+            "order_discount": {
+              "type": "number",
+              "format": "float"
+            },
+            "promo_id": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "productId": {
+              "type": "string"
+            },
+            "product": {
+              "$ref": "#/components/schemas/SearchProductData"
+            }
+          },"required": ["id", "order_id", "product_id", "order_price", "createdAt", "updatedAt", "productId", "product"]
+        },
+        "SearchProductData": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "user_id": {
+              "type": "string"
+            },
+            "shop_id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "quantity": {
+              "type": "integer"
+            },
+            "price": {
+              "type": "number",
+              "format": "float"
+            },
+            "discount_price": {
+              "type": "number",
+              "format": "float"
+            },
+            "tax": {
+              "type": "number",
+              "format": "float"
+            },
+            "admin_status": {
+              "type": "string"
+            },
+            "is_published": {
+              "type": "boolean"
+            },
+            "is_deleted": {
+              "type": "string"
+            },
+            "currency": {
+            "name": {
+              "type": "string"
+            },
+            "user": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": ["id", "user_id", "shop_id", "name", "price", "createdAt", "updatedAt"]
+        }
+        }
+      },
+      "securitySchemes": {
+        "BearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
+        }
       }
     }
   }
-}
