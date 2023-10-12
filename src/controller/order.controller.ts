@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
 import { PrismaClient } from '@prisma/client';
+import { TestUserId } from '../config/test';
 const validStatusValues = ['pending', 'complete', 'failed'];
 
 const prisma = new PrismaClient();
 
 export default class OrderController extends BaseController {
-
   constructor() {
     super();
   }
@@ -35,7 +35,7 @@ export default class OrderController extends BaseController {
       '--product/updated',
       'product updated successfully',
       200,
-      { data: order }, // Include the order data in the response
+      { data: order } // Include the order data in the response
     );
   }
 
@@ -89,6 +89,7 @@ export default class OrderController extends BaseController {
       },
     });
 
+
     const totalSales = orderItems.reduce((sum, item) => sum + item.order_price, 0);
     const averageSales = parseFloat((totalSales / orderItems.length).toFixed(2));
 
@@ -98,7 +99,7 @@ export default class OrderController extends BaseController {
   }
 
   async updateOrderStatus(req: Request, res: Response) {
-    const userId = (req as any).user['id'];
+    const userId = (req as any).user?.id ?? TestUserId;
     const orderId = req.params['order_id'];
     const newStatus = req.body.status;
 
@@ -120,7 +121,6 @@ export default class OrderController extends BaseController {
       return this.error(res, '--order/status', 'Invalid status value', 400);
     }
 
-
     // Find the order item that matches the merchant and order
     const orderItem = await prisma.order_item.findFirst({
       where: {
@@ -141,12 +141,6 @@ export default class OrderController extends BaseController {
       },
     });
 
-    this.success(
-      res,
-      '--order/status',
-      'Order status updated successfully',
-      200,
-      { data: updatedOrder }
-    );
+    this.success(res, '--order/status', 'Order status updated successfully', 200, { data: updatedOrder });
   }
 }
