@@ -26,7 +26,7 @@ export default class ProductRoute {
     this.router.post(
       `${this.path}/add`,
       upload.single('image'),
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.productController.addProduct.bind(this.productController))
     );
     this.router.post(
