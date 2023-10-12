@@ -246,6 +246,43 @@
         }
       }
     },
+    "/shop": {
+      "post": {
+        "summary": "Create a shop",
+        "tags": ["Shop"],
+        "requestBody": {
+          "description": "Shop data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "shop name",
+                    "required": true
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ]
+        },
+        "responses": {
+          "201": {
+            "description": "Shop created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
     "/auth/signup": {
       "post": {
         "tags": ["Authentication"],
