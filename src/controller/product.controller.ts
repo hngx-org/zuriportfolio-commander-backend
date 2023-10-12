@@ -45,7 +45,7 @@ export default class ProductController extends BaseController {
     // const userId = (req as any).user?.id;
     const file = req.file ?? null;
     const userId = 'd7955c27-4d61-4cd6-a6bb-e6402151d51f';
-    const payload: AddProductPayloadType = JSON.parse(req.body.json);
+    const payload: AddProductPayloadType = req.body;
     const { error, value } = productSchema.validate(payload);
 
     if (error || !file) {
@@ -125,7 +125,7 @@ export default class ProductController extends BaseController {
         '--product/invalid-fields',
         error?.message ?? 'Important product details is missing.',
         400,
-        null,
+        null
       );
     }
 
@@ -238,7 +238,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_delete/invalid-field',
         'product id is invalid, expected product_id in uuid format.',
-        400,
+        400
       );
     }
 
@@ -288,7 +288,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_category/category-exists',
         `Category with name '${lowercaseName}' already exists. Please choose a different name.`,
-        409,
+        409
       );
     }
 

@@ -132,6 +132,15 @@ export default class DiscountController extends BaseController {
     });
   }
 
+  async trackDiscount(req: Request, res: Response) {
+    const userId = (req as any).user?.id;
+    // const userId = 'dcb5b46a-9391-474c-9e69-fe37cfe821e9';
+    const validateSchema = createDiscountSchema.validate(req.body);
+    if (validateSchema.error) {
+      return this.error(res, '--discount/invalid-fields', validateSchema.error.message, 400);
+    }
+  }
+
   async getAllDiscount(req: Request, res: Response) {
     const userId = req.params.id; // get the user id from the request params
 
