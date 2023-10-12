@@ -25,6 +25,12 @@ enum Discount_type {
     Fixed
 }
 
+enum restricted {
+    no
+    temporary
+    permanent
+}
+
 enum Promo_type {
     Discount
 }
@@ -40,7 +46,7 @@ enum shop_status {
 }
 
 model user {
-    id                   String            @id @unique @default(uuid())
+    id                   String             @id @unique @default(uuid())
     username             String
     first_name           String
     last_name            String
@@ -48,22 +54,24 @@ model user {
     section_order        String?
     password             String?
     provider             String?
-    is_verified          Boolean           @default(false)
-    two_factor_auth      Boolean           @default(false)
+    is_verified          Boolean            @default(false)
+    two_factor_auth      Boolean            @default(false)
     location             String?
     country              String?
     profile_pic          String?
     refresh_token        String
-    createdAt            DateTime          @default(now())
-    order_items          order_item[]      @relation(name: "merchant_orders")
-    customer_orders      order[]           @relation(name: "customer_orders")
-    customer_order_items order_item[]      @relation(name: "customer_orders")
+    createdAt            DateTime           @default(now())
+    order_items          order_item[]       @relation(name: "merchant_orders")
+    customer_orders      order[]            @relation(name: "customer_orders")
+    customer_order_items order_item[]       @relation(name: "customer_orders")
     revenue              revenue[]
     promotion            promotion[]
     track_promotion      track_promotion[]
     shop                 shop[]
     promo_product        promo_product[]
     activities           activity[]
+    categories           product_category[]
+    products             product[]
 }
 
 model order {
@@ -120,14 +128,15 @@ model product {
     updatedAt      DateTime       @default(now())
 
     image           product_image[]
-    promotion       promotion[]
     track_promotion track_promotion[]
     promo_product   promo_product[]
 
     shop             shop             @relation(fields: [shop_id], references: [id], onDelete: Cascade)
     product_category product_category @relation(fields: [category_id], references: [id], onDelete: NoAction)
+    user             user             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
     //   rating
-    order_item       order_item[]
+    order_item order_item[]
 }
 
 model product_image {
@@ -143,6 +152,8 @@ model product_category {
     createdAt      DateTime               @default(now())
     sub_categories product_sub_category[]
     product        product[]
+    user_id        String
+    user           user                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model product_sub_category {
@@ -161,8 +172,9 @@ model promo_product {
     user_id    String
     createdAt  DateTime @default(now())
 
-    user    user    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    product product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+    user    user      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    product product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
+    promo   promotion @relation(fields: [promo_id], references: [id], onDelete: Cascade)
 }
 
 model promotion {
@@ -173,16 +185,15 @@ model promotion {
     quantity               Int
     amount                 Float
     maximum_discount_price Float?
-    product_id             String
     valid_from             DateTime
     valid_to               DateTime
     createdAt              DateTime      @default(now())
     updatedAt              DateTime      @default(now())
 
     user          user              @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    product       product?          @relation(fields: [product_id], references: [id], onDelete: Cascade)
     tracked_promo track_promotion[]
     order_items   order_item[]
+    promo_product promo_product[]
 }
 
 model revenue {
@@ -212,7 +223,7 @@ model shop {
     merchant_id         String
     name                String
     policy_confirmation Boolean?
-    restricted          String       @default("no")
+    restricted          restricted   @default(no)
     admin_status        ADMIN_STATUS @default(pending)
     is_deleted          shop_status  @default(active)
     reviewed            Boolean?
