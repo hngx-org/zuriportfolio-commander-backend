@@ -41,7 +41,7 @@ export default class ProductController extends BaseController {
     this.success(res, '--publish/success', 'Product published successfully', 201);
   }
 
-  // async addProduct(req: Request, res: Response) {
+  async addProduct(req: Request, res: Response) {
   //   const file = req.file ?? null;
 
   //   const payload: AddProductPayloadType = req.body;
@@ -106,7 +106,7 @@ export default class ProductController extends BaseController {
   //     ...product,
   //     // image: product.image,
   //   });
-  // }
+  }
 
   async addProductDraft(req: Request, res: Response) {
     const file = req.file ?? null;
