@@ -97,7 +97,7 @@ export default class ProductController extends BaseController {
         quantity: parseInt(quantity),
         price: parseFloat(price),
         tax: parseFloat(tax),
-        category_id: parseInt(categoryId),
+        //category_id: parseInt(categoryId),
         image: {
           create: {
             url: image.url ?? placeHolderImg,

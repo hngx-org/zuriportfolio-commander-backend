@@ -71,7 +71,7 @@ model user {
     promo_product        promo_product[]
     activities           activity[]
     categories           product_category[]
-    products             product[]
+    products             product[] 
 }
 
 model order {
