@@ -116,7 +116,6 @@ model product {
     updatedAt      DateTime       @default(now())
 
     image           product_image[]
-    // categories      product_category[]
     promotion       promotion[]
     track_promotion track_promotion[]
     promo_product   promo_product[]
