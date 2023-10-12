@@ -68,7 +68,15 @@ export default class DiscountController extends BaseController {
     if (product_ids.length > 0) {
       for (let i = 0; i < product_ids.length; i++) {
         const pId = product_ids[i];
-        const exist = await prisma.product.findFirst({ where: { id: pId, user_id: userId } });
+        const exist = await prisma.product.findFirst({
+          where: {
+            AND: {
+              id: pId,
+              user_id: userId,
+              is_deleted: 'active',
+            },
+          },
+        });
         if (exist === null) {
           notFoundProd.push(pId);
         }
