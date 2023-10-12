@@ -8,6 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
 import { isUUID } from '../helper';
 
+
+
 export default class ProductController extends BaseController {
   constructor() {
     super();
@@ -266,4 +268,6 @@ export default class ProductController extends BaseController {
 
     return this.success(res, '--product_delete/success', 'Product has been deleted successfully', 200);
   }
+  
+  
 }

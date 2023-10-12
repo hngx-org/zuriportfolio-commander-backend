@@ -60,6 +60,11 @@
   resolved "https://registry.npmjs.org/@eivifj/dot/-/dot-1.0.3.tgz"
   integrity sha512-UE2x9N7XD/1qqtXA+4CZPD1RQAlM0lEdXdy09CJ/wNR+mgGKqwLRH4BGGfOAWwwz06pIT3c2tC4gvXbntGAeMA==
 
+"@faker-js/faker@^8.1.0":
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-8.1.0.tgz#e14896f1c57af2495e341dc4c7bf04125c8aeafd"
+  integrity sha512-38DT60rumHfBYynif3lmtxMqMqmsOQIxQgEuPZxCk2yUYN0eqWpTACgxi0VpidvsJB8CRxCpvP7B3anK85FjtQ==
+
 "@hapi/hoek@^9.0.0":
   version "9.3.0"
   resolved "https://registry.npmjs.org/@hapi/hoek/-/hoek-9.3.0.tgz"
@@ -795,6 +800,11 @@ express@^4.18.2:
     type-is "~1.6.18"
     utils-merge "1.0.1"
     vary "~1.1.2"
+
+faker@^6.6.6:
+  version "6.6.6"
+  resolved "https://registry.yarnpkg.com/faker/-/faker-6.6.6.tgz#e9529da0109dca4c7c5dbfeaadbd9234af943033"
+  integrity sha512-9tCqYEDHI5RYFQigXFwF1hnCwcWCOJl/hmll0lr5D2Ljjb0o4wphb69wikeJDz5qCEzXCoPvG6ss5SDP6IfOdg==
 
 fecha@^4.2.0:
   version "4.2.3"

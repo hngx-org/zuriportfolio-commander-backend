@@ -45,6 +45,50 @@
         ]
       }
     },
+    "/orders/search/{name}": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Search Order By Product Name",
+        "description": "",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Product name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/searchOrder"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Please provide an authentication token."
+          },
+          "403": {
+            "description": "Forbidden. Token is invalid or action is not permitted."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/product/{product_id}": {
       "delete": {
         "tags": ["Product"],
@@ -402,6 +446,111 @@
       "GetProduct": {
         "type": "object",
         "properties": {}
+      },
+      "searchOrder": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "product_id": {
+            "type": "string"
+          },
+          "merchant_id": {
+            "type": "string"
+          },
+          "customer_id": {
+            "type": "string"
+          },
+          "order_price": {
+            "type": "number",
+            "format": "float"
+          },
+          "order_VAT": {
+            "type": "number",
+            "format": "float"
+          },
+          "order_discount": {
+            "type": "number",
+            "format": "float"
+          },
+          "promo_id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "productId": {
+            "type": "string"
+          },
+          "product": {
+            "$ref": "#/components/schemas/SearchProductData"
+          }
+        },"required": ["id", "order_id", "product_id", "order_price", "createdAt", "updatedAt", "productId", "product"]
+      },
+      "SearchProductData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "shop_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "price": {
+            "type": "number",
+            "format": "float"
+          },
+          "discount_price": {
+            "type": "number",
+            "format": "float"
+          },
+          "tax": {
+            "type": "number",
+            "format": "float"
+          },
+          "admin_status": {
+            "type": "string"
+          },
+          "is_published": {
+            "type": "boolean"
+          },
+          "is_deleted": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "user_id", "shop_id", "name", "price", "createdAt", "updatedAt"]
       }
     },
     "securitySchemes": {
