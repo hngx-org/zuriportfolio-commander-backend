@@ -41,4 +41,18 @@ export default class ShopController extends BaseController {
 
     this.success(res, '--shop/created', 'shop created', 200, created);
   }
+
+  async getAllShops(res: Response): Promise<void> {
+    try {
+      const shops = await prisma.shop.findMany();
+      if (shops.length > 0) {
+        this.success(res, 'All Shops Shown', 'Shops have been listed', 200, shops);
+      } else {
+        this.error(res, '--shops-notfound', 'Shops not found', 404);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      this.error(res, '--internal-error', 'Internal server error', 500);
+    }
+  }
 }
