@@ -104,9 +104,6 @@ model order_item {
     merchant user      @relation(name: "merchant_orders", fields: [merchant_id], references: [id])
     customer user      @relation(name: "customer_orders", fields: [customer_id], references: [id])
     promo    promotion @relation(fields: [promo_id], references: [id])
-
-    product   product? @relation(fields: [productId], references: [id])
-    productId String?
 }
 
 model product {
@@ -134,8 +131,6 @@ model product {
     shop             shop             @relation(fields: [shop_id], references: [id], onDelete: Cascade)
     product_category product_category @relation(fields: [category_id], references: [id], onDelete: NoAction)
     user             user             @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    order_item       order_item[]
-    //   rating
 }
 
 model product_image {
