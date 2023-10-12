@@ -354,12 +354,12 @@
       "get": {
         "tags": ["Order"],
         "summary": "Gets all order count withing a timeframe",
-        "description": "Gets all order count withing a timeframe: today, yesterday,one-week-ago and two-weeks-ago",
+        "description": "Gets all order count withing a timeframe",
         "parameters": [
           {
             "name": "timeframe",
             "in": "query",
-            "description": " counts of order made within a timeframe",
+            "description": " values: today, yesterday,one-week-ago and two-weeks-ago ",
             "required": "true",
             "type": "string"
           }
