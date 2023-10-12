@@ -192,7 +192,7 @@ model promotion {
 model revenue {
     id        Int      @id @unique @default(autoincrement())
     user_id   String
-    app_id    String
+    // app_id    String
     amount    Float
     createdAt DateTime @default(now())
 

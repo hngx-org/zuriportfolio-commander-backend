@@ -184,6 +184,60 @@
         ]
       }
     },
+    "/product/categories": {
+      "post": {
+        "tags": ["Product"],
+        "summary": "Create a product category",
+        "description": "Create a parent or subcategory.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategory"
+              },
+              "example": {
+                "name": "Software Enginering",
+                "parent_id": null
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Category created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                },
+                "example": {
+                  "parentCategory": {
+                    "$ref": "#/components/schemas/ProductCategory"
+                  },
+                  "subCategory": {
+                    "$ref": "#/components/schemas/ProductSubCategory"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/discount": {
       "post": {
         "summary": "Create a discount",
@@ -256,6 +310,43 @@
         "responses": {
           "201": {
             "description": "Discount created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/shop": {
+      "post": {
+        "summary": "Create a shop",
+        "tags": ["Shop"],
+        "requestBody": {
+          "description": "Shop data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "shop name",
+                    "required": true
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ]
+        },
+        "responses": {
+          "201": {
+            "description": "Shop created successfully"
           },
           "400": {
             "description": "Bad request"
@@ -972,9 +1063,73 @@
           "currency": "USD"
         }
       },
+
       "GetProduct": {
         "type": "object",
         "properties": {}
+      },
+
+      "CreateCategory": {
+        "type": "object",
+        "properties": {
+          "parent_id": {
+            "type": ["integer", "null", "undefined", ""]
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["name"]
+      },
+      "ProductCategory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ProductSubCategory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentCategory": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CategoryResponse": {
+        "type": "object",
+        "properties": {
+          "parentCategory": {
+            "$ref": "#/components/schemas/ProductCategory"
+          },
+          "subCategory": {
+            "$ref": "#/components/schemas/ProductSubCategory"
+          },
+          "name": {
+            "$ref": "#/components/schemas/CreateCategory/properties/name"
+          }
+        }
       }
     },
     "securitySchemes": {

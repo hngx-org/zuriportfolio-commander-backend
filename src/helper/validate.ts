@@ -29,7 +29,11 @@ export const saveProductDraftSchema = Joi.object({
 
 export const createShopSchema = Joi.object({
   name: Joi.string().required(),
-  merchant_id: Joi.string().required(),
+});
+
+export const createCategorySchema = Joi.object({
+  name: Joi.string().required(),
+  parent_id: Joi.number().integer().allow(null).optional(),
 });
 
 export const addProductCategorySchema = Joi.object({
