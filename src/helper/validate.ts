@@ -32,3 +32,8 @@ export const createShopSchema = Joi.object({
   merchant_id: Joi.string().required(),
 });
 
+export const createCategorySchema = Joi.object({
+  name: Joi.string().required(),
+  parent_id: Joi.number().integer().allow(null).optional(),
+  product_id: Joi.string().required()
+});
