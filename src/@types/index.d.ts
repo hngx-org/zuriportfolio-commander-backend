@@ -26,11 +26,11 @@ export interface AddPromotionPayloadType {
   quantity: number;
   amount: number;
   product_id: string;
-  min_cart_price: number
+  min_cart_price: number;
 }
-// export interface AuthenticatedMiddleware {
-//   status: number;
-//   authorized: boolean;
-//   message: string;
-//   user: { id: string };
-// }
+export interface AuthenticatedMiddleware {
+  status: number;
+  authorized: boolean;
+  message: string;
+  user: { id: string };
+}

@@ -28,7 +28,7 @@ export default class RevenueController extends BaseController {
 
     const existingRevenue = await prisma.revenue.findFirst({
       where: {
-        // user_id: +order.customerId,
+        // user_id: order.merchantId,
       },
     });
 
@@ -38,7 +38,7 @@ export default class RevenueController extends BaseController {
           id: existingRevenue.id,
         },
         data: {
-          //   amount: existingRevenue.amount + revenueAmount,
+          // amount: existingRevenue.amount + revenueAmount,
         },
       });
     }
