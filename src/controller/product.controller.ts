@@ -41,72 +41,72 @@ export default class ProductController extends BaseController {
     this.success(res, '--publish/success', 'Product published successfully', 201);
   }
 
-  async addProduct(req: Request, res: Response) {
-    const file = req.file ?? null;
+  // async addProduct(req: Request, res: Response) {
+  //   const file = req.file ?? null;
 
-    const payload: AddProductPayloadType = req.body;
+  //   const payload: AddProductPayloadType = req.body;
 
-    const { error, value } = productSchema.validate(payload);
+  //   const { error, value } = productSchema.validate(payload);
 
-    if (error || !file) {
-      return this.error(res, '--product/invalid-fields', error?.message ?? 'product image is missing.', 400, null);
-    }
+  //   if (error || !file) {
+  //     return this.error(res, '--product/invalid-fields', error?.message ?? 'product image is missing.', 400, null);
+  //   }
 
-    // upload image to cloudinary
-    //TODO get userId from Auth
-    const { name, currency, userId, description, discountPrice, price, quantity, tax, categoryId, shopId } = payload;
-    const { isError, errorMsg, image } = await uploadSingleImage(file);
+  //   // upload image to cloudinary
+  //   //TODO get userId from Auth
+  //   const { name, currency, userId, description, discountPrice, price, quantity, tax, categoryId, shopId } = payload;
+  //   const { isError, errorMsg, image } = await uploadSingleImage(file);
 
-    if (isError) {
-      logger.error(`Error uploading image: ${errorMsg}`);
-    }
+  //   if (isError) {
+  //     logger.error(`Error uploading image: ${errorMsg}`);
+  //   }
 
-    // check if user has a shop
-    const shopExists = await prisma.shop.findFirst({
-      where: {
-        id: shopId,
-      },
-    });
+  //   // check if user has a shop
+  //   const shopExists = await prisma.shop.findFirst({
+  //     where: {
+  //       id: shopId,
+  //     },
+  //   });
 
-    if (!shopExists) {
-      return this.error(res, '--product/shop-notfound', 'Failed to crete product, shop not found.', 404);
-    }
+  //   if (!shopExists) {
+  //     return this.error(res, '--product/shop-notfound', 'Failed to crete product, shop not found.', 404);
+  //   }
 
-    // check if user exists
+  //   // check if user exists
 
-    const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
-    //const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
-    const product = await prisma.product.create({
-      data: {
-        id: uuidv4(),
-        name,
-        shop_id: shopId,
-        user_id: userId,
-        currency,
-        description,
-        discount_price: parseFloat(discountPrice),
-        quantity: parseInt(quantity),
-        price: parseFloat(price),
-        tax: parseFloat(tax),
-        category_id: parseInt(categoryId),
-        discount_price: discountPrice ?? 0,
-        quantity,
-        price,
-        tax: tax ?? 0,
-        image: {
-          create: {
-            url: image.url ?? placeHolderImg,
-          },
-        },
-      },
-      include: { image: true },
-    });
+  //   const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
+  //   //const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
+  //   const product = await prisma.product.create({
+  //     data: {
+  //       id: uuidv4(),
+  //       name,
+  //       shop_id: shopId,
+  //       user_id: userId,
+  //       currency,
+  //       description,
+  //       discount_price: parseFloat(discountPrice),
+  //       quantity: parseInt(quantity),
+  //       price: parseFloat(price),
+  //       tax: parseFloat(tax),
+  //       category_id: parseInt(categoryId),
+  //       discount_price: discountPrice ?? 0,
+  //       quantity,
+  //       price,
+  //       tax: tax ?? 0,
+  //       image: {
+  //         create: {
+  //           url: image.url ?? placeHolderImg,
+  //         },
+  //       },
+  //     },
+  //     include: { image: true },
+  //   });
 
-    this.success(res, 'Product Added', 'Product has been added successfully', 201, {
-      ...product,
-      // image: product.image,
-    });
-  }
+  //   this.success(res, 'Product Added', 'Product has been added successfully', 201, {
+  //     ...product,
+  //     // image: product.image,
+  //   });
+  // }
 
   async addProductDraft(req: Request, res: Response) {
     const file = req.file ?? null;
