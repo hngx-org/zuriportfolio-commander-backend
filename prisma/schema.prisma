@@ -102,29 +102,30 @@ model order_item {
 }
 
 model product {
-    id                  String         @id @unique
-    user_id             String
-    shop_id             String
-    product_category_id Int?
-    name                String
-    description         String
-    quantity            Int
-    price               Float
-    discount_price      Float
-    tax                 Float
-    admin_status        ADMIN_STATUS   @default(pending)
-    is_published        Boolean        @default(false)
-    is_deleted          product_status @default(active)
-    currency            String
-    createdAt           DateTime       @default(now())
-    updatedAt           DateTime       @default(now())
+    id             String         @id @unique
+    user_id        String
+    shop_id        String
+    category_id    Int
+    name           String
+    description    String
+    quantity       Int
+    price          Float
+    discount_price Float
+    tax            Float
+    admin_status   ADMIN_STATUS   @default(pending)
+    is_published   Boolean        @default(false)
+    is_deleted     product_status @default(active)
+    currency       String
+    createdAt      DateTime       @default(now())
+    updatedAt      DateTime       @default(now())
 
-    image           product_image[]
-    promotion       promotion[]
-    track_promotion track_promotion[]
-    promo_product   promo_product[]
-    shop            shop              @relation(fields: [shop_id], references: [id], onDelete: Cascade)
-    order_item      order_item[]
+    image            product_image[]
+    promotion        promotion[]
+    track_promotion  track_promotion[]
+    promo_product    promo_product[]
+    shop             shop              @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+    order_item       order_item[]
+    product_category product_category  @relation(fields: [category_id], references: [id], onDelete: NoAction)
     //   rating
 }
 
@@ -138,9 +139,9 @@ model product_image {
 model product_category {
     id             Int                    @id @default(autoincrement())
     name           String
-    product_id     String
     createdAt      DateTime               @default(now())
     sub_categories product_sub_category[]
+    product        product[]
 }
 
 model product_sub_category {
