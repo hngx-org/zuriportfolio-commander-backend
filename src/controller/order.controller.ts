@@ -58,7 +58,7 @@ export default class OrderController extends BaseController {
     this.success(res, '--order/all', 'orders fetched successfully', 200, orders);
   }
 
-  async getOdersCountByTimeframe(req: Request, res: Response) {
+  async getOrdersCountByTimeframe(req: Request, res: Response) {
     const { timeframe } = req.query;
 
     let startDate: Date;
@@ -89,7 +89,7 @@ export default class OrderController extends BaseController {
         break;
 
       default:
-        res.status(400).json({ error: 'Invalid timeframe' });
+        this.success(res, 'error', 'invalid timeframe', 400);
     }
     console.log(startDate, endDate);
     const orderCount = await prisma.order.count({
