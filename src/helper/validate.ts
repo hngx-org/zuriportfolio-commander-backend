@@ -29,7 +29,6 @@ export const saveProductDraftSchema = Joi.object({
 
 export const createShopSchema = Joi.object({
   name: Joi.string().required(),
-  merchant_id: Joi.string().required(),
 });
 
 export const createCategorySchema = Joi.object({
@@ -50,4 +49,9 @@ export const createDiscountSchema = Joi.object({
     .required(),
   valid_from: Joi.date().required(),
   valid_to: Joi.date().required(),
+});
+
+export const trackPromotionSchema = Joi.object({
+  promo_id: Joi.string().required(),
+  sales: Joi.string().required(),
 });
