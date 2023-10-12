@@ -24,5 +24,11 @@ export default class ShopRoute {
       `${this.path}/delete/:id`,
       useCatchErrors(this.shopController.deleteShop.bind(this.shopController))
     );
+  
+    // shop traffic
+    this.router.post(
+      `${this.path}/store-traffic`,
+      useCatchErrors(this.shopController.shopTraffic.bind(this.shopController))
+    );
   }
 }
