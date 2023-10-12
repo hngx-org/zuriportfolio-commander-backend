@@ -229,6 +229,38 @@
         }
       }
     },
+    "/shop/store-traffic": {
+      "post": {
+        "summary": "Used to track user visit to a shop",
+        "tags": ["Shop"],
+        "requestBody": {
+          "description": "Shop data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "shop_id": {
+                    "type": "string",
+                    "description": "The shop id of the shop visited",
+                    "required": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Traffic added"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
     "/product/categories": {
       "get": {
         "summary": "Retrieve Product Categories",
