@@ -133,10 +133,10 @@ model product {
 }
 
 model product_image {
-    id        Int     @id @default(autoincrement())
-    productId String
-    url       String
-    product   product @relation(fields: [productId], references: [id], onDelete: Cascade)
+    id         Int     @id @default(autoincrement())
+    product_id String
+    url        String
+    product    product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
 model product_category {
@@ -191,7 +191,7 @@ model promotion {
 model revenue {
     id        Int      @id @unique @default(autoincrement())
     user_id   String
-    app_id    String
+    // app_id    String
     amount    Float
     createdAt DateTime @default(now())
 
