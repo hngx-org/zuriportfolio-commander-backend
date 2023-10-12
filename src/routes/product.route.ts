@@ -47,6 +47,12 @@ export default class ProductRoute {
       isAuthenticated,
       useCatchErrors(this.productController.deleteProduct.bind(this.productController)),
     );
+    this.router.patch(
+      `${this.path}/:productId`,
+      upload.single('image'),
+      isAuthenticated,
+      useCatchErrors(this.productController.updateProduct.bind(this.productController))
+    );
     this.router.get(
       `${this.path}/categories`,
       useCatchErrors(this.productController.getAllCategories.bind(this.productController))

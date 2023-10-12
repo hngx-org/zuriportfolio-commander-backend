@@ -264,4 +264,59 @@ export default class ProductController extends BaseController {
       return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
     }
   }
+
+  async updateProduct(req: Request, res: Response) {
+    const file = req.file ?? null;
+    const productId = req.params.productId;
+    const payload: AddProductPayloadType = JSON.parse(req.body.newData);
+
+    // Checks if the product exists before attempting update
+    const product = await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
+    // Returns error if product doesn't exist
+    if (!product) {
+      return this.error(res, "--product/updateproduct", "Product not found", 404);
+    }
+
+    // Validates the new product details
+    const { error } = productSchema.validate(payload);
+    if (error || typeof productId === 'undefined') {
+      return this.error(
+        res,
+        '--product/invalid-fields',
+        error?.message ?? 'Important product details is missing.',
+        400,
+        null
+      );
+    }
+
+    // upload image to cloudinary
+    const { isError, errorMsg, image } = await uploadSingleImage(file);
+    if (isError) {
+      logger.error(`Error uploading image: ${errorMsg}`);
+    }
+
+    const placeHolderImg = image ?? 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
+
+    // If the product exists, proceed with deletion
+    const updatedProduct = await prisma.product.update({
+      where: {
+        id: productId,
+      },
+      data: {
+        ...payload,
+        image: {
+          create: {
+            url: placeHolderImg,
+          },
+        },
+      }
+    });
+
+    return this.success(res, 'Product Updated', 'Product has been updated successfully', 201, updatedProduct);
+  }
 }
