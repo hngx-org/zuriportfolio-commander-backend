@@ -57,5 +57,10 @@ export default class ProductRoute {
       isAuthenticated,
       useCatchErrors(this.productController.createCategory.bind(this.productController)),
     );
+    this.router.post(
+      `${this.path}/category`,
+      isAuthenticated,
+      useCatchErrors(this.productController.createCategory.bind(this.productController))
+    );
   }
 }

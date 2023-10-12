@@ -50,3 +50,13 @@ export const createDiscountSchema = Joi.object({
   valid_from: Joi.date().required(),
   valid_to: Joi.date().required(),
 });
+
+export const trackPromotionSchema = Joi.object({
+  promo_id: Joi.string().required(),
+  sales: Joi.string().required(),
+});
+
+export const createCategorySchema = Joi.object({
+  name: Joi.string().required(),
+  parent_id: Joi.number().integer().allow(null).optional(),
+});
