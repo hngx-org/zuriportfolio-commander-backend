@@ -200,40 +200,20 @@ export default class ProductController extends BaseController {
 
   // Get all products for a user
   async getAllProducts(req: Request, res: Response) {
-    try {
-      const userId = (req as any).user?.id;
+    const userId = (req as any).user?.id;
 
-      if (!userId) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'User ID is missing in the request.',
-        });
-      }
+    const products = await prisma.product.findMany({
+      where: {
+        user_id: userId,
+      },
+    });
 
-      const products = await prisma.product.findMany({
-        where: {
-          user_id: userId,
-        },
-      });
-
-      if (products.length === 0) {
-        return res.status(404).json({
-          status: 'error',
-          message: 'No products found for this user.',
-        });
-      }
-
-      return res.status(200).json({
-        status: 'success',
-        message: 'All Products Shown',
-        data: products,
-      });
-    } catch (error) {
-      console.error('Error in getAllProducts:', error);
-      return res.status(500).json({
-        status: 'error',
-        message: 'Internal server error',
-      });
+    if (products.length === 0) {
+      return this.success(res, 'No Products Found', 'No products found for the user.', 200, []);
+    } else if (products.length > 0) {
+      return this.success(res, 'All Products Shown', 'Products have been listed', 200, products);
+    } else {
+      return this.error(res, '--server/internal-error', 'Internal server error', 500);
     }
   }
 
