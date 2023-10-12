@@ -13,11 +13,17 @@ export default class ShopRoute {
   }
 
   initializeRoutes() {
+    // create shop
     this.router.post(`${this.path}/create`, useCatchErrors(this.shopController.createShop.bind(this.shopController)));
+get-all-shops
     this.router.get(
       `${this.path}s`,
       isAuthenticated,
       useCatchErrors(this.shopController.getAllShops.bind(this.shopController))
     );
+
+    // delete shop
+    this.router.delete(`${this.path}/delete/:id`, useCatchErrors(this.shopController.deleteShop.bind(this.shopController)));
+ dev
   }
 }

@@ -43,7 +43,8 @@ export default class ProductRoute {
       useCatchErrors(this.productController.getAllProducts.bind(this.productController)),
     );
     this.router.delete(
-      `${this.path}/:productId`,
+      `${this.path}/:product_id`,
+      isAuthenticated,
       useCatchErrors(this.productController.deleteProduct.bind(this.productController)),
     );
   }

@@ -42,6 +42,7 @@ export default class ShopController extends BaseController {
     this.success(res, '--shop/created', 'shop created', 200, created);
   }
 
+ get-all-shops
   async getAllShops(res: Response): Promise<void> {
     try {
       const shops = await prisma.shop.findMany();
@@ -54,5 +55,22 @@ export default class ShopController extends BaseController {
       console.error('Error:', error);
       this.error(res, '--internal-error', 'Internal server error', 500);
     }
+
+  async deleteShop(req: Request, res: Response) {
+    const { id } = req.params;
+    const shop = await prisma.shop.findUnique({
+      where: { id },
+    });
+
+    if (!shop) {
+      return this.error(res, '--shop/not-found', 'shop not found', 404);
+    }
+
+    await prisma.shop.delete({
+      where: { id },
+    });
+
+    this.success(res, '--shop/deleted', 'shop deleted', 200, null);
   }
 }
+
