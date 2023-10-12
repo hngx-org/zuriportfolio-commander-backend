@@ -67,3 +67,8 @@ export const createDiscountSchema = Joi.object({
   valid_from: Joi.date().required(),
   valid_to: Joi.date().required(),
 });
+
+export const trackPromotionSchema = Joi.object({
+  promo_id: Joi.string().required(),
+  sales: Joi.string().required(),
+});
