@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
 import { PrismaClient } from '@prisma/client';
+import { TestUserId } from '../config/test';
+const validStatusValues = ['pending', 'complete', 'failed'];
 
 const prisma = new PrismaClient();
 
@@ -34,7 +36,7 @@ export default class OrderController extends BaseController {
       '--product/updated',
       'product updated successfully',
       200,
-      { data: order }, // Include the order data in the response
+      { data: order } // Include the order data in the response
     );
   }
 

@@ -7,6 +7,7 @@ import { AddProductPayloadType } from '@types';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
 import { isUUID } from '../helper';
+import { TestUserId } from '../config/test';
 
 export default class ProductController extends BaseController {
   constructor() {
@@ -42,9 +43,8 @@ export default class ProductController extends BaseController {
   }
 
   async addProduct(req: Request, res: Response) {
-    // const userId = (req as any).user?.id;
+    const userId = (req as any).user?.id ?? TestUserId;
     const file = req.file ?? null;
-    const userId = 'd7955c27-4d61-4cd6-a6bb-e6402151d51f';
     const payload: AddProductPayloadType = req.body;
     const { error, value } = productSchema.validate(payload);
 
@@ -214,19 +214,40 @@ export default class ProductController extends BaseController {
   }
 
   async getAllProducts(req: Request, res: Response) {
-    const userId = (req as any).user?.id;
+    const userId = (req as any).user?.id ?? TestUserId;
 
     const products = await prisma.product.findMany({
       where: {
-        user_id: userId,
+        AND: {
+          user_id: userId,
+          is_deleted: 'active',
+        },
       },
+      include: { image: true },
     });
-    return this.success(res, 'All Products Shown', 'Products have been listed', 200, products);
+    const allProd = [];
+    if (products.length > 0) {
+      for (const p of products) {
+        const cat = await prisma.product_category.findFirst({
+          where: { id: p.category_id },
+          include: { sub_categories: true },
+        });
+        allProd.push({
+          name: p.name,
+          id: p.id,
+          category: {
+            ...cat,
+          },
+          image: p.image,
+        });
+      }
+    }
+    return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
   }
 
   async deleteProduct(req: Request, res: Response) {
     const productId = req.params['product_id'];
-    const userId = (req as any).user['id'];
+    const userId = (req as any).user?.id ?? TestUserId;
 
     if (typeof productId === 'undefined') {
       return this.error(res, '--product_delete/invalid-fields', 'Invalid field provided.', 400);
@@ -268,9 +289,7 @@ export default class ProductController extends BaseController {
   }
 
   async createCategory(req: Request, res: Response) {
-    const userId = (req as any).user['id'];
-    console.log(userId);
-    // const userId = "d7955c27-4d61-4cd6-a6bb-e6402151d51f"
+    const userId = (req as any).user?.id ?? TestUserId;
     const { error, value } = createCategorySchema.validate(req.body);
 
     if (error) {
@@ -328,7 +347,11 @@ export default class ProductController extends BaseController {
 
   async getAllCategories(req: Request | any, res: Response | any) {
     try {
+      const userId = (req as any).user?.id ?? TestUserId;
       const categories = await prisma.product_category.findMany({
+        where: {
+          user_id: userId,
+        },
         include: {
           sub_categories: true,
         },
