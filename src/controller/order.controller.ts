@@ -23,7 +23,7 @@ export default class OrderController extends BaseController {
     });
 
     if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+      this.error(res, '--order/single', 'Order not found', 404);
     }
 
     this.success(res, '--order/single', 'Order fetched successfully', 200, order);
