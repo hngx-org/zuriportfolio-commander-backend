@@ -45,6 +45,39 @@
         ]
       }
     },
+    "/product/add": {
+      "post": {
+        "tags": ["Product"],
+        "summary": "Create a new Product",
+        "description": "",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AddProduct"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddProduct"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/product/{product_id}": {
       "delete": {
         "tags": ["Product"],
@@ -691,14 +724,17 @@
 
   "components": {
     "schemas": {
-      "Product": {
+      "AddProduct": {
         "type": "object",
         "properties": {
-          "id": {
+          "image": {
             "type": "string",
-            "optional": true
+            "format": "binary"
           },
-          "shop_id": {
+          "userId": {
+            "type": "string"
+          },
+          "shopId": {
             "type": "string"
           },
           "name": {
@@ -710,30 +746,46 @@
           "quantity": {
             "type": "integer"
           },
-          "category": {
-            "type": "integer"
-          },
-          "image_id": {
+          "categoryId": {
             "type": "integer"
           },
           "price": {
             "type": "number"
           },
-          "discount_price": {
+          "discountPrice": {
             "type": "number"
           },
           "tax": {
             "type": "number"
           },
-          "admin_status": {
-            "type": "string"
-          },
-          "rating_id": {
-            "type": "integer"
-          },
           "currency": {
             "type": "string"
           }
+        },
+        "required": [
+          "image",
+          "userId",
+          "shopId",
+          "name",
+          "description",
+          "quantity",
+          "categoryId",
+          "price",
+          "discountPrice",
+          "tax",
+          "currency"
+        ],
+        "example": {
+          "userId": "10372883-4ae7-4299-9759-706b3646e7ac",
+          "shopId": "d001d16b-9b1b-4b69-b037-2344325466ea",
+          "categoryId": 1,
+          "name": "HNGX polo",
+          "description": "Red",
+          "quantity": 4,
+          "price": 500,
+          "discount_price": 455,
+          "tax": 2.2,
+          "currency": "USD"
         }
       },
       "GetProduct": {

@@ -101,9 +101,9 @@ model order_item {
 
 model product {
     id             String         @id @unique
-    user_id        String?
+    user_id        String
     shop_id        String
-    category_id    Int?
+    category_id    Int
     name           String
     description    String
     quantity       Int
@@ -121,7 +121,9 @@ model product {
     promotion       promotion[]
     track_promotion track_promotion[]
     promo_product   promo_product[]
-    shop            shop              @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+
+    shop             shop             @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+    product_category product_category @relation(fields: [category_id], references: [id], onDelete: NoAction)
     //   rating
 }
 
@@ -136,7 +138,6 @@ model product_category {
     id             Int                    @id @default(autoincrement())
     name           String
     product_id     String
-    user_id        String
     createdAt      DateTime               @default(now())
     sub_categories product_sub_category[]
     user           user                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
