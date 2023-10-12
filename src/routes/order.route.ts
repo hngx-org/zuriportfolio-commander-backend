@@ -22,7 +22,7 @@ export default class OrderRoute {
 
     this.router.get(
       `${this.path}/search/:name`,
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.OrderController.getOrderByProductName.bind(this.OrderController)),
     );
   }
