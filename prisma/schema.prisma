@@ -136,7 +136,6 @@ model product_category {
     name       String
     product_id String
     createdAt  DateTime @default(now())
-
     sub_categories product_sub_category[]
     product        product                @relation(fields: [product_id], references: [id])
 }

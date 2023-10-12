@@ -54,7 +54,7 @@ export default class ProductController extends BaseController {
 
     if (isError) {
       logger.error(`Error uploading image: ${errorMsg}`);
-      }
+    }
 
     // check if user has a shop
     const shopExists = await prisma.shop.findFirst({
@@ -245,5 +245,18 @@ export default class ProductController extends BaseController {
     });
 
     return this.success(res, 'Product Deleted', 'Product has been deleted successfully', 200, deletedProduct);
+  }
+
+  async getAllCategories(req: Request | any, res: Response | any) {
+    try {
+      const categories = await prisma.product_category.findMany({
+        include: {
+          sub_categories: true,
+        },
+      });
+      this.success(res, '--categories/all', 'categories fetched successfully', 200, categories);
+    } catch (error) {
+      return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
+    }
   }
 }
