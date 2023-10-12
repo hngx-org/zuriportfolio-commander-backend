@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
+import { AddPromotionPayloadType } from '@types';
 import prisma from '../config/prisma';
 import { v4 as uuidv4 } from 'uuid';
 import { createDiscountSchema } from '../helper/validate';
