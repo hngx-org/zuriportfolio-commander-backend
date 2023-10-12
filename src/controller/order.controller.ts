@@ -141,7 +141,7 @@ export default class OrderController extends BaseController {
   }
 
   async getOrderByProductName(req: Request | any, res: Response | any) {
-    const userId = '1234';
+    const userId = (req as any).user?.id ?? TestUserId;
     
     const { name } = req.params;
     const { page = 1, pageSize = 10 } = req.query;
