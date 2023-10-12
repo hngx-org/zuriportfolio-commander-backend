@@ -9,12 +9,12 @@ export interface AddProductPayloadType {
   product_id?: string;
   name: string;
   description: string;
-  quantity: number;
-  price: number;
-  discountPrice: number;
-  tax: number;
+  quantity: string;
+  price: string;
+  discountPrice: string;
+  tax: string;
   currency: string;
-  category: string;
+  categoryId: string;
   shopId: string;
   userId: string; //! remove this once auth is working
 }
