@@ -56,28 +56,28 @@ export default class OrderController extends BaseController {
   }
 
   async getAverageOrderValue(req: Request, res: Response) {
- 
+
     const timeframe = (req.query.timeframe as string)?.toLocaleLowerCase();
     const merchantUserId = (req as any).user['id'];
-  
+
     if (!timeframe) {
       this.error(res, '--order/average', 'Missing timeframe parameter', 400);
       return;
     }
-  
+
     if (timeframe !== 'today') {
       this.error(res, '--order/average', 'Invalid timeframe parameter', 400);
       return;
     }
-  
+
     // Calculate the start and end timestamps for today
     const currentDate = new Date();
-    
+
     const startOfDay = new Date(currentDate);
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(currentDate);
     endOfDay.setHours(23, 59, 59, 999);
-    
+
 
     const orderItems = await prisma.order_item.findMany({
       where: {
@@ -88,14 +88,15 @@ export default class OrderController extends BaseController {
         },
       },
     });
-  
+
     const totalSales = orderItems.reduce((sum, item) => sum + item.order_price, 0);
     const averageSales = parseFloat((totalSales / orderItems.length).toFixed(2));
-  
+
     this.success(res, '--order/average', 'Average order value for today fetched successfully', 200, {
       averageSales,
     });
-    
+  }
+
   async updateOrderStatus(req: Request, res: Response) {
     const userId = (req as any).user['id'];
     const orderId = req.params['order_id'];
@@ -149,5 +150,3 @@ export default class OrderController extends BaseController {
     );
   }
 }
-
-
