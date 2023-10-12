@@ -48,20 +48,20 @@ export default class ProductRoute {
       // isAuthenticated,
       useCatchErrors(this.productController.deleteProduct.bind(this.productController))
     );
-    this.router.get(
-      `${this.path}/categories`,
-      useCatchErrors(this.productController.getAllCategories.bind(this.productController))
-    );
+    // this.router.get(
+    //   `${this.path}/categories`,
+    //   useCatchErrors(this.productController.getAllCategories.bind(this.productController))
+    // ); // clashing route with line 61
     // this.router.post(
     //   `${this.path}/categories`,
     //   isAuthenticated,
     //   useCatchErrors(this.productController.createCategory.bind(this.productController)),
     // );
-    this.router.post(
-      `${this.path}/categories`,
-      // isAuthenticated,
-      useCatchErrors(this.productController.createCategory.bind(this.productController))
-    );
+    // this.router.post(
+    //   `${this.path}/categories`,
+    //   // isAuthenticated,
+    //   useCatchErrors(this.productController.createCategory.bind(this.productController))
+    // ); // clashing route with line 54
     this.router.post(
       `${this.path}/category`,
       // isAuthenticated,
