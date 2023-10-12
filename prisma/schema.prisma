@@ -104,6 +104,7 @@ model order_item {
     merchant user      @relation(name: "merchant_orders", fields: [merchant_id], references: [id])
     customer user      @relation(name: "customer_orders", fields: [customer_id], references: [id])
     promo    promotion @relation(fields: [promo_id], references: [id])
+    product  product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
 model product {
@@ -127,6 +128,7 @@ model product {
     image           product_image[]
     track_promotion track_promotion[]
     promo_product   promo_product[]
+    order_items     order_item[]
 
     user user @relation(fields: [user_id], references: [id], onDelete: Cascade)
     shop shop @relation(fields: [shop_id], references: [id], onDelete: Cascade)
