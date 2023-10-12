@@ -82,6 +82,83 @@
         ]
       }
     },
+    "/discount": {
+      "post": {
+        "summary": "Create a discount",
+        "tags": ["Discount"],
+        "requestBody": {
+          "description": "Discount data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "discount_type": {
+                    "type": "string",
+                    "description": "Type of discount",
+                    "required": true
+                  },
+                  "amount": {
+                    "type": "number",
+                    "description": "Discount amount",
+                    "required": true
+                  },
+                  "quantity": {
+                    "type": "number",
+                    "description": "Minimum quantity for the discount",
+                    "minimum": 1,
+                    "required": true
+                  },
+                  "maximum_discount_price": {
+                    "type": "number",
+                    "description": "Maximum discount price",
+                    "required": false
+                  },
+                  "product_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "Product ID with a custom UUID pattern",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                      "example": "valid-uuid",
+                      "required": true
+                    },
+                    "description": "Array of product IDs",
+                    "required": true
+                  },
+                  "valid_from": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Start date and time of discount",
+                    "required": true
+                  },
+                  "valid_to": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "End date and time of discount",
+                    "required": true
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ]
+        },
+        "responses": {
+          "201": {
+            "description": "Discount created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
     "/auth/signup": {
       "post": {
         "tags": ["Authentication"],
