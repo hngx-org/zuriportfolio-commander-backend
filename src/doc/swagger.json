@@ -283,6 +283,42 @@
         }
       }
     },
+
+    "/shop/{shop_id}": {
+      "delete": {
+        "tags": ["Shop"],
+        "summary": "Delete a shop",
+        "description": "Delete a specific shop.",
+        "parameters": [
+          {
+            "name": "shop_id",
+            "in": "path",
+            "description": "Shop ID",
+            "required": true,
+            "schema": {
+            "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Shop deleted successfully."
+          },
+          "404": {
+            "description": "Shop not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          },
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ]
+        }
+      }
+    },
+
     "/auth/signup": {
       "post": {
         "tags": ["Authentication"],
