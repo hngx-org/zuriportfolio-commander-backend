@@ -433,6 +433,7 @@
           "currency": "USD"
         }
       },
+
       "GetProduct": {
         "type": "object",
         "properties": {}
