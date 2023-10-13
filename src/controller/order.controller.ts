@@ -49,33 +49,34 @@ export default class OrderController extends BaseController {
 
   async getAllOrders(req: Request, res: Response) {
     //const userId = req.user.id; // get the user id from the request params
-    const userId = (req as any).user?.id ?? TestUserId;
+    const userId = (req as any).user?.id || TestUserId;
   
     if (!userId) {
       return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
     }
 
     const { page = 1, pageSize = 10 } = req.query;
+
     const orders = await prisma.order_item.findMany({
       where: {
         merchant_id: userId,
       },
       select: {
         order_id: true,
-        order_price : true,
+        order_price: true,
         createdAt: true,
         merchant: {
           select: {
-            revenue:{
+            revenue : {
               select : {
-                amount : true, 
+                amount : true,
+              } 
+            },
+            categories : {
+              select : {
+                name : true,
               }
             },
-           categories : {
-            select : {
-              name : true,
-            }
-           },
             customer_orders: {
               select: {
                 status: true,
@@ -84,19 +85,18 @@ export default class OrderController extends BaseController {
                     sales : true,
                   }
                 }
-              },
-            },
+              }
+            }
           },
         },
         customer: {
           select: {
-            username: true,
+            first_name: true,
+            last_name : true,
           },
         },
         product: {
-          // Add the product selection here
           select: {
-            price : true,
             name: true,
           },
         },
@@ -109,7 +109,6 @@ export default class OrderController extends BaseController {
     }
     return this.success(res, '--order/all', 'Orders fetched successfully', 200, orders);
   }
-
 
   async getOrdersCountByTimeframe(req: Request, res: Response) {
     const { timeframe } = req.query;

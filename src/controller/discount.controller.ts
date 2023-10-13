@@ -100,18 +100,18 @@ export default class DiscountController extends BaseController {
 
     // create promotion
     const promo_id = uuidv4();
-    const promo = await prisma.promotion.create({
-      data: {
-        id: promo_id,
-        user_id: userId,
-        discount_type: validDiscountEnum[discount_type],
-        quantity,
-        amount,
-        maximum_discount_price,
-        valid_from,
-        valid_to,
-      },
-    });
+    //const promo = await prisma.promotion.create({
+    // data: {
+    //     id: promo_id,
+    //     user_id: userId,
+    //     discount_type: validDiscountEnum[discount_type],
+    //     quantity,
+    //     amount,
+    //     maximum_discount_price,
+    //     valid_from,
+    //     valid_to,
+    //   },
+   // });
 
     let createdProdDiscount;
     if (product_ids.length > 0) {
@@ -128,7 +128,7 @@ export default class DiscountController extends BaseController {
     }
 
     this.success(res, '--discount/success', `Successfully created discount`, 201, {
-      promo: promo,
+      //promo: promo,
       productWithPromo: createdProdDiscount ?? null,
     });
   }
