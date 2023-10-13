@@ -438,7 +438,7 @@
                           "status": "complete",
                           "sales_report": [
                             {
-                              "sales": "complete"
+                              "sales": 11
                             }
                           ]
                         }
