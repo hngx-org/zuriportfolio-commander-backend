@@ -99,7 +99,7 @@ model order_item {
     order_discount Float
     promo_id       String
     createdAt      DateTime @default(now())
-    updatedAt      DateTime @default(now())/
+    updatedAt      DateTime @default(now())
 
     merchant user      @relation(name: "merchant_orders", fields: [merchant_id], references: [id])
     customer user      @relation(name: "customer_orders", fields: [customer_id], references: [id])
