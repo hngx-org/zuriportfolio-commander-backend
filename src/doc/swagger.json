@@ -685,6 +685,53 @@
           }
         ]
       }
+    },
+    "/revenue/{order_id}": {
+      "patch": {
+        "tags": ["Revenue"],
+        "summary": "Update Revenue",
+        "description": "Update the revenue based on the order's status",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            },
+            "description": "ID of the order to update revenue for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Revenue updated successfully",
+                  "data": {
+                    "id": 1,
+                    "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
+                    "amount": 1500.0
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "--order/not-found",
+                  "message": "Order not found"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -988,6 +1035,34 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
+      }
+    },
+    "RevenueUpdateResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "A message indicating the result of the operation"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "The ID of the updated revenue record"
+            },
+            "user_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The user ID for whom the revenue is updated"
+            },
+            "amount": {
+              "type": "number",
+              "format": "float",
+              "description": "The updated revenue amount"
+            }
+          }
+        }
       }
     }
   }
