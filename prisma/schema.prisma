@@ -90,7 +90,7 @@ model order {
 }
 
 model order_item {
-    id             String   @id @unique
+    id             Int      @id @unique
     order_id       String
     product_id     String
     merchant_id    String
@@ -98,14 +98,14 @@ model order_item {
     order_price    Float
     order_VAT      Float
     order_discount Float
-    promo_id       String
+    promo_id       Int?
     createdAt      DateTime @default(now())
     updatedAt      DateTime @default(now())
 
-    merchant user      @relation(name: "merchant_orders", fields: [merchant_id], references: [id])
-    customer user      @relation(name: "customer_orders", fields: [customer_id], references: [id])
-    promo    promotion @relation(fields: [promo_id], references: [id])
-    product  product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
+    merchant user       @relation(name: "merchant_orders", fields: [merchant_id], references: [id])
+    customer user       @relation(name: "customer_orders", fields: [customer_id], references: [id])
+    promo    promotion? @relation(fields: [promo_id], references: [id])
+    product  product    @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
 model product {
@@ -163,7 +163,7 @@ model product_sub_category {
 
 model promo_product {
     id         Int    @id @default(autoincrement())
-    promo_id   String
+    promo_id   Int
     product_id String //  new field
     user_id    String
     // createdAt  DateTime @default(now())
@@ -174,9 +174,10 @@ model promo_product {
 }
 
 model promotion {
-    id                     String        @id
+    id                     Int           @id
     user_id                String
     promotion_type         String
+    code                   String
     discount_type          Discount_type @default(Percentage)
     quantity               Int
     amount                 Float
@@ -205,7 +206,7 @@ model revenue {
 model track_promotion {
     id         String   @id @unique
     product_id String
-    promo_id   String
+    promo_id   Int
     user_id    String
     createdAt  DateTime @default(now())
 
