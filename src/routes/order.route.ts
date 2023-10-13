@@ -6,7 +6,7 @@ import { isAuthenticated } from '../middlewares/auth';
 export default class OrderRoute {
   router = express.Router();
   OrderController = new OrderController();
-  path = '/orders';
+  path = '/order';
 
   constructor() {
     this.initializeRoutes();
@@ -26,7 +26,7 @@ export default class OrderRoute {
     );
 
     this.router.get(
-      `${this.path}`,
+      `${this.path}s`,
       //isAuthenticated
       useCatchErrors(this.OrderController.getAllOrders.bind(this.OrderController)),
     );

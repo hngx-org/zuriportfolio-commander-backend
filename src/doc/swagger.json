@@ -509,7 +509,7 @@
       "get": {
         "tags": ["Orders"],
         "summary": "get all orders",
-        "description": "",
+        "description": "To get All orders",
         "responses": {
           "200": {
             "description": "successful operation",
@@ -529,17 +529,12 @@
                           "amount": 3000.50
                         }
                       ],
-                      "categories": [
-                        {
-                          "name": "Software"
-                        }
-                      ],
                       "customer_orders": [
                         {
-                          "status": true,
+                          "status": "complete",
                           "sales_report": [
                             {
-                              "sales": "complete"
+                              "sales": 11
                             }
                           ]
                         }
@@ -551,7 +546,12 @@
                       ],
                       "product": {
                         "price": 12.34,
-                        "name": "Longchair"
+                        "name": "Longchair",
+                        "categories": [
+                          {
+                            "name": "Software"
+                          }
+                        ]
                       }
                     }
                   }
@@ -795,7 +795,7 @@
           "merchant": {
             "$ref": "#/components/schemas/MerchantData"
           }
-        },"required": ["id", "order_id", "product_id", "order_price", "createdAt", "updatedAt", "productId", "product"]
+        },"required": [ "order_id", "order_price", "createdAt", "merchant"]
       },
       "MerchantData": {
         "type": "object",
@@ -813,6 +813,64 @@
             "$ref": "#/components/schemas/ProductData"
           }
       }
+      },
+      "RevenueData": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number"
+          }
+        }
+      },
+      "CustomerOrders": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "sales_report": {
+            "$ref": "#/components/schemas/SalesData"
+          }
+        }
+      },
+      "SalesData": {
+        "type": "object",
+        "properties": {
+          "sales": {
+            "type": "number"
+          }
+        }
+      },
+      "CustomerData": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          }
+        }
+      },
+      "ProductData": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "categories": {
+            "$ref": "#/components/schemas/CategoriesData"
+          }
+        }
+      },
+      "CategoriesData": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      }    
     },
     "securitySchemes": {
       "BearerAuth": {
@@ -822,5 +880,4 @@
       }
     }
   }
-}
 }

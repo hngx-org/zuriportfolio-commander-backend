@@ -48,10 +48,9 @@ export default class OrderController extends BaseController {
   }
 
   async getAllOrders(req: Request, res: Response) {
-    const userId = req.params.id; // get the user id from the request params
-
-    console.log(userId);
-
+    //const userId = req.user.id; // get the user id from the request params
+    const userId = (req as any).user?.id ?? TestUserId;
+  
     if (!userId) {
       return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
     }
@@ -60,17 +59,11 @@ export default class OrderController extends BaseController {
     const orders = await prisma.order_item.findMany({
       where: {
         merchant_id: userId,
-        // product : {
-        //   name : {
-        //     contains: name,
-        //   },
-        // },
       },
       select: {
         order_id: true,
         order_price : true,
         createdAt: true,
-        //status :true,
         merchant: {
           select: {
             revenue:{
@@ -111,9 +104,12 @@ export default class OrderController extends BaseController {
       skip: (+page - 1) * +pageSize,
       take: +pageSize,
     });
-
-    this.success(res, '--order/all', 'orders fetched successfully', 200, orders);
+    if (!orders) {
+      return this.error(res, '--order/all', 'An error occurred', 500, 'internal server error');
+    }
+    return this.success(res, '--order/all', 'Orders fetched successfully', 200, orders);
   }
+
 
   async getOrdersCountByTimeframe(req: Request, res: Response) {
     const { timeframe } = req.query;
