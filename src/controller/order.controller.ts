@@ -64,8 +64,8 @@ export default class OrderController extends BaseController {
 
 
   async getAllOrders(req: Request, res: Response) {
-    const userId = req.params.id; // get the user id from the request params
-
+    // const userId = req.params.id; // get the user id from the request params
+    const userId = (req as any).user?.id ?? TestUserId;
     console.log(userId);
 
     if (!userId) {
@@ -130,7 +130,6 @@ export default class OrderController extends BaseController {
         startDate = new Date();
         startDate.setHours(0, 0, 0, 0);
         startDate.setDate(startDate.getDate() - 7);
-        break;
         break;
       case 'two-weeks-ago':
         startDate = new Date();
