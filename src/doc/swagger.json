@@ -350,36 +350,63 @@
         }
       }
     },
-    "/auth/signup": {
+    "/shop/store-traffic": {
       "post": {
-        "tags": [
-          "Authentication"
-        ],
-        "summary": "User Signup",
-        "description": "Allows a user to sign up.",
+        "summary": "Used to track user visit to a shop",
+        "tags": ["Shop"],
         "requestBody": {
+          "description": "Shop data",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "firstName": {
+                  "shop_id": {
                     "type": "string",
-                    "example": "John"
-                  },
-                  "lastName": {
-                    "type": "string",
-                    "example": "Doe"
-                  },
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "example": "sicoj92691@elixirsd.com"
-                  },
-                  "password": {
-                    "type": "string",
-                    "format": "password",
-                    "example": "myPassword2021"
+                    "description": "The shop id of the shop visited",
+                    "required": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Traffic added"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/product/categories": {
+      "get": {
+        "summary": "Retrieve Product Categories",
+        "description": "Get a list of all product categories along with their subcategories.",
+        "tags": ["Product"],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 11,
+                    "name": "Electronics",
+                    "product_id": "11",
+                    "createdAt": "2023-10-11T21:25:23.0000Z",
+
+                    "sub_categories": [
+                      {
+                        "id": 101,
+                        "name": "Smartphones",
+                        "parent_category_id": 1011,
+                        "createdAt": "2023-10-11T21:25:23.0000Z"
+                      }
+                    ]
                   }
                 }
               }
@@ -886,7 +913,52 @@
           }
         ]
       }
-    }
+    },
+    "/orders/average": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Fetch the average order value for today",
+        "parameters": [
+          {
+            "name": "timeframe",
+            "in": "query",
+            "description": "Timeframe for calculating the average order value. Should be 'today'.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["today"],
+              "example": "today"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AverageOrderValue"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    }    
   },
   "components": {
     "schemas": {
@@ -1172,6 +1244,19 @@
           }
         },
         "required": [ "order_id", "createdAt", "merchant", "customer", "product"]
+      },
+      "AverageOrderValue": {
+        "type": "object",
+        "properties": {
+          "averageSales": {
+            "type": "number",
+            "format": "double",
+            "description": "The average order value for today."
+          }
+        },
+        "example": {
+          "averageSales": 50.45
+        }
       }
     },
     "securitySchemes": {
