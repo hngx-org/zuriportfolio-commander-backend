@@ -23,12 +23,15 @@ export default class OrderController extends BaseController {
       },
     });
 
+
     if (!order) {
       this.error(res, '--order/single', 'Order not found', 404);
     }
 
     this.success(res, '--order/single', 'Order fetched successfully', 200, order);
   }
+
+
 
   async getAllOrders(req: Request, res: Response) {
     const userId = req.params.id; // get the user id from the request params
