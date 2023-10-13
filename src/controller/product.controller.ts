@@ -329,6 +329,20 @@ export default class ProductController extends BaseController {
       });
     }
     //create a subCategory
+    const existingSubCategory = await prisma.product_sub_category.findFirst({
+      where: {
+        name: lowercaseName,
+      },
+    });
+    if (existingSubCategory) {
+      return this.error(
+        res,
+        '--product_sub_category/category-exists',
+        `Sub-category with name '${lowercaseName}' already exists. Please choose a different name.`,
+        409
+      );
+    }
+    
     const subCategory = await prisma.product_sub_category.create({
       data: {
         name: lowercaseName,
