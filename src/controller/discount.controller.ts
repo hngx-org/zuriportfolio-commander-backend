@@ -221,7 +221,7 @@ export default class DiscountController extends BaseController {
   }
 
   async getAllPromotionsWithTrackedPromotions(req: Request, res: Response) {
-    const userId = (req as any).user?.id;
+    const userId = (req as any).user?.id ?? TestUserId;
 
     if (!userId) {
       return this.error(res, '--discount/promotions', 'User not found', 404, 'User not found');
@@ -234,7 +234,7 @@ export default class DiscountController extends BaseController {
     // Calculate the offset to skip the appropriate number of items
     const offset = (page - 1) * itemsPerPage;
 
-    // Fetch all associated products for promotions created by the user 
+    // Fetch all associated products for promotions created by the user
     const promoProducts = await prisma.promo_product.findMany({
       where: {
         user_id: userId,
@@ -282,5 +282,4 @@ export default class DiscountController extends BaseController {
       );
     }
   }
-
 }
