@@ -1,7 +1,7 @@
 import express from 'express';
 import useCatchErrors from '../error/catchErrors';
 import RevenueController from '../controller/revenue.controller';
-import { isAuthenticated } from '../middlewares/auth';
+// import { isAuthenticated } from '../middlewares/auth';
 
 export default class RevenueRoute {
   router = express.Router();
@@ -15,14 +15,14 @@ export default class RevenueRoute {
   initializeRoutes() {
     this.router.patch(
       `${this.path}/:order_iSd`,
-      useCatchErrors(this.revenueController.updateRevenue.bind(this.revenueController))
+      useCatchErrors(this.revenueController.updateRevenue.bind(this.revenueController)),
     );
 
     // Route for /api/revenues?timeframe=today
     this.router.get(
       `${this.path}s`,
       // isAuthenticated,
-      useCatchErrors(this.revenueController.getRevenueForToday.bind(this.revenueController))
+      useCatchErrors(this.revenueController.getRevenueForToday.bind(this.revenueController)),
     );
   }
 }
