@@ -48,21 +48,48 @@ export default class OrderController extends BaseController {
   }
 
   async getAllOrders(req: Request, res: Response) {
+
     const userId = req.params.id; // get the user id from the request params
 
     console.log(userId);
 
-    if (!userId) {
-      this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
-    }
 
-    const orders = await prisma.order.findMany({
+    if (!userId) {
+      return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
+    }
+  
+    const { page = 1, pageSize = 10 } = req.query;
+    const orders = await prisma.order_item.findMany({
       where: {
-        id: userId,
+        merchant_id: userId,
       },
+      select: {
+        order_id: true,
+        createdAt: true,
+        merchant: {
+          select: {
+            customer_orders: {
+              select: {
+                status: true,
+              },
+            },
+          },
+        },
+        customer: {
+          select: {
+            username: true,
+          },
+        },
+        product: { // Add the product selection here
+          select: {
+            name: true,
+          },
+        },
+      },
+      skip: (+page - 1) * +pageSize,
+      take: +pageSize,
     });
 
-    console.log(orders);
 
     this.success(res, '--order/all', 'orders fetched successfully', 200, orders);
   }
@@ -115,6 +142,16 @@ export default class OrderController extends BaseController {
   }
 
   async getAverageOrderValue(req: Request, res: Response) {
+
+  
+    if (!orders) {
+      return this.error(res, '--order/all', 'An error occurred', 500, 'internal server error');
+    }
+    return this.success(res, '--order/all', 'Orders fetched successfully', 200, orders);
+  }
+
+async getAverageOrderValue(req: Request, res: Response) {
+
     const timeframe = (req.query.timeframe as string)?.toLocaleLowerCase();
     const merchantUserId = (req as any).user?.id ?? TestUserId;
 
