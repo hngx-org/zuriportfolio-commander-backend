@@ -55,3 +55,8 @@ export const trackPromotionSchema = Joi.object({
   promo_id: Joi.string().required(),
   sales: Joi.string().required(),
 });
+
+export const createShopTrafficSchema = Joi.object({
+  shop_id: Joi.string().required(),
+  ip_addr: Joi.string().required(),
+});
