@@ -4,3 +4,8 @@
 /.env
 
 /dist
+
+/package-lock.json
+pnpm-lock.yaml
+
+/test.js
