@@ -123,19 +123,9 @@
         "requestBody": {
           "description": "",
           "content": {
-            "application/json": {
+            "application/x-www-form-urlencoded": {
               "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/UpdateProduct"
-                  }
-                ]
-              }
-            },
-            "application/octet-stream": {
-              "schema": {
-                "type": "string",
-                "format": "binary"
+                "$ref": "#/components/schemas/UpdateProductData"
               }
             }
           },
@@ -1159,111 +1149,66 @@
         }
       },
       "UpdateProductData": {
-        "type": "object",
-        "properties": {
-          "newData": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "required": true
-              },
-              "description": {
-                "type": "string",
-                "required": true
-              },
-              "quantity": {
-                "type": "integer",
-                "required": true
-              },
-              "categoryId": {
-                "type": "integer",
-                "required": true
-              },
-              "price": {
-                "type": "number",
-                "required": true
-              },
-              "discountPrice": {
-                "type": "number",
-                "required": true
-              },
-              "tax": {
-                "type": "number",
-                "required": true
-              },
-              "currency": {
-                "type": "string",
-                "required": true
-              },
-              "adminStatus": {
-                "type": "string",
-                "enum": [
-                  "pending",
-                  "review",
-                  "approved",
-                  "blacklist"
-                ],
-                "required": true
-              }
-            }
-          }
-        },
-        "example": {
-          "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
-          "newData": {
-            "name": "Nike Wears",
-            "description": "Comfortable and beautifully Designed",
-            "quantity": 53,
-            "price": 5000,
-            "discountPrice": 4500,
-            "tax": 200,
-            "currency": "Naira",
-            "categoryId": 1,
-            "adminStatus": "approved"
-          }
-        }
-      },
-      "UpdateProduct": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string"
-          },
-          "newData": {
-            "$ref": "#/components/schemas/UpdateProductData"
-          }
-        },
         "required": [
-          "userId"
+          "name",
+          "description",
+          "quantity",
+          "categoryId",
+          "price",
+          "discountPrice",
+          "tax",
+          "currency",
+          "adminStatus"
         ],
-        "example": {
-          "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
-          "newData": {
-            "name": "Nike Wears",
-            "description": "Comfortable and beautifully Designed",
-            "quantity": 53,
-            "price": 5000,
-            "discountPrice": 4500,
-            "tax": 200,
-            "currency": "Naira",
-            "categoryId": 1,
-            "adminStatus": "approved"
-          }
-        }
-      },
-      "UpdateProductWithImage": {
         "type": "object",
         "properties": {
           "image": {
-            "type": "array"
+            "type": "binary"
           },
-          "userId": {
+          "name": {
             "type": "string"
           },
-          "newData": {
-            "$ref": "#/components/schemas/UpdateProductData"
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "categoryId": {
+            "type": "integer"
+          },
+          "price": {
+            "type": "number"
+          },
+          "discountPrice": {
+            "type": "number"
+          },
+          "tax": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "adminStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "review",
+              "approved",
+              "blacklist"
+            ]
           }
+        },
+        "example": {
+          "name": "Nike Wears",
+          "description": "Comfortable and beautifully Designed",
+          "quantity": 53,
+          "price": 5000,
+          "discountPrice": 4500,
+          "tax": 200,
+          "currency": "Naira",
+          "categoryId": 1,
+          "adminStatus": "approved"
         }
       },
       "GetProduct": {
