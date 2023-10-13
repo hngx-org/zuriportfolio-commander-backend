@@ -180,8 +180,8 @@ model promotion {
     quantity               Int
     amount                 Float
     maximum_discount_price Float?
-    valid_from             DateTime
-    valid_to               DateTime
+    valid_from             DateTime      @db.Timestamp()
+    valid_to               DateTime      @db.Timestamp()
     createdAt              DateTime      @default(now())
     updatedAt              DateTime      @default(now())
 

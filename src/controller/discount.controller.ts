@@ -92,32 +92,35 @@ export default class DiscountController extends BaseController {
     // make sure product added has no discount / promo
     if (product_ids.length > 0) {
       const result = await this.canAddPromoToProducts(product_ids, userId);
+      console.log(result);
       if (result.length > 0) {
         logger.error(`One of this product already has a promo: ${notFoundProd.join(' ')}`);
-        return this.error(res, '--discount/product-notfound', `One or more of the product already has a promo.`, 400);
+        return this.error(res, '--discount/promo-exist', `One or more of the product already has a promo.`, 400);
       }
     }
 
     // create promotion
     const promo_id = uuidv4();
-    const promo = await prisma.promotion.create({
+    let createdProdDiscount;
+
+    const createPromo = prisma.promotion.create({
       data: {
         id: promo_id,
         user_id: userId,
-        discount_type: validDiscountEnum[discount_type],
+        discount_type: validDiscountEnum[discount_type.toLowerCase()],
         quantity,
         amount,
         maximum_discount_price,
         valid_from,
         valid_to,
+        promotion_type: 'Discount',
       },
     });
 
-    let createdProdDiscount;
     if (product_ids.length > 0) {
       // cretate the promo product
       for (const pId of product_ids) {
-        createdProdDiscount = await prisma.promo_product.create({
+        createdProdDiscount = prisma.promo_product.create({
           data: {
             promo_id,
             product_id: pId,
@@ -127,9 +130,11 @@ export default class DiscountController extends BaseController {
       }
     }
 
+    const [promo, discount] = await prisma.$transaction([createPromo, createdProdDiscount]);
+
     this.success(res, '--discount/success', `Successfully created discount`, 201, {
       promo: promo,
-      productWithPromo: createdProdDiscount ?? null,
+      productWithPromo: discount ?? null,
     });
   }
 
@@ -140,20 +145,78 @@ export default class DiscountController extends BaseController {
     if (validateSchema.error) {
       return this.error(res, '--discount/invalid-fields', validateSchema.error.message, 400);
     }
+
+    // check if
+  }
+
+  async computePromoUsage(prodId: string, promoId: string, userId: string) {
+    const trackPromos = await prisma.track_promotion.findMany({
+      where: {
+        AND: {
+          promo_id: promoId,
+          product_id: prodId,
+          user_id: userId,
+        },
+      },
+    });
+    return trackPromos.length;
+  }
+
+  async isPromoExpired(promoId: string) {
+    const currentDate = new Date();
+    const promo = await prisma.promotion.findFirst({
+      where: { id: promoId },
+    });
+
+    console.log(promo);
+
+    if (promo === null) return true;
+
+    const { valid_from, valid_to } = promo;
+    const validFrom = new Date(valid_from);
+    const validTo = new Date(valid_to);
+
+    // Check if the current date is within the valid date range
+    if (currentDate >= validFrom && currentDate <= validTo) {
+      return true;
+    } else if (currentDate >= validTo) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   async getAllDiscount(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
-    if (!userId) {
-      this.error(res, '--discount/all', 'This user id does not exist', 400, 'user not found');
-    }
+    const allPromotions = [];
 
-    const discount = await prisma.promotion.findMany({
+    const promos = await prisma.promotion.findMany({
       where: {
-        id: userId,
+        user_id: userId,
       },
+      include: { promo_product: true, tracked_promo: true },
     });
 
-    this.success(res, '--discount/all', 'discount fetched successfully', 200, discount);
+    for (const promo of promos) {
+      const promoProd = await prisma.promo_product.findMany({ where: { promo_id: promo.id } });
+      const prodIds = promoProd.map((d) => d.product_id);
+
+      for (const id of prodIds) {
+        const pInfo = await prisma.product.findFirst({
+          where: { id },
+        });
+
+        allPromotions.push({
+          name: pInfo.name,
+          quantity: promo.quantity,
+          type: promo.discount_type,
+          discount_price: promo.amount,
+          status: (await this.isPromoExpired(promo.id)) ? 'Expired' : 'Active', // check exp
+          usage: await this.computePromoUsage(id, promo.id, userId),
+        });
+      }
+    }
+
+    this.success(res, '--discount/all', 'discount fetched successfully', 200, allPromotions);
   }
 }
