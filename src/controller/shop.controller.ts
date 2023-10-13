@@ -70,8 +70,46 @@ export default class ShopController extends BaseController {
 
     this.success(res, '--shop/deleted', 'shop deleted', 200, null);
   }
+  
+  // Update existing shop controller
+  async updateShop(req: Request, res: Response) {
+    const shopId = req.params.shop_id;
+    const userId = (req as any).user['id'];
 
-  async shopTraffic(req: Request, res: Response) {
+    if (shopId === undefined) {
+      return this.error(res, '--shop/ShortId empty', 'Short ID cannot be empty', 400);
+    }
+
+    const shop = await prisma.shop.findFirst({
+      where: { id: shopId },
+    });
+
+    if (!shop) {
+      return this.error(res, '--shop/not-found', 'Shop does not exist', 404);
+    }
+
+    if (shop.merchant_id !== userId) {
+      return this.error(res, '--shop/not-authorized', 'You are not authorized to update this shop', 401);
+    }
+
+    // check if fields are empty
+    const payload = req.body;
+
+    const { name } = payload;
+
+    // update shop
+    const updatedShop = await prisma.shop.update({
+      where: { id: shopId },
+      data: {
+        name,
+      },
+    });
+
+    this.success(res, '--shop/updated', 'shop updated', 200, updatedShop);
+  } // end of updateShop
+
+  // start of shop traffic
+ async shopTraffic(req: Request, res: Response) {
   
     req.body.ip_addr = req.socket.remoteAddress;
 
@@ -84,5 +122,5 @@ export default class ShopController extends BaseController {
     await prisma.store_traffic.create({ data: req.body });
 
     this.success(res, '--shop/store-traffic', 'traffic added', 200, null);
-  }
+  } // end of shop traffic
 }

@@ -24,7 +24,14 @@ export default class ShopRoute {
       `${this.path}/delete/:id`,
       useCatchErrors(this.shopController.deleteShop.bind(this.shopController))
     );
-  
+    
+    // update shop route
+    this.router.patch(
+      `${this.path}/:shop_id`,
+      isAuthenticated,
+      useCatchErrors(this.shopController.updateShop.bind(this.shopController))
+    );
+    
     // shop traffic
     this.router.post(
       `${this.path}/store-traffic`,
