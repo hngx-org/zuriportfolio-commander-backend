@@ -7,9 +7,11 @@ import RevenueController from '../controller/revenue.controller';
 //   revenueController = new RevenueController();
 //   path = '/revenues';
 
-//   constructor() {
-//     this.initializeRoutes();
-//   }
+
+  //   constructor() {
+  //     this.initializeRoutes();
+  //   }
+
 
 //   initializeRoutes() {
 //     this.router.patch(
