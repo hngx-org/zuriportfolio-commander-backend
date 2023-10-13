@@ -26,7 +26,7 @@ export default class DiscountRoute {
 
     this.router.get(
       `${this.path}/promotions`,
-      isAuthenticated,
+      // isAuthenticated,
       useCatchErrors(this.discountController.getAllPromotionsWithTrackedPromotions.bind(this.discountController))
     );
   }
