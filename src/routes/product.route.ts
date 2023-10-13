@@ -55,8 +55,8 @@ export default class ProductRoute {
       useCatchErrors(this.productController.getAllProducts.bind(this.productController))
     );
     this.router.get(
-      `${this.path}/categories`,
-      useCatchErrors(this.productController.getAllCategories.bind(this.productController))
+      `${this.path}s/marketplace`,
+      useCatchErrors(this.productController.getMarketplaceProducts.bind(this.productController))
     );
     this.router.delete(
       `${this.path}/:product_id`,
