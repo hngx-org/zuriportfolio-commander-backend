@@ -43,7 +43,7 @@ export default class OrderController extends BaseController {
       '--product/updated',
       'product updated successfully',
       200,
-      { data: order }, // Include the order data in the response
+      { data: order } // Include the order data in the response
     );
   }
 
@@ -225,13 +225,12 @@ export default class OrderController extends BaseController {
   }
 
   async getOrderByProductName(req: Request | any, res: Response | any) {
-    const userId = (req as any).user?.id ?? "1234";
-    
+    const userId = (req as any).user?.id ?? TestUserId;
+
     const { name } = req.params;
     const { page = 1, pageSize = 10 } = req.query;
-  
+
     const orderItems = await prisma.order_item.findMany({
-     
       where: {
         merchant_id: userId,
         product: {
@@ -247,15 +246,15 @@ export default class OrderController extends BaseController {
         createdAt: true,
         merchant: {
           select: {
-            revenue:{
-              select:{
+            revenue: {
+              select: {
                 amount: true,
-              }
+              },
             },
             categories: {
-              select:{
+              select: {
                 name: true,
-              }
+              },
             },
             customer_orders: {
               select: {
@@ -263,36 +262,32 @@ export default class OrderController extends BaseController {
                 sales_report: {
                   select: {
                     sales: true,
-                  }
-                }
-              }
-            }
+                  },
+                },
+              },
+            },
           },
         },
         customer: {
           select: {
             username: true,
-
           },
         },
         product: {
           select: {
             price: true,
             name: true,
-
           },
         },
-
       },
       skip: (+page - 1) * +pageSize,
       take: +pageSize,
     });
-  
+
     if (!orderItems) {
       return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
     }
-  
+
     this.success(res, '--orders/all', 'orders fetched successfully', 200, orderItems);
   }
-  
 }
