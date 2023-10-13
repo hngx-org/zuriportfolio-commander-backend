@@ -283,6 +283,38 @@
         }
       }
     },
+    "/shop/store-traffic": {
+      "post": {
+        "summary": "Used to track user visit to a shop",
+        "tags": ["Shop"],
+        "requestBody": {
+          "description": "Shop data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "shop_id": {
+                    "type": "string",
+                    "description": "The shop id of the shop visited",
+                    "required": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Traffic added"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
     "/product/categories": {
       "get": {
         "summary": "Retrieve Product Categories",
@@ -359,7 +391,107 @@
           }
         ]
       }
-    }
+    },
+    "/Orders": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "get all orders",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getOrderData"
+                },
+                "example": [
+                  {
+                    "order_id": "1122",
+                    "createdAt": "2023-10-11T18:00:52.000Z",
+                    "merchant": {
+                      "customer_orders": [
+                        {
+                          "status": "complete"
+                        }
+                      ]
+                    },
+                    "customer": [
+                      {
+                        "username": "Customer1"
+                      }
+                    ],
+                    "product": {
+                      "name": "Longchair"
+                    }
+                    
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Please provide an authenticated user."
+          },
+          "403": {
+            "description": "Forbidden. Token is invalid or action is not permitted for provided user."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/orders/average": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Fetch the average order value for today",
+        "parameters": [
+          {
+            "name": "timeframe",
+            "in": "query",
+            "description": "Timeframe for calculating the average order value. Should be 'today'.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["today"],
+              "example": "today"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AverageOrderValue"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    }    
   },
   "components": {
     "schemas": {
@@ -369,12 +501,6 @@
           "image": {
             "type": "string",
             "format": "binary"
-          },
-          "userId": {
-            "type": "string"
-          },
-          "shopId": {
-            "type": "string"
           },
           "name": {
             "type": "string"
@@ -401,22 +527,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "image",
-          "userId",
-          "shopId",
-          "name",
-          "description",
-          "quantity",
-          "categoryId",
-          "price",
-          "discountPrice",
-          "tax",
-          "currency"
-        ],
         "example": {
-          "userId": "10372883-4ae7-4299-9759-706b3646e7ac",
-          "shopId": "d001d16b-9b1b-4b69-b037-2344325466ea",
           "categoryId": 1,
           "name": "HNGX polo",
           "description": "Red",
@@ -516,6 +627,56 @@
           }
         },
         "required": ["id", "user_id", "sales", "order_id", "createdAt"]
+      },
+      "getOrderData": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "merchant": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              }
+            }
+          },
+          "customer": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              }
+            }
+          },
+          "product": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [ "order_id", "createdAt", "merchant", "customer", "product"]
+      },
+      "AverageOrderValue": {
+        "type": "object",
+        "properties": {
+          "averageSales": {
+            "type": "number",
+            "format": "double",
+            "description": "The average order value for today."
+          }
+        },
+        "example": {
+          "averageSales": 50.45
+        }
       }
     },
     "securitySchemes": {
