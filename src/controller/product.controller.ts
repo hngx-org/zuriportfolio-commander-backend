@@ -251,6 +251,36 @@ export default class ProductController extends BaseController {
     }
   }
 
+  async getMarketplaceProducts(req: Request, res: Response) {
+    const products = await prisma.product.findMany({
+      where: {
+        AND: {
+          is_deleted: 'active',
+        },
+      },
+      include: { image: true },
+    });
+    const allProd = [];
+    if (products.length > 0) {
+      for (const p of products) {
+        const promoProd = await prisma.promo_product.findFirst({ where: { product_id: p.id } });
+        const cat = await prisma.product_category.findFirst({
+          where: { id: p.category_id },
+          include: { sub_categories: true },
+        });
+        allProd.push({
+          ...p,
+          category: {
+            ...cat,
+          },
+          image: p.image,
+          promo: promoProd,
+        });
+      }
+    }
+    return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
+  }
+
   async deleteProduct(req: Request, res: Response) {
     const productId = req.params['product_id'];
     const userId = (req as any).user?.id ?? TestUserId;
