@@ -40,7 +40,7 @@ export default class OrderController extends BaseController {
   }
 
   async getAllOrders(req: Request, res: Response) {
-
+   //const userId = 
     const userId = "1";
   
     if (!userId) {
@@ -48,7 +48,6 @@ export default class OrderController extends BaseController {
     }
   
     const { page = 1, pageSize = 10 } = req.query;
-  
     const orders = await prisma.order_item.findMany({
       where: {
         merchant_id: userId,
