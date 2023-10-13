@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
-import { createShopSchema, productSchema } from '../helper/validate';
+import { createShopSchema, productSchema, createShopTrafficSchema } from '../helper/validate';
 import logger from '../config/logger';
 import { AddProductPayloadType } from '@types';
 import { v4 as uuidv4 } from 'uuid';
@@ -115,4 +115,20 @@ export default class ShopController extends BaseController {
 
     this.success(res, '--shop/updated', 'shop updated', 200, updatedShop);
   } // end of updateShop
+
+  // start of shop traffic
+  async shopTraffic(req: Request, res: Response) {
+    const data = req.body;
+    data.ip_addr = req.socket.remoteAddress;
+
+    const { error, value } = createShopTrafficSchema.validate(data);
+
+    if (error) {
+      return this.error(res, '--shop/store-traffic', error?.message ?? 'missing required field.', 400, null);
+    }
+
+    await prisma.store_traffic.create({ data });
+
+    this.success(res, '--shop/store-traffic', 'traffic added', 200, null);
+  } // end of shop traffic
 }

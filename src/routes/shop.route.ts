@@ -28,13 +28,11 @@ export default class ShopRoute {
     // Get all shops
     this.router.get(`${this.path}s`, useCatchErrors(this.shopController.getAllShops.bind(this.shopController)));
 
-
     // update shop route
     this.router.patch(
       `${this.path}/:shop_id`,
       isAuthenticated,
       useCatchErrors(this.shopController.updateShop.bind(this.shopController))
     );
-
   }
 }
