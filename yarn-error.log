@@ -1,16 +1,8 @@
 Arguments: 
-<<<<<<< HEAD
-
-=======
->>>>>>> dev
   C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add joi
 
 PATH: 
   C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files (x86)\Yarn\bin\;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Users\hp\AppData\Local\Microsoft\WindowsApps;C:\Users\hp\AppData\Roaming\npm;C:\Users\hp\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\hp\AppData\Local\Yarn\bin
-<<<<<<< HEAD
-
-=======
->>>>>>> dev
 
 Yarn version: 
   1.22.19
