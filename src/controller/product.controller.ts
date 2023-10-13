@@ -233,7 +233,8 @@ export default class ProductController extends BaseController {
           include: { sub_categories: true },
         });
         allProd.push({
-          products: p,
+          name: p.name,
+          id: p.id,
           category: {
             ...cat,
           },
