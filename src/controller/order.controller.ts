@@ -58,7 +58,18 @@ export default class OrderController extends BaseController {
       this.error(res, '--order/single', 'Order not found', 404);
     }
 
+<<<<<<< HEAD
     this.success(res, '--order/single', 'Order fetched successfully', 200, orderItem);
+=======
+    // Return the order data as part of the response
+    this.success(
+      res,
+      '--product/updated',
+      'product updated successfully',
+      200,
+      { data: order } // Include the order data in the response
+    );
+>>>>>>> dcc2663c7a7113c84ed946bdaee932e28af208f5
   }
 
 
@@ -238,5 +249,72 @@ export default class OrderController extends BaseController {
     });
 
     this.success(res, '--order/status', 'Order status updated successfully', 200, { data: updatedOrder });
+  }
+
+  async getOrderByProductName(req: Request | any, res: Response | any) {
+    const userId = (req as any).user?.id ?? TestUserId;
+
+    const { name } = req.params;
+    const { page = 1, pageSize = 10 } = req.query;
+
+    const orderItems = await prisma.order_item.findMany({
+      where: {
+        merchant_id: userId,
+        product: {
+          name: {
+            contains: name,
+            mode: 'insensitive', // Case-insensitive search
+          },
+        },
+      },
+      select: {
+        order_id: true,
+        order_price: true,
+        createdAt: true,
+        merchant: {
+          select: {
+            revenue: {
+              select: {
+                amount: true,
+              },
+            },
+            categories: {
+              select: {
+                name: true,
+              },
+            },
+            customer_orders: {
+              select: {
+                status: true,
+                sales_report: {
+                  select: {
+                    sales: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        customer: {
+          select: {
+            username: true,
+          },
+        },
+        product: {
+          select: {
+            price: true,
+            name: true,
+          },
+        },
+      },
+      skip: (+page - 1) * +pageSize,
+      take: +pageSize,
+    });
+
+    if (!orderItems) {
+      return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
+    }
+
+    this.success(res, '--orders/all', 'orders fetched successfully', 200, orderItems);
   }
 }

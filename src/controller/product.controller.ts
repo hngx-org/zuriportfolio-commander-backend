@@ -125,7 +125,7 @@ export default class ProductController extends BaseController {
         '--product/invalid-fields',
         error?.message ?? 'Important product details is missing.',
         400,
-        null,
+        null
       );
     }
 
@@ -246,9 +246,9 @@ export default class ProductController extends BaseController {
           tax: p.tax,
           description: p.description,
         });
-        return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
       }
     }
+    return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
   }
 
   async getMarketplaceProducts(req: Request, res: Response) {
@@ -295,7 +295,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_delete/invalid-field',
         'product id is invalid, expected product_id in uuid format.',
-        400,
+        400
       );
     }
 
@@ -343,7 +343,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_category/category-exists',
         `Category with name '${lowercaseName}' already exists. Please choose a different name.`,
-        409,
+        409
       );
     }
 
@@ -376,7 +376,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_sub_category/category-exists',
         `Sub-category with name '${lowercaseName}' already exists. Please choose a different name.`,
-        409,
+        409
       );
     }
 
