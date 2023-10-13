@@ -16,7 +16,7 @@ export default class OrderRoute {
     this.router.get(`${this.path}/:id`, useCatchErrors(this.OrderController.getAllOrders.bind(this.OrderController)));
 
     this.router.get(
-      `${this.path}ss`,
+      `${this.path}s`,
       useCatchErrors(this.OrderController.getOrdersCountByTimeframe.bind(this.OrderController))
     );
 
@@ -26,7 +26,7 @@ export default class OrderRoute {
     );
 
     this.router.get(
-      `${this.path}s`,
+      `${this.path}s/all`,
       //isAuthenticated
       useCatchErrors(this.OrderController.getAllOrders.bind(this.OrderController))
     );
