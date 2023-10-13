@@ -11,14 +11,6 @@ export default class OrderController extends BaseController {
     super();
   }
 
-  async createOrder(req: Request, res: Response) {
-    const payload = req.body;
-
-    const created = await prisma.order.create({ data: payload });
-
-    this.success(res, '--order/created', 'order created', 200, created);
-  }
-
   async getOrder(req: Request, res: Response) {
     // Assuming you have the order ID from the request params
     const orderId = req.params.order_id; // Replace with your actual parameter name
@@ -33,9 +25,9 @@ export default class OrderController extends BaseController {
       },
     });
 
-    //   if (!order) {
-    //     return res.status(404).json({ error: 'Order not found' });
-    //   }
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
 
     // Return the order data as part of the response
     this.success(
@@ -48,14 +40,13 @@ export default class OrderController extends BaseController {
   }
 
   async getAllOrders(req: Request, res: Response) {
-    const userId = req.params.id; // get the user id from the request params
-
-    console.log(userId);
-
+   //const userId = 
+    const userId = "1";
+  
     if (!userId) {
       return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
     }
-
+  
     const { page = 1, pageSize = 10 } = req.query;
     const orders = await prisma.order_item.findMany({
       where: {
@@ -78,8 +69,7 @@ export default class OrderController extends BaseController {
             username: true,
           },
         },
-        product: {
-          // Add the product selection here
+        product: { // Add the product selection here
           select: {
             name: true,
           },
@@ -88,58 +78,14 @@ export default class OrderController extends BaseController {
       skip: (+page - 1) * +pageSize,
       take: +pageSize,
     });
-
-    this.success(res, '--order/all', 'orders fetched successfully', 200, orders);
-  }
-
-  async getOrdersCountByTimeframe(req: Request, res: Response) {
-    const { timeframe } = req.query;
-
-    let startDate: Date;
-    let endDate: Date = new Date(); // default to cuo the current date
-    endDate.setHours(23, 59, 59, 999);
-
-    switch (timeframe) {
-      case 'today':
-        startDate = new Date();
-        startDate.setHours(0, 0, 0, 0);
-        break;
-      case 'yesterday':
-        startDate = new Date();
-        startDate.setHours(0, 0, 0, 0);
-        startDate.setDate(startDate.getDate() - 1);
-        endDate.setDate(endDate.getDate() - 1);
-        break;
-      case 'one-week-ago':
-        startDate = new Date();
-        startDate.setHours(0, 0, 0, 0);
-        startDate.setDate(startDate.getDate() - 7);
-        break;
-        break;
-      case 'two-weeks-ago':
-        startDate = new Date();
-        startDate.setHours(0, 0, 0, 0);
-        startDate.setDate(startDate.getDate() - 14);
-        break;
-
-      default:
-        this.success(res, 'error', 'invalid timeframe', 400);
+  
+    if (!orders) {
+      return this.error(res, '--order/all', 'An error occurred', 500, 'internal server error');
     }
-    console.log(startDate, endDate);
-    const orderCount = await prisma.order.count({
-      where: {
-        createdAt: {
-          gte: startDate,
-          lte: endDate,
-        },
-      },
-    });
-    this.success(res, 'order Counted', ` successfully returned orders within ${timeframe} `, 200, {
-      orderCount,
-    });
+    return this.success(res, '--order/all', 'Orders fetched successfully', 200, orders);
   }
 
-  async getAverageOrderValue(req: Request, res: Response) {
+async getAverageOrderValue(req: Request, res: Response) {
     const timeframe = (req.query.timeframe as string)?.toLocaleLowerCase();
     const merchantUserId = (req as any).user?.id ?? TestUserId;
 
