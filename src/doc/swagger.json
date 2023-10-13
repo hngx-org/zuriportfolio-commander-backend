@@ -45,6 +45,25 @@
         ]
       }
     },
+    "/products/marketplace": {
+      "get": {
+        "tags": ["Product"],
+        "summary": "Fetch all marketplace products",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProduct"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/product/add": {
       "post": {
         "tags": ["Product"],
@@ -424,7 +443,6 @@
                     "product": {
                       "name": "Longchair"
                     }
-                    
                   }
                 ]
               }
@@ -491,7 +509,7 @@
           }
         ]
       }
-    }    
+    }
   },
   "components": {
     "schemas": {
@@ -663,7 +681,7 @@
             }
           }
         },
-        "required": [ "order_id", "createdAt", "merchant", "customer", "product"]
+        "required": ["order_id", "createdAt", "merchant", "customer", "product"]
       },
       "AverageOrderValue": {
         "type": "object",
