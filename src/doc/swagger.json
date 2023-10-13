@@ -946,6 +946,11 @@
                           "amount": 3000.50
                         }
                       ],
+                      "categories": [
+                        {
+                          "name": "Software"
+                        }
+                      ],
                       "customer_orders": [
                         {
                           "sales_report": [
@@ -962,12 +967,7 @@
                       ],
                       "product": {
                         "price": 12.34,
-                        "name": "Longchair",
-                        "categories": [
-                          {
-                            "name": "Software"
-                          }
-                        ]
+                        "name": "Longchair"
                       }
                     }
                   }

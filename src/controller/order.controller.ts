@@ -175,14 +175,14 @@ export default class OrderController extends BaseController {
             },
             customer_orders: {
               select: {
+                status: true,
                 sales_report: {
-                  select:{
+                  select: {
                     sales: true,
                   }
-                },
-                status: true,
-              },
-            },
+                }
+              }
+            }
           },
         },
         customer: {
