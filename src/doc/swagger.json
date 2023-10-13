@@ -359,6 +359,39 @@
           }
         ]
       }
+    },
+    "/sales/report": {
+      "post": {
+        "tags": ["Sales"],
+        "summary": "Create a new Sales report",
+        "description": "Create reports on a particular transaction",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SalesReport"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesReport"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -516,6 +549,26 @@
           }
         },
         "required": ["id", "user_id", "sales", "order_id", "createdAt"]
+      },
+      "AddSales Report": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "sales": {
+            "type": "number"
+          }
+        },
+        "required": ["user_id", "order_id", "sales"],
+        "example": {
+          "user_id": "fecfd17b-51a3-4288-9bd0-77ac4b7d60a0",
+          "order_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+          "sales": 500
+        }
       }
     },
     "securitySchemes": {
