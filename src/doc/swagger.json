@@ -15,7 +15,7 @@
       "description": "Production server"
     },
     {
-      "url": "https://auth.akuya.tech/api/",
+      "url": "https://auth.akuya.tech/api",
       "description": "Authentication server"
     }
   ],
@@ -134,6 +134,141 @@
         ]
       }
     },
+    "/order/status/{order_id}": {
+      "patch": {
+        "tags": ["Order"],
+        "summary": "Update Order Status",
+        "description": "Update the status of a specific order.",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "description": "Order ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["pending", "complete", "failed"],
+                    "example": "complete"
+                  }
+                },
+                "required": ["status"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order status updated successfully."
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters or status value."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "404": {
+            "description": "Order not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/orders/average": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Fetch the average order value for today",
+        "parameters": [
+          {
+            "name": "timeframe",
+            "in": "query",
+            "description": "Timeframe for calculating the average order value. Should be 'today'.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["today"],
+              "example": "today"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AverageOrderValue"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/orders": {
+      "get": {
+        "tags": ["Order"],
+        "summary": "Gets all order count withing a timeframe",
+        "description": "Gets all order count withing a timeframe",
+        "parameters": [
+          {
+            "name": "timeframe",
+            "in": "query",
+            "description": " values: today, yesterday,one-week-ago and two-weeks-ago ",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ordersCount"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/product/category": {
       "post": {
         "tags": ["Product"],
@@ -172,10 +307,13 @@
             }
           },
           "400": {
-            "description": "Bad request. Please check the request parameters."
+            "description": "Bad request. Please check the request parameters or status value."
           },
           "401": {
             "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "404": {
+            "description": "Order not found."
           },
           "500": {
             "description": "Internal server error."
@@ -520,6 +658,17 @@
             "type": "string",
             "format": "binary"
           },
+
+          "userId": {
+            "type": "string"
+          },
+          "shopId": {
+            "type": "string"
+          },
+          "shopId": {
+            "type": "string"
+          },
+
           "name": {
             "type": "string"
           },
@@ -545,6 +694,23 @@
             "type": "string"
           }
         },
+
+        "required": [
+          "image",
+
+          "userId",
+          "shopId",
+
+          "name",
+          "description",
+          "quantity",
+          "categoryId",
+          "price",
+          "discountPrice",
+          "tax",
+          "currency"
+        ],
+
         "example": {
           "categoryId": 1,
           "name": "HNGX polo",
@@ -560,6 +726,10 @@
       "GetProduct": {
         "type": "object",
         "properties": {}
+      },
+
+      "ordersCount": {
+        "type": "number"
       },
 
       "CreateCategory": {
