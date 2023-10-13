@@ -31,9 +31,9 @@ enum restricted {
     permanent
 }
 
-enum Promo_type {
-    Discount
-}
+// enum Promo_type {
+//     Discount
+// }
 
 enum product_status {
     active
@@ -99,7 +99,7 @@ model order_item {
     order_discount Float
     promo_id       String
     createdAt      DateTime @default(now())
-    updatedAt      DateTime @default(now())
+    updatedAt      DateTime @default(now())/
 
     merchant user      @relation(name: "merchant_orders", fields: [merchant_id], references: [id])
     customer user      @relation(name: "customer_orders", fields: [customer_id], references: [id])
@@ -175,7 +175,7 @@ model promo_product {
 model promotion {
     id                     String        @id
     user_id                String
-    promotion_type         Promo_type    @default(Discount)
+    promotion_type         String
     discount_type          Discount_type @default(Percentage)
     quantity               Int
     amount                 Float

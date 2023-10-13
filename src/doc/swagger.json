@@ -359,6 +359,86 @@
         }
       }
     },
+      "/discount/promotions": {
+      "get": {
+        "summary": "Retrieve Products with Promotions and number of sales",
+        "tags": ["Discount"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "Number of items per page (default: 10)",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products with associated promotions and tracked promotions",
+            "content":{  "application/json": {
+              "example": [
+                {
+                  "product": {
+                    "id": "product1",
+                    "name": "Product A"
+                  },
+                  "promo": {
+                    "id": "promo1",
+                    "discount_type": "Percentage",
+                    "quantity": 5,
+                    "amount": 10.0,
+                    "valid_from": "2023-10-15T00:00:00Z",
+                    "valid_to": "2023-10-30T00:00:00Z"
+                  },
+                  "sales": 2
+                },
+                {
+                  "product": {
+                    "id": "product2",
+                    "name": "Product B"
+                  },
+                  "promo": {
+                    "id": "promo2",
+                    "discount_type": "Fixed",
+                    "quantity": 10,
+                    "amount": 50.0,
+                    "valid_from": "2023-11-01T00:00:00Z",
+                    "valid_to": "2023-11-15T00:00:00Z"
+               
+                  },
+                  " sales": 1
+                }
+      
+              ]
+            }}
+            
+          },
+          "401": {
+            "description": "Unauthorized access"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    }
+,    
     "/shop": {
       "post": {
         "summary": "Create a shop",
@@ -603,6 +683,88 @@
           }
         ]
       }
+    },
+    "/orders/search/{name}": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Search Order By Product Name",
+        "description": "",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Product name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/searchOrder"
+                },
+                "example": [
+                  {
+                    "order_id": "1122",
+                    "order_price": 12.22,
+                    "createdAt": "2023-10-11T18:00:52.000Z",
+                    "merchant": {
+                      "revenue": [
+                        {
+                          "amount": 3000.50
+                        }
+                      ],
+                      "customer_orders": [
+                        {
+                          "status": "complete",
+                          "sales_report": [
+                            {
+                              "sales": 11
+                            }
+                          ]
+                        }
+                      ],
+                      "customer": [
+                        {
+                          "username": "Customer1"
+                        }
+                      ],
+                      "product": {
+                        "price": 12.34,
+                        "name": "Longchair",
+                        "categories": [
+                          {
+                            "name": "Software"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Please provide an authenticated user."
+          },
+          "403": {
+            "description": "Forbidden. Token is invalid or action is not permitted for provided user."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -806,7 +968,100 @@
         "example": {
           "averageSales": 50.45
         }
+      },
+      "searchOrder": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "order_price": {
+            "type": "number",
+            "format": "float"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "merchant": {
+            "$ref": "#/components/schemas/MerchantData"
+          }
+        },"required": [ "order_id", "order_price", "createdAt", "merchant"]
+      },
+      "MerchantData": {
+        "type": "object",
+        "properties": {
+          "revenue": {
+            "$ref": "#/components/schemas/RevenueData"
+          },
+          "customer_orders": {
+            "$ref": "#/components/schemas/CustomerOrders"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/CustomerData"
+          },
+          "product": {
+            "$ref": "#/components/schemas/ProductData"
+          }
       }
+      },
+      "RevenueData": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number"
+          }
+        }
+      },
+      "CustomerOrders": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "sales_report": {
+            "$ref": "#/components/schemas/SalesData"
+          }
+        }
+      },
+      "SalesData": {
+        "type": "object",
+        "properties": {
+          "sales": {
+            "type": "number"
+          }
+        }
+      },
+      "CustomerData": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          }
+        }
+      },
+      "ProductData": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "categories": {
+            "$ref": "#/components/schemas/CategoriesData"
+          }
+        }
+      },
+      "CategoriesData": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      }    
     },
     "securitySchemes": {
       "BearerAuth": {

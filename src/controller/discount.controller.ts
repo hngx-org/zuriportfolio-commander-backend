@@ -156,4 +156,68 @@ export default class DiscountController extends BaseController {
 
     this.success(res, '--discount/all', 'discount fetched successfully', 200, discount);
   }
+
+  async getAllPromotionsWithTrackedPromotions(req: Request, res: Response) {
+    const userId = (req as any).user?.id;
+
+    if (!userId) {
+      return this.error(res, '--discount/promotions', 'User not found', 404, 'User not found');
+    }
+
+    // query parameters for pagination
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    const itemsPerPage = req.query.itemsPerPage ? parseInt(req.query.itemsPerPage as string, 10) : 10;
+
+    // Calculate the offset to skip the appropriate number of items
+    const offset = (page - 1) * itemsPerPage;
+
+    // Fetch all associated products for promotions created by the user 
+    const promoProducts = await prisma.promo_product.findMany({
+      where: {
+        user_id: userId,
+      },
+      include: {
+        product: true, // Include all product information
+        promo: {
+          include: {
+            tracked_promo: true, // Include tracked promotions for each promotion
+          },
+        },
+      },
+      orderBy: {
+        product: {
+          name: 'asc', // Sort products alphabetically
+        },
+      },
+      skip: offset,
+      take: itemsPerPage,
+    });
+
+    // Prepare an array to store the results
+    const productsWithPromotionsAndTrackedCounts = [];
+
+    for (const promoProduct of promoProducts) {
+      const { product, promo } = promoProduct;
+      const sales = promo.tracked_promo.length;
+
+      productsWithPromotionsAndTrackedCounts.push({
+        product,
+        promo,
+        sales,
+      });
+    }
+
+    if (productsWithPromotionsAndTrackedCounts.length === 0) {
+      return this.success(res, '--discount/promotions', 'No promotions found', 200, []);
+    } else {
+      return this.success(
+        res,
+        '--discount/promotions',
+        'Products with promotions and tracked promotions fetched successfully',
+        200,
+        productsWithPromotionsAndTrackedCounts
+      );
+    }
+  }
+
 }
