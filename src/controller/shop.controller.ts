@@ -70,7 +70,7 @@ export default class ShopController extends BaseController {
 
     this.success(res, '--shop/deleted', 'shop deleted', 200, null);
   }
-  
+
   // Update existing shop controller
   async updateShop(req: Request, res: Response) {
     const shopId = req.params.shop_id;
@@ -109,9 +109,8 @@ export default class ShopController extends BaseController {
   } // end of updateShop
 
   // start of shop traffic
- async shopTraffic(req: Request, res: Response) {
-  
-    const data = req.body
+  async shopTraffic(req: Request, res: Response) {
+    const data = req.body;
     data.ip_addr = req.socket.remoteAddress;
 
     const { error, value } = createShopTrafficSchema.validate(data);

@@ -1,7 +1,7 @@
 import express from 'express';
 import useCatchErrors from '../error/catchErrors';
 import RevenueController from '../controller/revenue.controller';
-import { isAuthenticated } from '../middlewares/auth';
+// import { isAuthenticated } from '../middlewares/auth';
 
 export default class RevenueRoute {
   router = express.Router();
