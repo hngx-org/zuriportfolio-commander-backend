@@ -18,10 +18,16 @@ export default class OrderRoute {
       useCatchErrors(this.OrderController.getOrder.bind(this.OrderController))
     );
 
+<<<<<<< HEAD
     this.router.get(
       `${this.path}`,
       useCatchErrors(this.OrderController.getAllOrders.bind(this.OrderController))
     );
+=======
+    this.router.get(`${this.path}`, 
+    //isAuthenticated
+    useCatchErrors(this.OrderController.getAllOrders.bind(this.OrderController)));
+>>>>>>> 657fce744387c2002febae9023ff5bcc1fd3a3b9
 
     this.router.get(
       `${this.path}/average`,
