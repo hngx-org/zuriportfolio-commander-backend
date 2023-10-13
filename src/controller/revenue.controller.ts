@@ -70,7 +70,7 @@ export default class RevenueController extends BaseController {
     const todayRevenue = await prisma.revenue.findMany({
       where: {
         user_id: userId,
-        created_at: {
+        createdAt: {
           gte: startTime,
           lte: endTime,
         },
