@@ -550,7 +550,8 @@
           }
         }
       }
-    },"/api/product/categories": {
+    },
+    "/api/product/categories": {
     "get": {
       "summary": "Retrieve Product Categories",
       "description": "Get a list of all product categories along with their subcategories.",
@@ -865,8 +866,8 @@
         ]
       }
     } 
-  },
-  "/sales/reports": {
+    },
+    "/sales/reports": {
       "get": {
         "tags": ["Sales"],
         "summary": "Retrieve Sales Reports",
@@ -901,6 +902,61 @@
           },
           "500": {
             "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/Orders": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "get all orders",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getOrderData"
+                },
+                "example": [
+                  {
+                    "order_id": "1122",
+                    "createdAt": "2023-10-11T18:00:52.000Z",
+                    "merchant": {
+                      "customer_orders": [
+                        {
+                          "status": "complete"
+                        }
+                      ]
+                    },
+                    "customer": [
+                      {
+                        "username": "Customer1"
+                      }
+                    ],
+                    "product": {
+                      "name": "Longchair"
+                    }
+                    
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Please provide an authenticated user."
+          },
+          "403": {
+            "description": "Forbidden. Token is invalid or action is not permitted for provided user."
+          },
+          "500": {
+            "description": "Internal server error."
           }
         },
         "security": [
@@ -1066,6 +1122,43 @@
           }
         },
         "required": ["id", "user_id", "sales", "order_id", "createdAt"]
+      },
+      "getOrderData": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "merchant": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              }
+            }
+          },
+          "customer": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              }
+            }
+          },
+          "product": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [ "order_id", "createdAt", "merchant", "customer", "product"]
       }
     },
     "securitySchemes": {

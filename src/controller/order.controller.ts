@@ -41,7 +41,7 @@ export default class OrderController extends BaseController {
 
   async getAllOrders(req: Request, res: Response) {
 
-    const userId = "00b0b915a-f5a7-47d8-85a3-57c11d34c7v5";
+    const userId = "1";
   
     if (!userId) {
       return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
@@ -83,6 +83,7 @@ export default class OrderController extends BaseController {
     if (!orders) {
       return this.error(res, '--order/all', 'An error occurred', 500, 'internal server error');
     }
+    return this.success(res, '--order/all', 'Orders fetched successfully', 200, orders);
   }
 
 async getAverageOrderValue(req: Request, res: Response) {
