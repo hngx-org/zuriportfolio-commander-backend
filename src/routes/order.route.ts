@@ -42,5 +42,10 @@ export default class OrderRoute {
       // isAuthenticated,
       useCatchErrors(this.OrderController.updateOrderStatus.bind(this.OrderController)),
     );
+    this.router.get(
+      `${this.path}/search/:name`,
+      // isAuthenticated,
+      useCatchErrors(this.OrderController.getOrderByProductName.bind(this.OrderController)),
+    );
   }
 }
