@@ -5,6 +5,7 @@ import logger from '../config/logger';
 import { AddProductPayloadType } from '@types';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
+import { TestUserId } from '../config/test';
 
 export default class ShopController extends BaseController {
   constructor() {
@@ -13,12 +14,12 @@ export default class ShopController extends BaseController {
 
   async createShop(req: Request, res: Response) {
     const payload = req.body;
+    const merchant_id = (req as any).user?.id ?? TestUserId;
     const { error, value } = createShopSchema.validate(payload);
     if (error) {
       return this.error(res, '--shop/invalid-fields', error?.message ?? 'missing shop details.', 400, null);
     }
-
-    const { name, merchant_id } = payload;
+    const { name } = payload;
     const id = uuidv4();
 
     //! check if user exists
@@ -41,4 +42,69 @@ export default class ShopController extends BaseController {
 
     this.success(res, '--shop/created', 'shop created', 200, created);
   }
+
+  async deleteShop(req: Request, res: Response) {
+    const { id } = req.params;
+    const merchant_id = (req as any).user?.id ?? TestUserId;
+    const shop = await prisma.shop.findFirst({
+      where: {
+        AND: {
+          merchant_id,
+          id,
+        },
+      },
+    });
+
+    if (shop === null) {
+      return this.error(res, '--shop/not-found', 'shop not found', 404);
+    }
+
+    await prisma.shop.update({
+      where: {
+        id,
+      },
+      data: {
+        is_deleted: 'temporary',
+      },
+    });
+
+    this.success(res, '--shop/deleted', 'shop deleted', 200, null);
+  }
+
+  // Update existing shop controller
+  async updateShop(req: Request, res: Response) {
+    const shopId = req.params.shop_id;
+    const userId = (req as any).user['id'];
+
+    if (shopId === undefined) {
+      return this.error(res, '--shop/ShortId empty', 'Short ID cannot be empty', 400);
+    }
+
+    const shop = await prisma.shop.findFirst({
+      where: { id: shopId },
+    });
+
+    if (!shop) {
+      return this.error(res, '--shop/not-found', 'Shop does not exist', 404);
+    }
+
+    if (shop.merchant_id !== userId) {
+      return this.error(res, '--shop/not-authorized', 'You are not authorized to update this shop', 401);
+    }
+
+    // check if fields are empty
+    const payload = req.body;
+
+    const { name } = payload;
+
+    // update shop
+    const updatedShop = await prisma.shop.update({
+      where: { id: shopId },
+      data: {
+        name,
+      },
+    });
+
+    this.success(res, '--shop/updated', 'shop updated', 200, updatedShop);
+  } // end of updateShop
 }
