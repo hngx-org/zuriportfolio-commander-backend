@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
-import { createCategorySchema, productSchema } from '../helper/validate';
+import { createCategorySchema, productSchema, updatedProductSchema } from '../helper/validate';
 import { uploadSingleImage } from '../helper/uploadImage';
 import logger from '../config/logger';
 import { AddProductPayloadType } from '@types';
@@ -110,6 +110,36 @@ export default class ProductController extends BaseController {
     this.success(res, 'Product Added', 'Product has been added successfully', 201, {
       ...product,
       image: product.image,
+    });
+  }
+
+  async updateProduct(req: Request, res: Response) {
+    const productId = req.params['product_id'];
+    const file = req.file ?? null;
+    const userId = (req as any).user?.id ?? TestUserId;
+
+    const payload: AddProductPayloadType = req.body;
+    const { error, value } = updatedProductSchema.validate(payload);
+
+    // Find the product by ID
+    const existingProduct = await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
+    // Check if the product exists
+    if (!existingProduct) {
+      return this.error(res, '--product/not-found', 'Product not found', 404);
+    }
+
+    const product = await prisma.product.update({
+      where: { id: productId },
+      data: { ...value },
+    });
+
+    this.success(res, 'Product Updated', 'Product has been updated successfully', 200, {
+      product,
     });
   }
 
