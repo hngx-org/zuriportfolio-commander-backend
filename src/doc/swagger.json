@@ -620,6 +620,88 @@
           }
         ]
       }
+    },
+    "/orders/search/{name}": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Search Order By Product Name",
+        "description": "",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Product name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/searchOrder"
+                },
+                "example": [
+                  {
+                    "order_id": "1122",
+                    "order_price": 12.22,
+                    "createdAt": "2023-10-11T18:00:52.000Z",
+                    "merchant": {
+                      "revenue": [
+                        {
+                          "amount": 3000.50
+                        }
+                      ],
+                      "customer_orders": [
+                        {
+                          "status": "complete",
+                          "sales_report": [
+                            {
+                              "sales": 11
+                            }
+                          ]
+                        }
+                      ],
+                      "customer": [
+                        {
+                          "username": "Customer1"
+                        }
+                      ],
+                      "product": {
+                        "price": 12.34,
+                        "name": "Longchair",
+                        "categories": [
+                          {
+                            "name": "Software"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Please provide an authenticated user."
+          },
+          "403": {
+            "description": "Forbidden. Token is invalid or action is not permitted for provided user."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -630,10 +712,6 @@
           "image": {
             "type": "string",
             "format": "binary"
-          },
-
-          "userId": {
-            "type": "string"
           },
           "name": {
             "type": "string"
@@ -778,7 +856,7 @@
         },
         "required": ["id", "user_id", "sales", "order_id", "createdAt"]
       },
-      "getOrderData": {
+      "searchOrder": {
         "type": "object",
         "properties": {
           "order_id": {
@@ -795,7 +873,25 @@
           "merchant": {
             "$ref": "#/components/schemas/MerchantData"
           }
-        },"required": [ "order_id", "order_price", "createdAt", "merchant"]
+        },"required": [ "order_id", "order_price", "createdAt", "merchant"],
+        "getOrderData": {
+          "type": "object",
+          "properties": {
+            "order_id": {
+              "type": "string"
+            },
+            "order_price": {
+              "type": "number",
+              "format": "float"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "merchant": {
+              "$ref": "#/components/schemas/MerchantData"
+            }
+          },"required": [ "order_id", "order_price", "createdAt", "merchant"]
       },
       "MerchantData": {
         "type": "object",
@@ -880,4 +976,5 @@
       }
     }
   }
+}
 }
