@@ -115,6 +115,155 @@
         ]
       }
     },
+
+    "/order/status/{order_id}": {
+      "patch": {
+        "tags": ["Order"],
+        "summary": "Update Order Status",
+        "description": "Update the status of a specific order.",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "description": "Order ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["pending", "complete", "failed"],
+                    "example": "complete"
+                  }
+                },
+                "required": ["status"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order status updated successfully."
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters or status value."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "404": {
+            "description": "Order not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+   
+    "/orders": {
+      "get": {
+        "tags": ["Order"],
+        "summary": "Gets all order count withing a timeframe",
+        "description": "Gets all order count withing a timeframe",
+        "parameters": [
+          {
+            "name": "timeframe",
+            "in": "query",
+            "description": " values: today, yesterday,one-week-ago and two-weeks-ago ",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ordersCount"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/product/category": {
+      "post": {
+        "tags": ["Product"],
+        "summary": "Create a product category",
+        "description": "Create a parent or subcategory.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategory"
+              },
+              "example": {
+                "name": "Software Enginering",
+                "parent_id": null
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Category created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                },
+                "example": {
+                  "parentCategory": {
+                    "$ref": "#/components/schemas/ProductCategory"
+                  },
+                  "subCategory": {
+                    "$ref": "#/components/schemas/ProductSubCategory"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters or status value."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "404": {
+            "description": "Order not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/discount": {
       "post": {
         "summary": "Create a discount",
@@ -743,6 +892,88 @@
           }
         }
       }
+    },
+    "/orders/search/{name}": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Search Order By Product Name",
+        "description": "",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Product name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/searchOrder"
+                },
+                "example": [
+                  {
+                    "order_id": "1122",
+                    "order_price": 12.22,
+                    "createdAt": "2023-10-11T18:00:52.000Z",
+                    "merchant": {
+                      "revenue": [
+                        {
+                          "amount": 3000.50
+                        }
+                      ],
+                      "customer_orders": [
+                        {
+                          "status": "complete",
+                          "sales_report": [
+                            {
+                              "sales": 11
+                            }
+                          ]
+                        }
+                      ],
+                      "customer": [
+                        {
+                          "username": "Customer1"
+                        }
+                      ],
+                      "product": {
+                        "price": 12.34,
+                        "name": "Longchair",
+                        "categories": [
+                          {
+                            "name": "Software"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Please provide an authenticated user."
+          },
+          "403": {
+            "description": "Forbidden. Token is invalid or action is not permitted for provided user."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
 
@@ -755,6 +986,7 @@
             "type": "string",
             "format": "binary"
           },
+
           "userId": {
             "type": "string"
           },
@@ -815,7 +1047,239 @@
       "GetProduct": {
         "type": "object",
         "properties": {}
+      },
+
+      "ordersCount": {
+        "type": "number"
+      },
+
+      "CreateCategory": {
+        "type": "object",
+        "properties": {
+          "parent_id": {
+            "type": ["integer", "null", "undefined", ""]
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["name"]
+      },
+      "ProductCategory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ProductSubCategory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentCategory": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CategoryResponse": {
+        "type": "object",
+        "properties": {
+          "parentCategory": {
+            "$ref": "#/components/schemas/ProductCategory"
+          },
+          "subCategory": {
+            "$ref": "#/components/schemas/ProductSubCategory"
+          },
+          "name": {
+            "$ref": "#/components/schemas/CreateCategory/properties/name"
+          }
+        }
+      },
+      "SalesReport": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "sales": {
+            "type": "integer"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "user_id", "sales", "order_id", "createdAt"]
+      },
+      "getOrderData": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "merchant": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              }
+            }
+          },
+          "customer": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              }
+            }
+          },
+          "product": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": ["order_id", "createdAt", "merchant", "customer", "product"]
+      },
+      "AverageOrderValue": {
+        "type": "object",
+        "properties": {
+          "averageSales": {
+            "type": "number",
+            "format": "double",
+            "description": "The average order value for today."
+          }
+        },
+        "example": {
+          "averageSales": 50.45
+        }
+      },
+      "searchOrder": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "order_price": {
+            "type": "number",
+            "format": "float"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "merchant": {
+            "$ref": "#/components/schemas/MerchantData"
+          }
+        },"required": [ "order_id", "order_price", "createdAt", "merchant"]
+      },
+      "MerchantData": {
+        "type": "object",
+        "properties": {
+          "revenue": {
+            "$ref": "#/components/schemas/RevenueData"
+          },
+          "customer_orders": {
+            "$ref": "#/components/schemas/CustomerOrders"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/CustomerData"
+          },
+          "product": {
+            "$ref": "#/components/schemas/ProductData"
+          }
       }
+      },
+      "RevenueData": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number"
+          }
+        }
+      },
+      "CustomerOrders": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "sales_report": {
+            "$ref": "#/components/schemas/SalesData"
+          }
+        }
+      },
+      "SalesData": {
+        "type": "object",
+        "properties": {
+          "sales": {
+            "type": "number"
+          }
+        }
+      },
+      "CustomerData": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          }
+        }
+      },
+      "ProductData": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "categories": {
+            "$ref": "#/components/schemas/CategoriesData"
+          }
+        }
+      },
+      "CategoriesData": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      }    
     },
     "securitySchemes": {
       "BearerAuth": {
