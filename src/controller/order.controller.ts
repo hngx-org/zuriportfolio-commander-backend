@@ -58,18 +58,7 @@ export default class OrderController extends BaseController {
       this.error(res, '--order/single', 'Order not found', 404);
     }
 
-<<<<<<< HEAD
     this.success(res, '--order/single', 'Order fetched successfully', 200, orderItem);
-=======
-    // Return the order data as part of the response
-    this.success(
-      res,
-      '--product/updated',
-      'product updated successfully',
-      200,
-      { data: order } // Include the order data in the response
-    );
->>>>>>> dcc2663c7a7113c84ed946bdaee932e28af208f5
   }
 
 
