@@ -76,7 +76,7 @@ export default class ShopController extends BaseController {
     if (shops.length > 0) {
       this.success(res, 'All shops', 'Shops have been listed successfully', 200, shops);
     } else {
-      this.error(res, '--shops-notfound', 'Shops not found', 404);
+      this.success(res, '--shops-isEmpty', 'No Shop Found', 404, []);
     }
   }
   // Update existing shop controller
