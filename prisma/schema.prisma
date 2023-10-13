@@ -161,11 +161,11 @@ model product_sub_category {
 }
 
 model promo_product {
-    id         Int      @id @default(autoincrement())
+    id         Int    @id @default(autoincrement())
     promo_id   String
     product_id String //  new field
     user_id    String
-    createdAt  DateTime @default(now())
+    // createdAt  DateTime @default(now())
 
     user    user      @relation(fields: [user_id], references: [id], onDelete: Cascade)
     product product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
