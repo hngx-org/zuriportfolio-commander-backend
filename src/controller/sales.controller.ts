@@ -37,12 +37,11 @@ export default class SalesController extends BaseController {
           const twentyFourHoursAgo = new Date(now);
           twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
           return createdAt >= twentyFourHoursAgo;
-        }else if (timeframe === '7d') {
+        } else if (timeframe === '7d') {
           const sevenDaysAgo = new Date(now);
           sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
           return createdAt >= sevenDaysAgo;
-        }
-        else if (timeframe === '3m') {
+        } else if (timeframe === '3m') {
           const threeMonthsAgo = new Date(now);
           threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
           return createdAt >= threeMonthsAgo;
@@ -50,12 +49,12 @@ export default class SalesController extends BaseController {
           const twelveMonthsAgo = new Date(now);
           twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
           return createdAt >= twelveMonthsAgo;
-        }else if (timeframe === '1yr') {
+        } else if (timeframe === '1yr') {
           const oneYearAgo = new Date(now);
           oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
           return createdAt >= oneYearAgo;
-        };
-      })
+        }
+      });
 
       this.success(res, '/api/sales/reports', 'Sales reports fetched successfully', 200, filteredReports);
     } catch (error) {

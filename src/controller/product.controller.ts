@@ -125,7 +125,7 @@ export default class ProductController extends BaseController {
         '--product/invalid-fields',
         error?.message ?? 'Important product details is missing.',
         400,
-        null
+        null,
       );
     }
 
@@ -239,6 +239,42 @@ export default class ProductController extends BaseController {
             ...cat,
           },
           image: p.image,
+          price: p.price,
+          discount: p.discount_price,
+          quantity: p.quantity,
+          currency: p.currency,
+          tax: p.tax,
+          description: p.description,
+        });
+        return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
+      }
+    }
+  }
+
+  async getMarketplaceProducts(req: Request, res: Response) {
+    const products = await prisma.product.findMany({
+      where: {
+        AND: {
+          is_deleted: 'active',
+        },
+      },
+      include: { image: true },
+    });
+    const allProd = [];
+    if (products.length > 0) {
+      for (const p of products) {
+        const promoProd = await prisma.promo_product.findFirst({ where: { product_id: p.id } });
+        const cat = await prisma.product_category.findFirst({
+          where: { id: p.category_id },
+          include: { sub_categories: true },
+        });
+        allProd.push({
+          ...p,
+          category: {
+            ...cat,
+          },
+          image: p.image,
+          promo: promoProd,
         });
       }
     }
@@ -259,7 +295,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_delete/invalid-field',
         'product id is invalid, expected product_id in uuid format.',
-        400
+        400,
       );
     }
 
@@ -307,7 +343,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_category/category-exists',
         `Category with name '${lowercaseName}' already exists. Please choose a different name.`,
-        409
+        409,
       );
     }
 
@@ -330,6 +366,20 @@ export default class ProductController extends BaseController {
       });
     }
     //create a subCategory
+    const existingSubCategory = await prisma.product_sub_category.findFirst({
+      where: {
+        name: lowercaseName,
+      },
+    });
+    if (existingSubCategory) {
+      return this.error(
+        res,
+        '--product_sub_category/category-exists',
+        `Sub-category with name '${lowercaseName}' already exists. Please choose a different name.`,
+        409,
+      );
+    }
+
     const subCategory = await prisma.product_sub_category.create({
       data: {
         name: lowercaseName,
@@ -346,19 +396,18 @@ export default class ProductController extends BaseController {
   }
 
   async getAllCategories(req: Request | any, res: Response | any) {
-    try {
-      const userId = (req as any).user?.id ?? TestUserId;
-      const categories = await prisma.product_category.findMany({
-        where: {
-          user_id: userId,
-        },
-        include: {
-          sub_categories: true,
-        },
-      });
-      this.success(res, '--categories/all', 'categories fetched successfully', 200, categories);
-    } catch (error) {
-      return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
+    const userId = (req as any).user?.id ?? TestUserId;
+    const categories = await prisma.product_category.findMany({
+      where: {
+        user_id: userId,
+      },
+      include: {
+        sub_categories: true,
+      },
+    });
+    this.success(res, '--categories/all', 'categories fetched successfully', 200, categories);
+    if (this.error) {
+      return this.error(res, '--getCategories/internal-server-error', 'Internal server Error', 500);
     }
   }
 }
