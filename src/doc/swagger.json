@@ -48,7 +48,9 @@
     },
     "/products/marketplace": {
       "get": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "summary": "Fetch all marketplace products",
         "description": "",
         "responses": {
@@ -199,7 +201,9 @@
     },
     "/order/status/{order_id}": {
       "patch": {
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "summary": "Update Order Status",
         "description": "Update the status of a specific order.",
         "parameters": [
@@ -221,11 +225,17 @@
                 "properties": {
                   "status": {
                     "type": "string",
-                    "enum": ["pending", "complete", "failed"],
+                    "enum": [
+                      "pending",
+                      "complete",
+                      "failed"
+                    ],
                     "example": "complete"
                   }
                 },
-                "required": ["status"]
+                "required": [
+                  "status"
+                ]
               }
             }
           }
@@ -256,7 +266,9 @@
     },
     "/orders/average": {
       "get": {
-        "tags": ["Orders"],
+        "tags": [
+          "Orders"
+        ],
         "summary": "Fetch the average order value for today",
         "parameters": [
           {
@@ -266,7 +278,9 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["today"],
+              "enum": [
+                "today"
+              ],
               "example": "today"
             }
           }
@@ -301,7 +315,9 @@
     },
     "/orders": {
       "get": {
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "summary": "Gets all order count withing a timeframe",
         "description": "Gets all order count withing a timeframe",
         "parameters": [
@@ -334,7 +350,9 @@
     },
     "/product/category": {
       "post": {
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "summary": "Create a product category",
         "description": "Create a parent or subcategory.",
         "requestBody": {
@@ -510,7 +528,9 @@
     "/shop/store-traffic": {
       "post": {
         "summary": "Used to track user visit to a shop",
-        "tags": ["Shop"],
+        "tags": [
+          "Shop"
+        ],
         "requestBody": {
           "description": "Shop data",
           "required": true,
@@ -543,7 +563,9 @@
       "get": {
         "summary": "Retrieve Product Categories",
         "description": "Get a list of all product categories along with their subcategories.",
-        "tags": ["Product"],
+        "tags": [
+          "Product"
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -555,7 +577,6 @@
                     "name": "Electronics",
                     "product_id": "11",
                     "createdAt": "2023-10-11T21:25:23.0000Z",
-
                     "sub_categories": [
                       {
                         "id": 101,
@@ -565,12 +586,10 @@
                       }
                     ]
                   }
-                }
+                ]
               }
             }
-          }
-        },
-        "responses": {
+          },
           "201": {
             "description": "User successfully signed up."
           },
@@ -585,7 +604,9 @@
     },
     "/sales/reports": {
       "get": {
-        "tags": ["Sales"],
+        "tags": [
+          "Sales"
+        ],
         "summary": "Retrieve Sales Reports",
         "description": "Get sales reports based on timeframes.",
         "parameters": [
@@ -598,7 +619,7 @@
               "type": "string"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Verification code confirmed successfully."
@@ -1018,7 +1039,9 @@
     },
     "/Orders": {
       "get": {
-        "tags": ["Orders"],
+        "tags": [
+          "Orders"
+        ],
         "summary": "get all orders",
         "description": "",
         "responses": {
@@ -1069,51 +1092,6 @@
           }
         ]
       }
-    },
-    "/orders/average": {
-      "get": {
-        "tags": ["Orders"],
-        "summary": "Fetch the average order value for today",
-        "parameters": [
-          {
-            "name": "timeframe",
-            "in": "query",
-            "description": "Timeframe for calculating the average order value. Should be 'today'.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": ["today"],
-              "example": "today"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AverageOrderValue"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request. Please check the request parameters."
-          },
-          "401": {
-            "description": "Unauthorized. Token is invalid or action is not permitted."
-          },
-          "500": {
-            "description": "Internal server error."
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
     }
   },
   "components": {
@@ -1125,17 +1103,12 @@
             "type": "string",
             "format": "binary"
           },
-
           "userId": {
             "type": "string"
           },
           "shopId": {
             "type": "string"
           },
-          "shopId": {
-            "type": "string"
-          },
-
           "name": {
             "type": "string"
           },
@@ -1161,13 +1134,10 @@
             "type": "string"
           }
         },
-
         "required": [
           "image",
-
           "userId",
           "shopId",
-
           "name",
           "description",
           "quantity",
@@ -1177,7 +1147,6 @@
           "tax",
           "currency"
         ],
-
         "example": {
           "categoryId": 1,
           "name": "HNGX polo",
@@ -1301,11 +1270,9 @@
         "type": "object",
         "properties": {}
       },
-
       "ordersCount": {
         "type": "number"
       },
-
       "CreateCategory": {
         "type": "object",
         "properties": {
@@ -1395,7 +1362,13 @@
             "format": "date-time"
           }
         },
-        "required": ["id", "user_id", "sales", "order_id", "createdAt"]
+        "required": [
+          "id",
+          "user_id",
+          "sales",
+          "order_id",
+          "createdAt"
+        ]
       },
       "getOrderData": {
         "type": "object",
@@ -1432,7 +1405,13 @@
             }
           }
         },
-        "required": ["order_id", "createdAt", "merchant", "customer", "product"]
+        "required": [
+          "order_id",
+          "createdAt",
+          "merchant",
+          "customer",
+          "product"
+        ]
       },
       "AverageOrderValue": {
         "type": "object",
@@ -1454,55 +1433,6 @@
         "scheme": "bearer",
         "bearerFormat": "JWT"
       }
-    }
-  },
-  "/orders/average": {
-    "get": {
-      "tags": [
-        "Orders"
-      ],
-      "summary": "Fetch the average order value for today",
-      "parameters": [
-        {
-          "name": "timeframe",
-          "in": "query",
-          "description": "Timeframe for calculating the average order value. Should be 'today'.",
-          "required": true,
-          "schema": {
-            "type": "string",
-            "enum": [
-              "today"
-            ],
-            "example": "today"
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Successful operation",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AverageOrderValue"
-              }
-            }
-          }
-        },
-        "400": {
-          "description": "Bad request. Please check the request parameters."
-        },
-        "401": {
-          "description": "Unauthorized. Token is invalid or action is not permitted."
-        },
-        "500": {
-          "description": "Internal server error."
-        }
-      },
-      "security": [
-        {
-          "BearerAuth": []
-        }
-      ]
     }
   }
 }

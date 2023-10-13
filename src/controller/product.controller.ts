@@ -394,9 +394,9 @@ export default class ProductController extends BaseController {
 
   async updateProduct(req: Request, res: Response) {
     const file = req.file ?? null;
-    const userId = (req as any).body.user_id;
+    const userId = (req as any).user?.id ?? TestUserId;
     const productId = req.params['productId'];
-    const payload: UpdateProductPayloadType = file == null ? req.body.newData : JSON.parse(req.body.newData);
+    const payload: UpdateProductPayloadType = req.body;
 
     // Checks if the product exists before attempting update
     const product = await prisma.product.findUnique({

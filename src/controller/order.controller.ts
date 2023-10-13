@@ -78,12 +78,13 @@ export default class OrderController extends BaseController {
             username: true,
           },
         },
-        product: {
-          // Add the product selection here
-          select: {
-            name: true,
-          },
-        },
+        // Showing error
+        // product: {
+        //   // Add the product selection here
+        //   select: {
+        //     name: true,
+        //   },
+        // },
       },
       skip: (+page - 1) * +pageSize,
       take: +pageSize,
@@ -178,7 +179,7 @@ export default class OrderController extends BaseController {
       averageSales,
     });
   }
-  
+
   async updateOrderStatus(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
     const orderId = req.params['order_id'];
