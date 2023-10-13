@@ -71,6 +71,7 @@ export default class ShopController extends BaseController {
     this.success(res, '--shop/deleted', 'shop deleted', 200, null);
   }
 
+  // Get all shop controller
   async getAllShops(req: Request, res: Response) {
     const shops = await prisma.shop.findMany();
     if (shops.length > 0) {
