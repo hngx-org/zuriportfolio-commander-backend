@@ -272,7 +272,7 @@ export default class ProductController extends BaseController {
         });
       }
     }
-    return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
+    return this.success(res, '--product_marketplace/success', 'Marketplace products have been listed', 200, allProd);
   }
 
   async deleteProduct(req: Request, res: Response) {
