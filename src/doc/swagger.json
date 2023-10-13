@@ -376,23 +376,39 @@
                 "example": [
                   {
                     "order_id": "1122",
+                    "order_price": 12.22,
                     "createdAt": "2023-10-11T18:00:52.000Z",
                     "merchant": {
+                      "revenue": [
+                        {
+                          "amount": 3000.50
+                        }
+                      ],
+                      "categories": [
+                        {
+                          "name": "Software"
+                        }
+                      ],
                       "customer_orders": [
                         {
-                          "status": "complete"
+                          "status": true,
+                          "sales_report": [
+                            {
+                              "sales": "complete"
+                            }
+                          ]
                         }
-                      ]
-                    },
-                    "customer": [
-                      {
-                        "username": "Customer1"
+                      ],
+                      "customer": [
+                        {
+                          "username": "Customer1"
+                        }
+                      ],
+                      "product": {
+                        "price": 12.34,
+                        "name": "Longchair"
                       }
-                    ],
-                    "product": {
-                      "name": "Longchair"
                     }
-                    
                   }
                 ]
               }
@@ -578,36 +594,34 @@
           "order_id": {
             "type": "string"
           },
+          "order_price": {
+            "type": "number",
+            "format": "float"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time"
           },
           "merchant": {
-            "type": "object",
-            "properties": {
-              "status": {
-                "type": "string"
-              }
-            }
+            "$ref": "#/components/schemas/MerchantData"
+          }
+        },"required": ["id", "order_id", "product_id", "order_price", "createdAt", "updatedAt", "productId", "product"]
+      },
+      "MerchantData": {
+        "type": "object",
+        "properties": {
+          "revenue": {
+            "$ref": "#/components/schemas/RevenueData"
+          },
+          "customer_orders": {
+            "$ref": "#/components/schemas/CustomerOrders"
           },
           "customer": {
-            "type": "object",
-            "properties": {
-              "username": {
-                "type": "string"
-              }
-            }
+            "$ref": "#/components/schemas/CustomerData"
           },
           "product": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              }
-            }
+            "$ref": "#/components/schemas/ProductData"
           }
-        },
-        "required": [ "order_id", "createdAt", "merchant", "customer", "product"]
       }
     },
     "securitySchemes": {
@@ -618,4 +632,5 @@
       }
     }
   }
+}
 }

@@ -40,7 +40,8 @@ export default class OrderController extends BaseController {
   }
 
   async getAllOrders(req: Request, res: Response) {
-   //const userId = 
+   //const userId = req.user.id
+
     const userId = "1";
   
     if (!userId) {
@@ -51,15 +52,37 @@ export default class OrderController extends BaseController {
     const orders = await prisma.order_item.findMany({
       where: {
         merchant_id: userId,
+        // product : {
+        //   name : {
+        //     contains: name,
+        //   },
+        // },
       },
       select: {
         order_id: true,
+        order_price : true,
         createdAt: true,
+        //status :true,
         merchant: {
           select: {
+            revenue:{
+              select : {
+                amount : true, 
+              }
+            },
+           categories : {
+            select : {
+              name : true,
+            }
+           },
             customer_orders: {
               select: {
                 status: true,
+                sales_report : {
+                  select : {
+                    sales : true,
+                  }
+                }
               },
             },
           },
@@ -69,8 +92,9 @@ export default class OrderController extends BaseController {
             username: true,
           },
         },
-        product: { // Add the product selection here
+        product: {
           select: {
+            price : true,
             name: true,
           },
         },
