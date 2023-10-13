@@ -34,12 +34,7 @@ export const createShopSchema = Joi.object({
 export const createCategorySchema = Joi.object({
   name: Joi.string().required(),
   // parent_id: Joi.number().integer().allow(null).optional(),
-  parent_id: Joi.alternatives(
-    Joi.number().integer(),
-    Joi.allow(null),
-    Joi.allow(undefined),
-    Joi.allow('')
-  ).optional(),
+  parent_id: Joi.alternatives(Joi.number().integer(), Joi.allow(null), Joi.allow('')).optional(),
 });
 
 export const createDiscountSchema = Joi.object({

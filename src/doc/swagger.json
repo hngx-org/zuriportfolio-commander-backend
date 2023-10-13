@@ -424,7 +424,6 @@
                     "product": {
                       "name": "Longchair"
                     }
-                    
                   }
                 ]
               }
@@ -491,7 +490,7 @@
           }
         ]
       }
-    }    
+    }
   },
   "components": {
     "schemas": {
@@ -663,7 +662,7 @@
             }
           }
         },
-        "required": [ "order_id", "createdAt", "merchant", "customer", "product"]
+        "required": ["order_id", "createdAt", "merchant", "customer", "product"]
       },
       "AverageOrderValue": {
         "type": "object",
