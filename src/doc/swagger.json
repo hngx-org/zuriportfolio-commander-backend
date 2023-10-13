@@ -115,7 +115,7 @@
         ]
       }
     },
-    "/product/categories": {
+    "/product/category": {
       "post": {
         "tags": ["Product"],
         "summary": "Create a product category",
@@ -283,81 +283,14 @@
         }
       }
     },
-    "/auth/signup": {
-      "post": {
-        "tags": ["Authentication"],
-        "summary": "User Signup",
-        "description": "Allows a user to sign up.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "firstName": {
-                    "type": "string",
-                    "example": "John"
-                  },
-                  "lastName": {
-                    "type": "string",
-                    "example": "Doe"
-                  },
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "example": "sicoj92691@elixirsd.com"
-                  },
-                  "password": {
-                    "type": "string",
-                    "format": "password",
-                    "example": "myPassword2021"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "User successfully signed up."
-          },
-          "400": {
-            "description": "Bad request. Please check the request parameters."
-          },
-          "500": {
-            "description": "Internal server error."
-          }
-        }
-      }
-    },
-    "/auth/login": {
-      "post": {
-        "tags": ["Authentication"],
-        "summary": "User Login",
-        "description": "Allows a user to log in.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "example": "sicoj92691@elixirsd.com"
-                  },
-                  "password": {
-                    "type": "string",
-                    "format": "password",
-                    "example": "myPassword2021"
-                  }
-                }
-              }
-            }
-          }
-        },
+    "/product/categories": {
+      "get": {
+        "summary": "Retrieve Product Categories",
+        "description": "Get a list of all product categories along with their subcategories.",
+        "tags": ["Product"],
         "responses": {
           "200": {
+<<<<<<< HEAD
             "description": "User successfully logged in."
           },
           "401": {
@@ -566,22 +499,35 @@
                   "name": "Electronics",
                   "product_id": "11",
                   "createdAt": "2023-10-11T21:25:23.0000Z",
+=======
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 11,
+                    "name": "Electronics",
+                    "product_id": "11",
+                    "createdAt": "2023-10-11T21:25:23.0000Z",
+>>>>>>> 787ebc401fa75fd27a2c461cead27231df435d0c
 
-                  "sub_categories": [
-                    {
-                      "id": 101,
-                      "name": "Smartphones",
-                      "parent_category_id": 1011,
-                      "createdAt": "2023-10-11T21:25:23.0000Z"
-                    }
-                  ]
-                }
-              ]
+                    "sub_categories": [
+                      {
+                        "id": 101,
+                        "name": "Smartphones",
+                        "parent_category_id": 1011,
+                        "createdAt": "2023-10-11T21:25:23.0000Z"
+                      }
+                    ]
+                  }
+                ]
+              }
             }
           }
         }
       }
     },
+<<<<<<< HEAD
 
     "/auth/signup": {
       "post": {
@@ -912,6 +858,9 @@
         }
     },
     "/orders/search/{name}": {
+=======
+    "/sales/reports": {
+>>>>>>> 787ebc401fa75fd27a2c461cead27231df435d0c
       "get": {
         "tags": ["Orders"],
         "summary": "Search Order By Product Name",
