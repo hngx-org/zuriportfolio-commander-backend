@@ -32,8 +32,7 @@ export default class OrderRoute {
     );
 
     this.router.get(
-      `${this.path}/average`,
-
+      `${this.path}s/average`,
       // isAuthenticated,
       useCatchErrors(this.OrderController.getAverageOrderValue.bind(this.OrderController))
     );

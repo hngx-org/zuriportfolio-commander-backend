@@ -405,9 +405,6 @@ export default class ProductController extends BaseController {
       },
     });
     this.success(res, '--categories/all', 'categories fetched successfully', 200, categories);
-    if (this.error) {
-      return this.error(res, '--getCategories/internal-server-error', 'Internal server Error', 500);
-    }
   }
 
   async updateProduct(req: Request, res: Response) {
