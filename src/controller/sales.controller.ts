@@ -3,7 +3,7 @@ import BaseController from './base.controller';
 import logger from '../config/logger';
 import prisma from '../config/prisma';
 import { AddSalesReportType } from '@types';
-import { saleSchema } from 'helper/validate';
+import { saleSchema } from './../helper/validate';
 import { v4 as uuidv4 } from 'uuid';
 
 export default class SalesController extends BaseController {

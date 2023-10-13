@@ -21,7 +21,7 @@ export interface AddProductPayloadType {
 
 export interface AddSalesReportType {
   user_id: string;
-  sales: number;
+  sales: any;
   order_id: string;
 }
 
