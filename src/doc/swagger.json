@@ -15,7 +15,7 @@
       "description": "Production server"
     },
     {
-      "url": "https://auth.akuya.tech/api",
+      "url": "https://auth.akuya.tech/api/",
       "description": "Authentication server"
     }
   ],
@@ -97,6 +97,60 @@
         "responses": {
           "200": {
             "description": "Action authorized successfully."
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/product/category": {
+      "post": {
+        "tags": ["Product"],
+        "summary": "Create a product category",
+        "description": "Create a parent or subcategory.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategory"
+              },
+              "example": {
+                "name": "Software Enginering",
+                "parent_id": null
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Category created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                },
+                "example": {
+                  "parentCategory": {
+                    "$ref": "#/components/schemas/ProductCategory"
+                  },
+                  "subCategory": {
+                    "$ref": "#/components/schemas/ProductSubCategory"
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad request. Please check the request parameters."
@@ -417,49 +471,43 @@
         "tags": ["Order"],
         "summary": "Update Order Status",
         "description": "Update the status of a specific order.",
+
+    "/sales/reports": {
+      "get": {
+        "tags": ["Sales"],
+        "summary": "Retrieve Sales Reports",
+        "description": "Get sales reports based on timeframes.",
+
         "parameters": [
           {
-            "name": "order_id",
-            "in": "path",
-            "description": "Order ID",
+            "name": "timeframe",
+            "in": "query",
+            "description": "Comma-separated list of timeframes (e.g., 12m,3m,1yr,7d,24hr)",
             "required": true,
             "schema": {
               "type": "string"
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "status": {
-                    "type": "string",
-                    "enum": ["pending", "complete", "failed"],
-                    "example": "complete"
-                  }
-                },
-                "required": ["status"]
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
-            "description": "Order status updated successfully."
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesReport"
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad request. Please check the request parameters or status value."
+            "description": "Bad request"
           },
           "401": {
-            "description": "Unauthorized. Token is invalid or action is not permitted."
-          },
-          "404": {
-            "description": "Order not found."
+            "description": "Unauthorized"
           },
           "500": {
-            "description": "Internal server error."
+            "description": "Internal server error"
           }
         },
         "security": [
@@ -469,39 +517,49 @@
         ]
       }
     },
-    "/orders/average": {
+    "/Orders": {
       "get": {
         "tags": ["Orders"],
-        "summary": "Fetch the average order value for today",
-        "parameters": [
-          {
-            "name": "timeframe",
-            "in": "query",
-            "description": "Timeframe for calculating the average order value. Should be 'today'.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": ["today"],
-              "example": "today"
-            }
-          }
-        ],
+        "summary": "get all orders",
+        "description": "",
         "responses": {
           "200": {
-            "description": "Successful operation",
+            "description": "successful operation",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AverageOrderValue"
-                }
+                  "$ref": "#/components/schemas/getOrderData"
+                },
+                "example": [
+                  {
+                    "order_id": "1122",
+                    "createdAt": "2023-10-11T18:00:52.000Z",
+                    "merchant": {
+                      "customer_orders": [
+                        {
+                          "status": "complete"
+                        }
+                      ]
+                    },
+                    "customer": [
+                      {
+                        "username": "Customer1"
+                      }
+                    ],
+                    "product": {
+                      "name": "Longchair"
+                    }
+                    
+                  }
+                ]
               }
             }
           },
-          "400": {
-            "description": "Bad request. Please check the request parameters."
-          },
           "401": {
-            "description": "Unauthorized. Token is invalid or action is not permitted."
+            "description": "Unauthorized. Please provide an authenticated user."
+          },
+          "403": {
+            "description": "Forbidden. Token is invalid or action is not permitted for provided user."
           },
           "500": {
             "description": "Internal server error."
@@ -515,7 +573,6 @@
       }
     }
   },
-
   "components": {
     "schemas": {
       "AddProduct": {
@@ -550,20 +607,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "image",
-          "name",
-          "description",
-          "quantity",
-          "categoryId",
-          "price",
-          "discountPrice",
-          "tax",
-          "currency"
-        ],
         "example": {
-          "userId": "10372883-4ae7-4299-9759-706b3646e7ac",
-          "shopId": "d001d16b-9b1b-4b69-b037-2344325466ea",
           "categoryId": 1,
           "name": "HNGX polo",
           "description": "Red",
@@ -641,6 +685,65 @@
             "$ref": "#/components/schemas/CreateCategory/properties/name"
           }
         }
+      },
+      "SalesReport": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "sales": {
+            "type": "integer"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "user_id", "sales", "order_id", "createdAt"]
+      },
+      "getOrderData": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "merchant": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              }
+            }
+          },
+          "customer": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              }
+            }
+          },
+          "product": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [ "order_id", "createdAt", "merchant", "customer", "product"]
       }
     },
     "securitySchemes": {
