@@ -233,8 +233,7 @@ export default class ProductController extends BaseController {
           include: { sub_categories: true },
         });
         allProd.push({
-          name: p.name,
-          id: p.id,
+          products: p,
           category: {
             ...cat,
           },
@@ -406,8 +405,5 @@ export default class ProductController extends BaseController {
       },
     });
     this.success(res, '--categories/all', 'categories fetched successfully', 200, categories);
-    if (this.error) {
-      return this.error(res, '--getCategories/internal-server-error', 'Internal server Error', 500);
-    }
   }
 }

@@ -20,32 +20,48 @@ export default class OrderController extends BaseController {
   }
 
   async getOrder(req: Request, res: Response) {
-    // Assuming you have the order ID from the request params
-    const orderId = req.params.order_id; // Replace with your actual parameter name
+      const userId = (req as any).user?.id ?? TestUserId;
+      const orderId = req.params['order_id'];
 
-    // Fetch the order details from the database using Prisma
-    const order = await prisma.order.findFirst({
+   
+    const orderItem = await prisma.order_item.findFirst({
       where: {
-        id: orderId,
+        merchant_id: userId,
+        order_id: orderId,
       },
-      include: {
-        customer: true,
+      select: {
+        order_id: true,
+        createdAt: true,
+        merchant: {
+          select: {
+            customer_orders: {
+              select: {
+                status: true,
+              },
+            },
+          },
+        },
+        customer: {
+          select: {
+            username: true,
+          },
+        },
+        product: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
-    //   if (!order) {
-    //     return res.status(404).json({ error: 'Order not found' });
-    //   }
+    if (!orderItem) {
+      this.error(res, '--order/single', 'Order not found', 404);
+    }
 
-    // Return the order data as part of the response
-    this.success(
-      res,
-      '--product/updated',
-      'product updated successfully',
-      200,
-      { data: order } // Include the order data in the response
-    );
+    this.success(res, '--order/single', 'Order fetched successfully', 200, orderItem);
   }
+
+
 
   async getAllOrders(req: Request, res: Response) {
     //const userId = req.user.id; // get the user id from the request params
