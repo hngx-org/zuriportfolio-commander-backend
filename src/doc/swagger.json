@@ -97,7 +97,50 @@
         ]
       }
     },
+
     "/product/{product_id}": {
+      "patch": {
+        "tags": ["Product"],
+        "summary": "Update a Product",
+        "description": "",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "description": "Product Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProduct"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddProduct"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
       "delete": {
         "tags": ["Product"],
         "summary": "Delete a product",
@@ -191,7 +234,7 @@
         ]
       }
     },
-   
+
     "/orders": {
       "get": {
         "tags": ["Order"],
@@ -733,7 +776,7 @@
                     "merchant": {
                       "revenue": [
                         {
-                          "amount": 3000.50
+                          "amount": 3000.5
                         }
                       ],
                       "customer_orders": [
@@ -781,6 +824,53 @@
             "BearerAuth": []
           }
         ]
+      }
+    },
+    "/revenue/{order_id}": {
+      "patch": {
+        "tags": ["Revenue"],
+        "summary": "Update Revenue",
+        "description": "Update the revenue based on the order's status",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            },
+            "description": "ID of the order to update revenue for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Revenue updated successfully",
+                  "data": {
+                    "id": 1,
+                    "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
+                    "amount": 1500.0
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "--order/not-found",
+                  "message": "Order not found"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -831,6 +921,49 @@
           "currency"
         ],
 
+        "example": {
+          "categoryId": 1,
+          "name": "HNGX polo",
+          "description": "Red",
+          "quantity": 4,
+          "price": 500,
+          "discount_price": 455,
+          "tax": 2.2,
+          "currency": "USD"
+        }
+      },
+      "UpdateProduct": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "string",
+            "format": "binary"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "categoryId": {
+            "type": "integer"
+          },
+          "price": {
+            "type": "number"
+          },
+          "discountPrice": {
+            "type": "number"
+          },
+          "tax": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          }
+        },
         "example": {
           "categoryId": 1,
           "name": "HNGX polo",
@@ -951,27 +1084,64 @@
             "format": "date-time"
           },
           "merchant": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              }
+            }
+          },
+          "customer": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              }
+            }
+          },
+          "product": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": ["order_id", "createdAt", "merchant", "customer", "product"]
+      },
+      "AverageOrderValue": {
+        "type": "object",
+        "properties": {
+          "averageSales": {
+            "type": "number",
+            "format": "double",
+            "description": "The average order value for today."
+          }
+        },
+        "example": {
+          "averageSales": 50.45
+        }
+      },
+      "searchOrder": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "order_price": {
+            "type": "number",
+            "format": "float"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "merchant": {
             "$ref": "#/components/schemas/MerchantData"
           }
-        },"required": [ "order_id", "order_price", "createdAt", "merchant"],
-        "getOrderData": {
-          "type": "object",
-          "properties": {
-            "order_id": {
-              "type": "string"
-            },
-            "order_price": {
-              "type": "number",
-              "format": "float"
-            },
-            "createdAt": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "merchant": {
-              "$ref": "#/components/schemas/MerchantData"
-            }
-          },"required": [ "order_id", "order_price", "createdAt", "merchant"]
+        },
+        "required": ["order_id", "order_price", "createdAt", "merchant"]
       },
       "MerchantData": {
         "type": "object",
@@ -988,7 +1158,7 @@
           "product": {
             "$ref": "#/components/schemas/ProductData"
           }
-      }
+        }
       },
       "RevenueData": {
         "type": "object",
@@ -1046,7 +1216,7 @@
             "type": "string"
           }
         }
-      }    
+      }
     },
     "securitySchemes": {
       "BearerAuth": {
@@ -1054,7 +1224,34 @@
         "scheme": "bearer",
         "bearerFormat": "JWT"
       }
+    },
+    "RevenueUpdateResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "A message indicating the result of the operation"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "The ID of the updated revenue record"
+            },
+            "user_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The user ID for whom the revenue is updated"
+            },
+            "amount": {
+              "type": "number",
+              "format": "float",
+              "description": "The updated revenue amount"
+            }
+          }
+        }
+      }
     }
   }
-}
 }

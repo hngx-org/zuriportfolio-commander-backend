@@ -40,3 +40,13 @@ export function validateDateRange(valid_from: string, valid_to: string) {
   }
   return resp;
 }
+
+export function genRandNum(len: number = 10) {
+  let char = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  let id: string = '';
+  for (let i = 0; i < len; i++) {
+    const rand = Math.floor(Math.random() * char.length);
+    id += char[rand];
+  }
+  return Number(id);
+}

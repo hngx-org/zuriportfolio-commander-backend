@@ -5,7 +5,7 @@ import prisma from '../config/prisma';
 import { v4 as uuidv4 } from 'uuid';
 import { createDiscountSchema } from '../helper/validate';
 import { CreateDiscountType } from '../@types';
-import { validateDateRange } from '../helper';
+import { genRandNum, validateDateRange } from '../helper';
 import logger from '../config/logger';
 import { TestUserId } from '../config/test';
 
@@ -100,7 +100,7 @@ export default class DiscountController extends BaseController {
     }
 
     // create promotion
-    const promo_id = uuidv4();
+    const promo_id = genRandNum(5);
     let createdProdDiscount;
 
     const createPromo = prisma.promotion.create({
@@ -114,6 +114,7 @@ export default class DiscountController extends BaseController {
         valid_from,
         valid_to,
         promotion_type: 'Discount',
+        code: uuidv4(), // remember to remove this
       },
     });
 
@@ -149,7 +150,7 @@ export default class DiscountController extends BaseController {
     // check if
   }
 
-  async computePromoUsage(prodId: string, promoId: string, userId: string) {
+  async computePromoUsage(prodId: string, promoId: number, userId: string) {
     const trackPromos = await prisma.track_promotion.findMany({
       where: {
         AND: {
@@ -162,7 +163,7 @@ export default class DiscountController extends BaseController {
     return trackPromos.length;
   }
 
-  async isPromoExpired(promoId: string) {
+  async isPromoExpired(promoId: number) {
     const currentDate = new Date();
     const promo = await prisma.promotion.findFirst({
       where: { id: promoId },
