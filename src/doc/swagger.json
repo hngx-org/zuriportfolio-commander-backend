@@ -27,6 +27,18 @@
         ],
         "summary": "Fetch all products",
         "description": "",
+        "parameters": [
+          {
+            "name": "productname",
+            "in": "query",
+            "description": "Use to search for product by name",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -1430,104 +1442,105 @@
         "properties": {
           "revenue": {
             "$ref": "#/components/schemas/RevenueData",
-          "customer_orders": {
-            "$ref": "#/components/schemas/CustomerOrders",
-            "type": "object",
-            "properties": {
-              "status": {
-                "type": "string"
+            "customer_orders": {
+              "$ref": "#/components/schemas/CustomerOrders",
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                }
               }
-            }
-          },
-          "customer": {
-            "type": "object",
-            "properties": {
-              "username": {
-                "type": "string"
+            },
+            "customer": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string"
+                }
               }
-            }
-          },
-          "product": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
+            },
+            "product": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
               }
             }
           }
+        },
+        "required": [
+          "order_id",
+          "createdAt",
+          "merchant",
+          "customer",
+          "product"
+        ]
+      },
+      "RevenueData": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number"
+          }
         }
       },
-      "required": [
-        "order_id",
-        "createdAt",
-        "merchant",
-        "customer",
-        "product"
-      ]
-    },
-    "RevenueData": {
-      "type": "object",
-      "properties": {
-        "amount": {
-          "type": "number"
+      "CustomerOrders": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "sales_report": {
+            "$ref": "#/components/schemas/SalesData"
+          }
+        }
+      },
+      "SalesData": {
+        "type": "object",
+        "properties": {
+          "sales": {
+            "type": "number"
+          }
+        }
+      },
+      "CustomerData": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          }
+        }
+      },
+      "ProductData": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "categories": {
+            "$ref": "#/components/schemas/CategoriesData"
+          }
+        }
+      },
+      "CategoriesData": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
         }
       }
     },
-    "CustomerOrders": {
-      "type": "object",
-      "properties": {
-        "status": {
-          "type": "string"
-        },
-        "sales_report": {
-          "$ref": "#/components/schemas/SalesData"
-        }
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
-    },
-    "SalesData": {
-      "type": "object",
-      "properties": {
-        "sales": {
-          "type": "number"
-        }
-      }
-    },
-    "CustomerData": {
-      "type": "object",
-      "properties": {
-        "username": {
-          "type": "string"
-        }
-      }
-    },
-    "ProductData": {
-      "type": "object",
-      "properties": {
-        "price": {
-          "type": "number"
-        },
-        "name": {
-          "type": "string"
-        },
-        "categories": {
-          "$ref": "#/components/schemas/CategoriesData"
-        }
-      }
-    },
-    "CategoriesData": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        }
-      }
-    }
-  },
-  "securitySchemes": {
-    "BearerAuth": {
-      "type": "http",
-      "scheme": "bearer",
-      "bearerFormat": "JWT"
     }
   }
 }
