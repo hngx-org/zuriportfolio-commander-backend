@@ -20,10 +20,10 @@ export default class OrderController extends BaseController {
   }
 
   async getOrder(req: Request, res: Response) {
-      const userId = (req as any).user?.id ?? TestUserId;
-      const orderId = req.params['order_id'];
+    const userId = (req as any).user?.id ?? TestUserId;
+    const orderId = req.params['order_id'];
 
-   
+
     const orderItem = await prisma.order_item.findFirst({
       where: {
         merchant_id: userId,
@@ -66,7 +66,7 @@ export default class OrderController extends BaseController {
   async getAllOrders(req: Request, res: Response) {
     //const userId = req.user.id; // get the user id from the request params
     const userId = (req as any).user?.id || TestUserId;
-  
+
     if (!userId) {
       return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
     }
@@ -83,22 +83,22 @@ export default class OrderController extends BaseController {
         createdAt: true,
         merchant: {
           select: {
-            revenue : {
-              select : {
-                amount : true,
-              } 
+            revenue: {
+              select: {
+                amount: true,
+              }
             },
-            categories : {
-              select : {
-                name : true,
+            categories: {
+              select: {
+                name: true,
               }
             },
             customer_orders: {
               select: {
                 status: true,
-                sales_report : {
-                  select : {
-                    sales : true,
+                sales_report: {
+                  select: {
+                    sales: true,
                   }
                 }
               }
@@ -108,7 +108,7 @@ export default class OrderController extends BaseController {
         customer: {
           select: {
             first_name: true,
-            last_name : true,
+            last_name: true,
           },
         },
         product: {
@@ -175,7 +175,7 @@ export default class OrderController extends BaseController {
 
   async getAverageOrderValue(req: Request, res: Response) {
     const timeframe = (req.query.timeframe as string)?.toLocaleLowerCase();
-    const merchantUserId = (req as any).user?.id ?? TestUserId;
+    const merchantUserId = (req as any).user['id'];
 
     if (!timeframe) {
       this.error(res, '--order/average', 'Missing timeframe parameter', 400);
@@ -195,6 +195,7 @@ export default class OrderController extends BaseController {
     const endOfDay = new Date(currentDate);
     endOfDay.setHours(23, 59, 59, 999);
 
+
     const orderItems = await prisma.order_item.findMany({
       where: {
         merchant_id: merchantUserId,
@@ -205,6 +206,7 @@ export default class OrderController extends BaseController {
       },
     });
 
+
     const totalSales = orderItems.reduce((sum, item) => sum + item.order_price, 0);
     const averageSales = parseFloat((totalSales / orderItems.length).toFixed(2));
 
@@ -212,6 +214,7 @@ export default class OrderController extends BaseController {
       averageSales,
     });
   }
+
   async updateOrderStatus(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
     const orderId = req.params['order_id'];
