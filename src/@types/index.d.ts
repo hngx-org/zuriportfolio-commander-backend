@@ -1,3 +1,4 @@
+import { ObjectEnumValue } from '@prisma/client/runtime/library';
 import { Router } from 'express';
 
 export interface Routes {
@@ -17,6 +18,12 @@ export interface AddProductPayloadType {
   categoryId: string;
   shopId: string;
   userId: string; //! remove this once auth is working
+}
+
+export interface AddSalesReportType {
+  user_id: string;
+  sales: any;
+  order_id: string;
 }
 
 export interface AddPromotionPayloadType {

@@ -11,40 +11,47 @@ export default class RevenueController extends BaseController {
   }
 
   async updateRevenue(req: Request, res: Response) {
+    const merchantUserId = (req as any).user?.id ?? TestUserId;
     const { order_id } = req.params;
+
+    if (!order_id) {
+      return this.error(res, '--order/missing order_id', 'Please provide a valid order ID', 400);
+    }
 
     const order = await prisma.order.findUnique({
       where: { id: order_id },
     });
 
     if (!order) {
-      throw new Error('Order not found.');
+      return this.error(res, '--order/not-found', 'Order not found', 400);
     }
 
     if (order.status !== 'complete') {
-      return res.status(400).json({ error: 'Order is not completed' });
+      return this.error(res, '--order/not-completed', 'Order is not completed', 400);
     }
 
-    // const revenueAmount = order.amount;
+    const revenueAmount = order.subtotal;
 
     const existingRevenue = await prisma.revenue.findFirst({
       where: {
-        // user_id: order.merchantId,
+        user_id: merchantUserId,
       },
     });
 
+    let updatedRevenue;
+
     if (existingRevenue) {
-      await prisma.revenue.update({
+      updatedRevenue = await prisma.revenue.update({
         where: {
           id: existingRevenue.id,
         },
         data: {
-          // amount: existingRevenue.amount + revenueAmount,
+          amount: existingRevenue.amount + revenueAmount,
         },
       });
     }
 
-    this.success(res, 'revenues', 'Revenue updated successfully', 200, existingRevenue);
+    this.success(res, '--revenues', 'Revenue updated successfully', 200, updatedRevenue);
   }
 
   async getRevenueForToday(req: Request, res: Response) {

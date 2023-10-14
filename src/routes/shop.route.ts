@@ -25,6 +25,10 @@ export default class ShopRoute {
       useCatchErrors(this.shopController.deleteShop.bind(this.shopController))
     );
 
+
+    // Get all shops
+    this.router.get(`${this.path}s`, useCatchErrors(this.shopController.getAllShops.bind(this.shopController)));
+
     // update shop route
     this.router.patch(
       `${this.path}/:shop_id`,
@@ -32,11 +36,6 @@ export default class ShopRoute {
       useCatchErrors(this.shopController.updateShop.bind(this.shopController))
     );
 
-    // shop traffic
-    this.router.post(
-      `${this.path}/store-traffic`,
-      useCatchErrors(this.shopController.shopTraffic.bind(this.shopController))
-    );
 
     // shop traffic
     this.router.post(
