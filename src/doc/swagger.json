@@ -102,64 +102,36 @@
         ]
       }
     },
-    "/product/{productId}": {
-      "patch": {
+    "/product/{product_id}": {
+      "get": {
         "tags": [
           "Product"
         ],
-        "summary": "Update a product",
-        "description": "Update a specific product.",
+        "summary": "Fetch product by id",
+        "description": "",
         "parameters": [
           {
-            "name": "productId",
+            "name": "product_id",
             "in": "path",
-            "description": "ID of product to update",
+            "description": "Product id",
             "required": true,
             "schema": {
               "type": "string"
             }
           }
         ],
-        "requestBody": {
-          "description": "",
-          "content": {
-            "application/json": {
-              "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/UpdateProduct"
-                  }
-                ]
-              }
-            },
-            "application/octet-stream": {
-              "schema": {
-                "type": "string",
-                "format": "binary"
-              }
-            }
-          },
-          "required": true
-        },
         "responses": {
           "200": {
-            "description": "Action authorized successfully."
-          },
-          "400": {
-            "description": "Bad request. Please check the request parameters."
-          },
-          "401": {
-            "description": "Unauthorized. Token is invalid or action is not permitted."
-          },
-          "500": {
-            "description": "Internal server error."
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProduct"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
+        }
       },
       "delete": {
         "tags": [
@@ -252,55 +224,6 @@
           },
           "404": {
             "description": "Order not found."
-          },
-          "500": {
-            "description": "Internal server error."
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
-    "/orders/average": {
-      "get": {
-        "tags": [
-          "Orders"
-        ],
-        "summary": "Fetch the average order value for today",
-        "parameters": [
-          {
-            "name": "timeframe",
-            "in": "query",
-            "description": "Timeframe for calculating the average order value. Should be 'today'.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "today"
-              ],
-              "example": "today"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AverageOrderValue"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request. Please check the request parameters."
-          },
-          "401": {
-            "description": "Unauthorized. Token is invalid or action is not permitted."
           },
           "500": {
             "description": "Internal server error."
@@ -486,6 +409,86 @@
         }
       }
     },
+    "/discount/promotions": {
+      "get": {
+        "summary": "Retrieve Products with Promotions and number of sales",
+        "tags": [
+          "Discount"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "Number of items per page (default: 10)",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products with associated promotions and tracked promotions",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "product": {
+                      "id": "product1",
+                      "name": "Product A"
+                    },
+                    "promo": {
+                      "id": "promo1",
+                      "discount_type": "Percentage",
+                      "quantity": 5,
+                      "amount": 10.0,
+                      "valid_from": "2023-10-15T00:00:00Z",
+                      "valid_to": "2023-10-30T00:00:00Z"
+                    },
+                    "sales": 2
+                  },
+                  {
+                    "product": {
+                      "id": "product2",
+                      "name": "Product B"
+                    },
+                    "promo": {
+                      "id": "promo2",
+                      "discount_type": "Fixed",
+                      "quantity": 10,
+                      "amount": 50.0,
+                      "valid_from": "2023-11-01T00:00:00Z",
+                      "valid_to": "2023-11-15T00:00:00Z"
+                    },
+                    " sales": 1
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
     "/shop": {
       "post": {
         "summary": "Create a shop",
@@ -523,6 +526,32 @@
             "description": "Bad request"
           }
         }
+      }
+    },
+    "/shops": {
+      "get": {
+        "tags": [
+          "Shops"
+        ],
+        "summary": "Fetch all shops",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shops"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
       }
     },
     "/shop/store-traffic": {
@@ -636,13 +665,13 @@
         ]
       }
     },
-    "/Orders": {
+    "/Orders/all": {
       "get": {
         "tags": [
           "Orders"
         ],
         "summary": "get all orders",
-        "description": "",
+        "description": "To get All orders",
         "responses": {
           "200": {
             "description": "successful operation",
@@ -654,21 +683,38 @@
                 "example": [
                   {
                     "order_id": "1122",
+                    "order_price": 12.22,
                     "createdAt": "2023-10-11T18:00:52.000Z",
                     "merchant": {
+                      "revenue": [
+                        {
+                          "amount": 3000.50
+                        }
+                      ],
                       "customer_orders": [
                         {
-                          "status": "complete"
+                          "status": "complete",
+                          "sales_report": [
+                            {
+                              "sales": 11
+                            }
+                          ]
                         }
-                      ]
-                    },
-                    "customer": [
-                      {
-                        "username": "Customer1"
+                      ],
+                      "customer": [
+                        {
+                          "username": "Customer1"
+                        }
+                      ],
+                      "product": {
+                        "price": 12.34,
+                        "name": "Longchair",
+                        "categories": [
+                          {
+                            "name": "Software"
+                          }
+                        ]
                       }
-                    ],
-                    "product": {
-                      "name": "Longchair"
                     }
                   }
                 ]
@@ -916,6 +962,90 @@
           }
         ]
       }
+    },
+    "/orders/search/{name}": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Search Order By Product Name",
+        "description": "",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Product name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/searchOrder"
+                },
+                "example": [
+                  {
+                    "order_id": "1122",
+                    "order_price": 12.22,
+                    "createdAt": "2023-10-11T18:00:52.000Z",
+                    "merchant": {
+                      "revenue": [
+                        {
+                          "amount": 3000.50
+                        }
+                      ],
+                      "customer_orders": [
+                        {
+                          "status": "complete",
+                          "sales_report": [
+                            {
+                              "sales": 11
+                            }
+                          ]
+                        }
+                      ],
+                      "customer": [
+                        {
+                          "username": "Customer1"
+                        }
+                      ],
+                      "product": {
+                        "price": 12.34,
+                        "name": "Longchair",
+                        "categories": [
+                          {
+                            "name": "Software"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Please provide an authenticated user."
+          },
+          "403": {
+            "description": "Forbidden. Token is invalid or action is not permitted for provided user."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -926,12 +1056,6 @@
           "image": {
             "type": "string",
             "format": "binary"
-          },
-          "userId": {
-            "type": "string"
-          },
-          "shopId": {
-            "type": "string"
           },
           "name": {
             "type": "string"
@@ -960,8 +1084,6 @@
         },
         "required": [
           "image",
-          "userId",
-          "shopId",
           "name",
           "description",
           "quantity",
@@ -1194,11 +1316,39 @@
           "createdAt"
         ]
       },
+      "AddSales Report": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "sales": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "user_id",
+          "order_id",
+          "sales"
+        ],
+        "example": {
+          "user_id": "fecfd17b-51a3-4288-9bd0-77ac4b7d60a0",
+          "order_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+          "sales": 500
+        }
+      },
       "getOrderData": {
         "type": "object",
         "properties": {
           "order_id": {
             "type": "string"
+          },
+          "order_price": {
+            "type": "number",
+            "format": "float"
           },
           "createdAt": {
             "type": "string",
@@ -1249,63 +1399,136 @@
         "example": {
           "averageSales": 50.45
         }
-      }
-    },
-    "securitySchemes": {
-      "BearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
-      }
-    }
-  },
-  "/orders/average": {
-    "get": {
-      "tags": [
-        "Orders"
-      ],
-      "summary": "Fetch the average order value for today",
-      "parameters": [
-        {
-          "name": "timeframe",
-          "in": "query",
-          "description": "Timeframe for calculating the average order value. Should be 'today'.",
-          "required": true,
-          "schema": {
+      },
+      "searchOrder": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "order_price": {
+            "type": "number",
+            "format": "float"
+          },
+          "createdAt": {
             "type": "string",
-            "enum": [
-              "today"
-            ],
-            "example": "today"
+            "format": "date-time"
+          },
+          "merchant": {
+            "$ref": "#/components/schemas/MerchantData"
           }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Successful operation",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AverageOrderValue"
+        },
+        "required": [
+          "order_id",
+          "order_price",
+          "createdAt",
+          "merchant"
+        ]
+      },
+      "MerchantData": {
+        "type": "object",
+        "properties": {
+          "revenue": {
+            "$ref": "#/components/schemas/RevenueData"
+          },
+          "customer_orders": {
+            "$ref": "#/components/schemas/CustomerOrders",
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              }
+            }
+          },
+          "customer": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              }
+            }
+          },
+          "product": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
               }
             }
           }
-        },
-        "400": {
-          "description": "Bad request. Please check the request parameters."
-        },
-        "401": {
-          "description": "Unauthorized. Token is invalid or action is not permitted."
-        },
-        "500": {
-          "description": "Internal server error."
         }
       },
-      "security": [
-        {
-          "BearerAuth": []
-        }
+      "required": [
+        "order_id",
+        "createdAt",
+        "merchant",
+        "customer",
+        "product"
       ]
+    },
+    "RevenueData": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "number"
+        }
+      }
+    },
+    "CustomerOrders": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "sales_report": {
+          "$ref": "#/components/schemas/SalesData"
+        }
+      }
+    },
+    "SalesData": {
+      "type": "object",
+      "properties": {
+        "sales": {
+          "type": "number"
+        }
+      }
+    },
+    "CustomerData": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "ProductData": {
+      "type": "object",
+      "properties": {
+        "price": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "categories": {
+          "$ref": "#/components/schemas/CategoriesData"
+        }
+      }
+    },
+    "CategoriesData": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "securitySchemes": {
+    "BearerAuth": {
+      "type": "http",
+      "scheme": "bearer",
+      "bearerFormat": "JWT"
     }
   }
 }

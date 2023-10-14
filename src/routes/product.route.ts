@@ -23,6 +23,13 @@ export default class ProductRoute {
       `${this.path}/publish/:productId`,
       useCatchErrors(this.productController.publishProduct.bind(this.productController))
     );
+
+    this.router.patch(
+      `${this.path}/:product_id`,
+      //upload.single('image'),
+      useCatchErrors(this.productController.updateProduct.bind(this.productController))
+    );
+
     this.router.post(
       `${this.path}/add`,
       upload.single('image'),
@@ -65,6 +72,11 @@ export default class ProductRoute {
       `${this.path}/category`,
       // isAuthenticated,
       useCatchErrors(this.productController.createCategory.bind(this.productController))
+    );
+    this.router.get(
+      `${this.path}/:product_id`,
+      // isAuthenticated,
+      useCatchErrors(this.productController.getProductById.bind(this.productController))
     );
   }
 }

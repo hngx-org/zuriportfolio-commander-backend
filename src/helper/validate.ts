@@ -13,16 +13,22 @@ export const productSchema = Joi.object({
   categoryId: Joi.number().required(),
 });
 
-export const updateProductSchema = Joi.object({
-  name: Joi.string().required(),
-  description: Joi.string().required(),
-  quantity: Joi.number().integer().required(),
-  price: Joi.number().required(),
+
+export const saleSchema = Joi.object({
+  user_id: Joi.string().required(),
+  sales: Joi.number().required(),
+  order_id: Joi.string().required(),
+})
+export const updatedProductSchema = Joi.object({
+  name: Joi.string().optional(),
+  description: Joi.string().optional(),
+  quantity: Joi.number().integer().optional(),
+  price: Joi.number().optional(),
   discountPrice: Joi.number().optional(),
   tax: Joi.number().optional(),
-  currency: Joi.string().required(),
-  categoryId: Joi.number().required(),
-  adminStatus: Joi.string()
+  currency: Joi.string().optional(),
+  categoryId: Joi.number().optional(),
+
 });
 
 export const saveProductDraftSchema = Joi.object({
@@ -45,7 +51,8 @@ export const createShopSchema = Joi.object({
 
 export const createCategorySchema = Joi.object({
   name: Joi.string().required(),
-  parent_id: Joi.number().integer().allow(null).optional(),
+  // parent_id: Joi.number().integer().allow(null).optional(),
+  parent_id: Joi.alternatives(Joi.number().integer(), Joi.allow(null), Joi.allow('')).optional(),
 });
 
 export const addProductCategorySchema = Joi.object({

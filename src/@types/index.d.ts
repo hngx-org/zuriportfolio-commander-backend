@@ -20,16 +20,10 @@ export interface AddProductPayloadType {
   userId: string; //! remove this once auth is working
 }
 
-export interface UpdateProductPayloadType {
-  name: string;
-  description: string;
-  quantity: string;
-  price: string;
-  discountPrice: string;
-  tax: string;
-  currency: string;
-  categoryId: string;
-  adminStatus: string;
+export interface AddSalesReportType {
+  user_id: string;
+  sales: any;
+  order_id: string;
 }
 
 export interface AddPromotionPayloadType {

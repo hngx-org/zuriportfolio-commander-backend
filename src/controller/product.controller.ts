@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
-import { createCategorySchema, productSchema } from '../helper/validate';
+import { createCategorySchema, productSchema, updatedProductSchema } from '../helper/validate';
 import { uploadSingleImage } from '../helper/uploadImage';
 import logger from '../config/logger';
 import { AddProductPayloadType } from '@types';
@@ -110,6 +110,36 @@ export default class ProductController extends BaseController {
     this.success(res, 'Product Added', 'Product has been added successfully', 201, {
       ...product,
       image: product.image,
+    });
+  }
+
+  async updateProduct(req: Request, res: Response) {
+    const productId = req.params['product_id'];
+    const file = req.file ?? null;
+    const userId = (req as any).user?.id ?? TestUserId;
+
+    const payload: AddProductPayloadType = req.body;
+    const { error, value } = updatedProductSchema.validate(payload);
+
+    // Find the product by ID
+    const existingProduct = await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
+    // Check if the product exists
+    if (!existingProduct) {
+      return this.error(res, '--product/not-found', 'Product not found', 404);
+    }
+
+    const product = await prisma.product.update({
+      where: { id: productId },
+      data: { ...value },
+    });
+
+    this.success(res, 'Product Updated', 'Product has been updated successfully', 200, {
+      product,
     });
   }
 
@@ -233,16 +263,62 @@ export default class ProductController extends BaseController {
           include: { sub_categories: true },
         });
         allProd.push({
-          name: p.name,
-          id: p.id,
+          products: p,
           category: {
             ...cat,
           },
           image: p.image,
+          price: p.price,
+          discount: p.discount_price,
+          quantity: p.quantity,
+          currency: p.currency,
+          tax: p.tax,
+          description: p.description,
         });
       }
     }
     return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
+  }
+
+  async getProductById(req: Request, res: Response) {
+    const userId = (req as any).user?.id ?? TestUserId;
+    const productId = req.params.product_id
+
+    const product = await prisma.product.findFirst({
+      where: {
+        AND: {
+          id: productId,
+          // user_id: userId,
+          is_deleted: 'active',
+        },
+      },
+      include: { image: true },
+    });
+
+    if (!product) {
+      return this.error(res, '--product/missing-product', 'Product not found.', 404, null)
+    }
+  
+    let data = {}
+    const cat = await prisma.product_category.findFirst({
+      where: { id: product.category_id },
+      include: { sub_categories: true },
+    });
+    data = {
+      product: product,
+      category: {
+        ...cat,
+      },
+      image: product.image,
+      price: product.price,
+      discount: product.discount_price,
+      quantity: product.quantity,
+      currency: product.currency,
+      tax: product.tax,
+      description: product.description,
+    };
+
+    return this.success(res, `Product ${productId} Shown`, 'Products have been listed', 200, data);
   }
 
   async getMarketplaceProducts(req: Request, res: Response) {
@@ -360,6 +436,20 @@ export default class ProductController extends BaseController {
       });
     }
     //create a subCategory
+    const existingSubCategory = await prisma.product_sub_category.findFirst({
+      where: {
+        name: lowercaseName,
+      },
+    });
+    if (existingSubCategory) {
+      return this.error(
+        res,
+        '--product_sub_category/category-exists',
+        `Sub-category with name '${lowercaseName}' already exists. Please choose a different name.`,
+        409
+      );
+    }
+
     const subCategory = await prisma.product_sub_category.create({
       data: {
         name: lowercaseName,
@@ -376,19 +466,15 @@ export default class ProductController extends BaseController {
   }
 
   async getAllCategories(req: Request | any, res: Response | any) {
-    try {
-      const userId = (req as any).user?.id ?? TestUserId;
-      const categories = await prisma.product_category.findMany({
-        where: {
-          user_id: userId,
-        },
-        include: {
-          sub_categories: true,
-        },
-      });
-      this.success(res, '--categories/all', 'categories fetched successfully', 200, categories);
-    } catch (error) {
-      return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
-    }
+    const userId = (req as any).user?.id ?? TestUserId;
+    const categories = await prisma.product_category.findMany({
+      where: {
+        user_id: userId,
+      },
+      include: {
+        sub_categories: true,
+      },
+    });
+    this.success(res, '--categories/all', 'categories fetched successfully', 200, categories);
   }
 }

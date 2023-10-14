@@ -20,8 +20,14 @@ export default class DiscountRoute {
     );
 
     this.router.get(
-      `${this.path}/all`,
+      `${this.path}s`,
       useCatchErrors(this.discountController.getAllDiscount.bind(this.discountController))
+    );
+
+    this.router.get(
+      `${this.path}/promotions`,
+      // isAuthenticated,
+      useCatchErrors(this.discountController.getAllPromotionsWithTrackedPromotions.bind(this.discountController))
     );
   }
 }
