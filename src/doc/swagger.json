@@ -219,7 +219,7 @@
         ]
       }
     },
-   
+
     "/orders": {
       "get": {
         "tags": ["Order"],
@@ -658,7 +658,7 @@
                     "merchant": {
                       "revenue": [
                         {
-                          "amount": 3000.50
+                          "amount": 3000.5
                         }
                       ],
                       "customer_orders": [
@@ -785,7 +785,7 @@
                     "merchant": {
                       "revenue": [
                         {
-                          "amount": 3000.50
+                          "amount": 3000.5
                         }
                       ],
                       "customer_orders": [
@@ -835,7 +835,7 @@
         ]
       }
     },
-    
+
     "/revenue/{order_id}": {
       "patch": {
         "tags": ["Revenue"],
@@ -882,9 +882,10 @@
           }
         }
       }
-    }
+    },
     "/revenues": {
       "get": {
+        "tags": ["Revenue"],
         "summary": "Get Revenue for Today",
         "description": "Get revenue data for today.",
         "parameters": [
@@ -1163,39 +1164,40 @@
           "merchant": {
             "$ref": "#/components/schemas/MerchantData"
           }
-        },"required": [ "order_id", "order_price", "createdAt", "merchant"]
+        },
+        "required": ["order_id", "order_price", "createdAt", "merchant"]
       },
       "MerchantData": {
         "type": "object",
         "properties": {
           "revenue": {
             "$ref": "#/components/schemas/RevenueData",
-          "customer_orders": {
-            "$ref": "#/components/schemas/CustomerOrders",
-            "type": "object",
-            "properties": {
-              "status": {
-                "type": "string"
+            "customer_orders": {
+              "$ref": "#/components/schemas/CustomerOrders",
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                }
               }
-            }
-          },
-          "customer": {
-            "type": "object",
-            "properties": {
-              "username": {
-                "type": "string"
+            },
+            "customer": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string"
+                }
               }
-            }
-          },
-          "product": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
+            },
+            "product": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
               }
             }
           }
-      }
         },
         "required": ["order_id", "createdAt", "merchant", "customer", "product"]
       },
@@ -1255,7 +1257,7 @@
             "type": "string"
           }
         }
-      }    
+      }
     },
     "securitySchemes": {
       "BearerAuth": {
