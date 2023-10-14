@@ -1179,7 +1179,7 @@
         ]
       }
     },
-    "/orders/search/{name}": {
+    "/order/search/{name}": {
       "get": {
         "tags": [
           "Orders"
