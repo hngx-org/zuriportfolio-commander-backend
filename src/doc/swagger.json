@@ -97,7 +97,50 @@
         ]
       }
     },
+
     "/product/{product_id}": {
+      "patch": {
+        "tags": ["Product"],
+        "summary": "Update a Product",
+        "description": "",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "description": "Product Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProduct"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddProduct"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
       "delete": {
         "tags": ["Product"],
         "summary": "Delete a product",
@@ -359,6 +402,86 @@
         }
       }
     },
+      "/discount/promotions": {
+      "get": {
+        "summary": "Retrieve Products with Promotions and number of sales",
+        "tags": ["Discount"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "Number of items per page (default: 10)",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products with associated promotions and tracked promotions",
+            "content":{  "application/json": {
+              "example": [
+                {
+                  "product": {
+                    "id": "product1",
+                    "name": "Product A"
+                  },
+                  "promo": {
+                    "id": "promo1",
+                    "discount_type": "Percentage",
+                    "quantity": 5,
+                    "amount": 10.0,
+                    "valid_from": "2023-10-15T00:00:00Z",
+                    "valid_to": "2023-10-30T00:00:00Z"
+                  },
+                  "sales": 2
+                },
+                {
+                  "product": {
+                    "id": "product2",
+                    "name": "Product B"
+                  },
+                  "promo": {
+                    "id": "promo2",
+                    "discount_type": "Fixed",
+                    "quantity": 10,
+                    "amount": 50.0,
+                    "valid_from": "2023-11-01T00:00:00Z",
+                    "valid_to": "2023-11-15T00:00:00Z"
+               
+                  },
+                  " sales": 1
+                }
+      
+              ]
+            }}
+            
+          },
+          "401": {
+            "description": "Unauthorized access"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    }
+,    
     "/shop": {
       "post": {
         "summary": "Create a shop",
@@ -477,6 +600,48 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesReport"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/sales/report": {
+      "post": {
+        "tags": ["Sales"],
+        "summary": "Create a new Sales report",
+        "description": "Create reports on a particular transaction",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SalesReport"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Successful response",
@@ -686,10 +851,56 @@
         ]
       }
     },
-
+    
+    "/revenue/{order_id}": {
+      "patch": {
+        "tags": ["Revenue"],
+        "summary": "Update Revenue",
+        "description": "Update the revenue based on the order's status",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            },
+            "description": "ID of the order to update revenue for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Revenue updated successfully",
+                  "data": {
+                    "id": 1,
+                    "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
+                    "amount": 1500.0
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "--order/not-found",
+                  "message": "Order not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     "/revenues": {
       "get": {
-        "tags": ["Revenues"],
         "summary": "Get Revenue for Today",
         "description": "Get revenue data for today.",
         "parameters": [
@@ -772,6 +983,49 @@
           "currency"
         ],
 
+        "example": {
+          "categoryId": 1,
+          "name": "HNGX polo",
+          "description": "Red",
+          "quantity": 4,
+          "price": 500,
+          "discount_price": 455,
+          "tax": 2.2,
+          "currency": "USD"
+        }
+      },
+      "UpdateProduct": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "string",
+            "format": "binary"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "categoryId": {
+            "type": "integer"
+          },
+          "price": {
+            "type": "number"
+          },
+          "discountPrice": {
+            "type": "number"
+          },
+          "tax": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          }
+        },
         "example": {
           "categoryId": 1,
           "name": "HNGX polo",
@@ -876,6 +1130,26 @@
           }
         },
         "required": ["id", "user_id", "sales", "order_id", "createdAt"]
+      },
+      "AddSales Report": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "sales": {
+            "type": "number"
+          }
+        },
+        "required": ["user_id", "order_id", "sales"],
+        "example": {
+          "user_id": "fecfd17b-51a3-4288-9bd0-77ac4b7d60a0",
+          "order_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+          "sales": 500
+        }
       },
       "getOrderData": {
         "type": "object",
@@ -1027,6 +1301,34 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
+      }
+    },
+    "RevenueUpdateResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "A message indicating the result of the operation"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "The ID of the updated revenue record"
+            },
+            "user_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The user ID for whom the revenue is updated"
+            },
+            "amount": {
+              "type": "number",
+              "format": "float",
+              "description": "The updated revenue amount"
+            }
+          }
+        }
       }
     }
   }
