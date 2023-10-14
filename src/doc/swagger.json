@@ -97,7 +97,50 @@
         ]
       }
     },
+
     "/product/{product_id}": {
+      "patch": {
+        "tags": ["Product"],
+        "summary": "Update a Product",
+        "description": "",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "description": "Product Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProduct"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddProduct"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
       "delete": {
         "tags": ["Product"],
         "summary": "Delete a product",
@@ -191,7 +234,7 @@
         ]
       }
     },
-   
+
     "/orders": {
       "get": {
         "tags": ["Order"],
@@ -716,7 +759,7 @@
                     "merchant": {
                       "revenue": [
                         {
-                          "amount": 3000.50
+                          "amount": 3000.5
                         }
                       ],
                       "customer_orders": [
@@ -814,6 +857,49 @@
           "currency"
         ],
 
+        "example": {
+          "categoryId": 1,
+          "name": "HNGX polo",
+          "description": "Red",
+          "quantity": 4,
+          "price": 500,
+          "discount_price": 455,
+          "tax": 2.2,
+          "currency": "USD"
+        }
+      },
+      "UpdateProduct": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "string",
+            "format": "binary"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "categoryId": {
+            "type": "integer"
+          },
+          "price": {
+            "type": "number"
+          },
+          "discountPrice": {
+            "type": "number"
+          },
+          "tax": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          }
+        },
         "example": {
           "categoryId": 1,
           "name": "HNGX polo",
@@ -986,7 +1072,8 @@
           "merchant": {
             "$ref": "#/components/schemas/MerchantData"
           }
-        },"required": [ "order_id", "order_price", "createdAt", "merchant"]
+        },
+        "required": ["order_id", "order_price", "createdAt", "merchant"]
       },
       "MerchantData": {
         "type": "object",
@@ -1003,7 +1090,7 @@
           "product": {
             "$ref": "#/components/schemas/ProductData"
           }
-      }
+        }
       },
       "RevenueData": {
         "type": "object",
@@ -1061,7 +1148,7 @@
             "type": "string"
           }
         }
-      }    
+      }
     },
     "securitySchemes": {
       "BearerAuth": {
