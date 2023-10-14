@@ -288,11 +288,6 @@ export default class OrderController extends BaseController {
                 amount: true,
               },
             },
-            categories: {
-              select: {
-                name: true,
-              },
-            },
             customer_orders: {
               select: {
                 status: true,
@@ -307,13 +302,15 @@ export default class OrderController extends BaseController {
         },
         customer: {
           select: {
-            username: true,
+            first_name: true,
+            last_name: true,
           },
         },
         product: {
           select: {
             price: true,
             name: true,
+            category_id: true,
           },
         },
       },
