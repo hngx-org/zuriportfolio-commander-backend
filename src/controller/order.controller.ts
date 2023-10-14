@@ -325,6 +325,13 @@ export default class OrderController extends BaseController {
       return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
     }
 
-    this.success(res, '--orders/all', 'orders fetched successfully', 200, orderItems);
+    const response = {
+      data: {
+        totalResults: orderItems.length,
+        orders: orderItems,
+      },
+    };
+
+    this.success(res, '--orders/all', 'orders fetched successfully', 200, response);
   }
 }
