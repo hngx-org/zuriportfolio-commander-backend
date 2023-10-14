@@ -71,7 +71,15 @@ export default class OrderController extends BaseController {
       return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
     }
 
-    const { page = 1, pageSize = 10 } = req.query;
+   const pageSize = parseInt(req.query.pageSize?.toString(), 10) || 10;
+   const page = parseInt(req.query.page?.toString(), 10) || 1;
+ 
+    
+    const totalOrders = await prisma.order.count({
+      where: {
+        customer_id: userId,
+      },
+    });
 
     const orders = await prisma.order_item.findMany({
       where: {
@@ -113,7 +121,9 @@ export default class OrderController extends BaseController {
         },
         product: {
           select: {
+            price: true,
             name: true,
+            category_id: true
           },
         },
       },
@@ -123,7 +133,20 @@ export default class OrderController extends BaseController {
     if (!orders) {
       return this.error(res, '--order/all', 'An error occurred', 500, 'internal server error');
     }
-    return this.success(res, '--order/all', 'Orders fetched successfully', 200, orders);
+    const pagination = {
+      page : +page,
+      pageSize: +pageSize,
+      totalOrders,
+      totalPages: Math.ceil(totalOrders/pageSize)
+    };
+    const response = {
+      data : {
+        totalResults : orders.length,
+        orders: orders,
+        pagination,
+      }
+    }
+    return this.success(res, '--order/all', 'Orders fetched successfully', 200, response);
   }
 
   async getOrdersCountByTimeframe(req: Request, res: Response) {

@@ -885,44 +885,55 @@
                 "schema": {
                   "$ref": "#/components/schemas/getOrderData"
                 },
-                "example": [
-                  {
-                    "order_id": "1122",
-                    "order_price": 12.22,
-                    "createdAt": "2023-10-11T18:00:52.000Z",
-                    "merchant": {
-                      "revenue": [
-                        {
-                          "amount": 3000.5
-                        }
-                      ],
-                      "customer_orders": [
-                        {
-                          "status": "complete",
-                          "sales_report": [
-                            {
-                              "sales": 11
-                            }
-                          ]
-                        }
-                      ],
-                      "customer": [
-                        {
-                          "username": "Customer1"
-                        }
-                      ],
-                      "product": {
-                        "price": 12.34,
-                        "name": "Longchair",
-                        "categories": [
+                "example": {
+                  "totalResults" : 1,
+                  "orders": [
+                    {
+                      "order_id": "1122",
+                      "order_price": 12.22,
+                      "createdAt": "2023-10-11T18:00:52.000Z",
+                      "merchant": {
+                        "revenue": [
                           {
-                            "name": "Software"
+                            "amount": 3000.5
                           }
-                        ]
+                        ],
+                        "categories" : [
+                          {
+                            "name" : "nike"
+                          }
+                        ],
+                        "customer_orders": [
+                          {
+                            "status": "complete",
+                            "sales_report": [
+                              {
+                                "sales": 11
+                              }
+                            ]
+                          }
+                        ],
+                        "customer": [
+                          {
+                            "first_name" : "customerFirstName",
+                            "last_name" : "customerLastName"
+                          }
+                        ],
+                        "product": {
+                          "price": 12.34,
+                          "name": "shoe",
+                          "category_id": 1
+                        }
                       }
-                    }
+                    }  
+                  ],
+                  "pagination" : {
+                    "page" : 1,
+                    "pageSize" : 10,
+                    "totalOrders" : 1,
+                    "totalPages" : 1 
                   }
-                ]
+                }
               }
             }
           },
