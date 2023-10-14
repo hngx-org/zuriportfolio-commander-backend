@@ -37,11 +37,5 @@ export default class ShopRoute {
       `${this.path}/store-traffic`,
       useCatchErrors(this.shopController.shopTraffic.bind(this.shopController))
     );
-
-    // shop traffic
-    this.router.post(
-      `${this.path}/store-traffic`,
-      useCatchErrors(this.shopController.shopTraffic.bind(this.shopController))
-    );
   }
 }
