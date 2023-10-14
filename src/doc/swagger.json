@@ -97,49 +97,34 @@
         ]
       }
     },
-
     "/product/{product_id}": {
-      "patch": {
+      "get": {
         "tags": ["Product"],
-        "summary": "Update a Product",
+        "summary": "Fetch product by id",
         "description": "",
         "parameters": [
           {
             "name": "product_id",
             "in": "path",
-            "description": "Product Id",
+            "description": "Product id",
             "required": true,
             "schema": {
               "type": "string"
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateProduct"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "successful operation",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AddProduct"
+                  "$ref": "#/components/schemas/GetProduct"
                 }
               }
             }
           }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
+        }
       },
       "delete": {
         "tags": ["Product"],
@@ -234,7 +219,7 @@
         ]
       }
     },
-
+   
     "/orders": {
       "get": {
         "tags": ["Order"],
@@ -402,7 +387,7 @@
         }
       }
     },
-      "/discount/promotions": {
+    "/discount/promotions": {
       "get": {
         "summary": "Retrieve Products with Promotions and number of sales",
         "tags": ["Discount"],
@@ -434,43 +419,42 @@
         "responses": {
           "200": {
             "description": "List of products with associated promotions and tracked promotions",
-            "content":{  "application/json": {
-              "example": [
-                {
-                  "product": {
-                    "id": "product1",
-                    "name": "Product A"
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "product": {
+                      "id": "product1",
+                      "name": "Product A"
+                    },
+                    "promo": {
+                      "id": "promo1",
+                      "discount_type": "Percentage",
+                      "quantity": 5,
+                      "amount": 10.0,
+                      "valid_from": "2023-10-15T00:00:00Z",
+                      "valid_to": "2023-10-30T00:00:00Z"
+                    },
+                    "sales": 2
                   },
-                  "promo": {
-                    "id": "promo1",
-                    "discount_type": "Percentage",
-                    "quantity": 5,
-                    "amount": 10.0,
-                    "valid_from": "2023-10-15T00:00:00Z",
-                    "valid_to": "2023-10-30T00:00:00Z"
-                  },
-                  "sales": 2
-                },
-                {
-                  "product": {
-                    "id": "product2",
-                    "name": "Product B"
-                  },
-                  "promo": {
-                    "id": "promo2",
-                    "discount_type": "Fixed",
-                    "quantity": 10,
-                    "amount": 50.0,
-                    "valid_from": "2023-11-01T00:00:00Z",
-                    "valid_to": "2023-11-15T00:00:00Z"
-               
-                  },
-                  " sales": 1
-                }
-      
-              ]
-            }}
-            
+                  {
+                    "product": {
+                      "id": "product2",
+                      "name": "Product B"
+                    },
+                    "promo": {
+                      "id": "promo2",
+                      "discount_type": "Fixed",
+                      "quantity": 10,
+                      "amount": 50.0,
+                      "valid_from": "2023-11-01T00:00:00Z",
+                      "valid_to": "2023-11-15T00:00:00Z"
+                    },
+                    " sales": 1
+                  }
+                ]
+              }
+            }
           },
           "401": {
             "description": "Unauthorized access"
@@ -480,8 +464,7 @@
           }
         }
       }
-    }
-,    
+    },
     "/shop": {
       "post": {
         "summary": "Create a shop",
@@ -519,6 +502,32 @@
         }
       }
     },
+
+    "/shops": {
+      "get": {
+        "tags": ["Shops"],
+        "summary": "Fetch all shops",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shops"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+
     "/shop/store-traffic": {
       "post": {
         "summary": "Used to track user visit to a shop",
@@ -628,53 +637,11 @@
         ]
       }
     },
-    "/sales/report": {
-      "post": {
-        "tags": ["Sales"],
-        "summary": "Create a new Sales report",
-        "description": "Create reports on a particular transaction",
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/SalesReport"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SalesReport"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
-    "/Orders": {
+    "/Orders/all": {
       "get": {
         "tags": ["Orders"],
         "summary": "get all orders",
-        "description": "",
+        "description": "To get All orders",
         "responses": {
           "200": {
             "description": "successful operation",
@@ -686,21 +653,38 @@
                 "example": [
                   {
                     "order_id": "1122",
+                    "order_price": 12.22,
                     "createdAt": "2023-10-11T18:00:52.000Z",
                     "merchant": {
+                      "revenue": [
+                        {
+                          "amount": 3000.50
+                        }
+                      ],
                       "customer_orders": [
                         {
-                          "status": "complete"
+                          "status": "complete",
+                          "sales_report": [
+                            {
+                              "sales": 11
+                            }
+                          ]
                         }
-                      ]
-                    },
-                    "customer": [
-                      {
-                        "username": "Customer1"
+                      ],
+                      "customer": [
+                        {
+                          "username": "Customer1"
+                        }
+                      ],
+                      "product": {
+                        "price": 12.34,
+                        "name": "Longchair",
+                        "categories": [
+                          {
+                            "name": "Software"
+                          }
+                        ]
                       }
-                    ],
-                    "product": {
-                      "name": "Longchair"
                     }
                   }
                 ]
@@ -801,7 +785,7 @@
                     "merchant": {
                       "revenue": [
                         {
-                          "amount": 3000.5
+                          "amount": 3000.50
                         }
                       ],
                       "customer_orders": [
@@ -994,49 +978,6 @@
           "currency": "USD"
         }
       },
-      "UpdateProduct": {
-        "type": "object",
-        "properties": {
-          "image": {
-            "type": "string",
-            "format": "binary"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "quantity": {
-            "type": "integer"
-          },
-          "categoryId": {
-            "type": "integer"
-          },
-          "price": {
-            "type": "number"
-          },
-          "discountPrice": {
-            "type": "number"
-          },
-          "tax": {
-            "type": "number"
-          },
-          "currency": {
-            "type": "string"
-          }
-        },
-        "example": {
-          "categoryId": 1,
-          "name": "HNGX polo",
-          "description": "Red",
-          "quantity": 4,
-          "price": 500,
-          "discount_price": 455,
-          "tax": 2.2,
-          "currency": "USD"
-        }
-      },
 
       "GetProduct": {
         "type": "object",
@@ -1157,6 +1098,10 @@
           "order_id": {
             "type": "string"
           },
+          "order_price": {
+            "type": "number",
+            "format": "float"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time"
@@ -1218,8 +1163,7 @@
           "merchant": {
             "$ref": "#/components/schemas/MerchantData"
           }
-        },
-        "required": ["order_id", "order_price", "createdAt", "merchant"]
+        },"required": [ "order_id", "order_price", "createdAt", "merchant"]
       },
       "MerchantData": {
         "type": "object",
@@ -1229,14 +1173,32 @@
           },
           "customer_orders": {
             "$ref": "#/components/schemas/CustomerOrders"
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              }
+            }
           },
           "customer": {
-            "$ref": "#/components/schemas/CustomerData"
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              }
+            }
           },
           "product": {
-            "$ref": "#/components/schemas/ProductData"
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            }
           }
-        }
+      }
+        },
+        "required": ["order_id", "createdAt", "merchant", "customer", "product"]
       },
       "RevenueData": {
         "type": "object",
@@ -1294,41 +1256,13 @@
             "type": "string"
           }
         }
-      }
+      }    
     },
     "securitySchemes": {
       "BearerAuth": {
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
-      }
-    },
-    "RevenueUpdateResponse": {
-      "type": "object",
-      "properties": {
-        "message": {
-          "type": "string",
-          "description": "A message indicating the result of the operation"
-        },
-        "data": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "integer",
-              "description": "The ID of the updated revenue record"
-            },
-            "user_id": {
-              "type": "string",
-              "format": "uuid",
-              "description": "The user ID for whom the revenue is updated"
-            },
-            "amount": {
-              "type": "number",
-              "format": "float",
-              "description": "The updated revenue amount"
-            }
-          }
-        }
       }
     }
   }
