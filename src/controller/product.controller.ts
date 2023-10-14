@@ -294,28 +294,30 @@ export default class ProductController extends BaseController {
       },
       include: { image: true },
     });
-    let data = {}
-    if (product) {
-      const cat = await prisma.product_category.findFirst({
-        where: { id: product.category_id },
-        include: { sub_categories: true },
-      });
-      data = {
-        product: product,
-        category: {
-          ...cat,
-        },
-        image: product.image,
-        price: product.price,
-        discount: product.discount_price,
-        quantity: product.quantity,
-        currency: product.currency,
-        tax: product.tax,
-        description: product.description,
-      };
-    } else {
+
+    if (!product) {
       return this.error(res, '--product/missing-product', 'Product not found.', 404, null)
     }
+  
+    let data = {}
+    const cat = await prisma.product_category.findFirst({
+      where: { id: product.category_id },
+      include: { sub_categories: true },
+    });
+    data = {
+      product: product,
+      category: {
+        ...cat,
+      },
+      image: product.image,
+      price: product.price,
+      discount: product.discount_price,
+      quantity: product.quantity,
+      currency: product.currency,
+      tax: product.tax,
+      description: product.description,
+    };
+
     return this.success(res, `Product ${productId} Shown`, 'Products have been listed', 200, data);
   }
 
