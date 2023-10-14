@@ -288,11 +288,6 @@ export default class OrderController extends BaseController {
                 amount: true,
               },
             },
-            categories: {
-              select: {
-                name: true,
-              },
-            },
             customer_orders: {
               select: {
                 status: true,
@@ -307,13 +302,15 @@ export default class OrderController extends BaseController {
         },
         customer: {
           select: {
-            username: true,
+            first_name: true,
+            last_name: true,
           },
         },
         product: {
           select: {
             price: true,
             name: true,
+            category_id: true
           },
         },
       },
@@ -325,6 +322,13 @@ export default class OrderController extends BaseController {
       return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
     }
 
-    this.success(res, '--orders/all', 'orders fetched successfully', 200, orderItems);
+    const response = {
+      data: {
+        totalResults: orderItems.length,
+        orders: orderItems,
+      },
+    };
+
+    this.success(res, '--orders/all', 'orders fetched successfully', 200, response);
   }
 }
