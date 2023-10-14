@@ -628,7 +628,7 @@
         ]
       }
     },
-    "/Orders": {
+    "/Orders/all": {
       "get": {
         "tags": ["Orders"],
         "summary": "get all orders",
@@ -1123,7 +1123,7 @@
           "averageSales": 50.45
         }
       },
-      "searchOrder": {
+      "getOrderData": {
         "type": "object",
         "properties": {
           "order_id": {
@@ -1138,27 +1138,31 @@
             "format": "date-time"
           },
           "merchant": {
-            "$ref": "#/components/schemas/MerchantData"
-          }
-        },
-        "required": ["order_id", "order_price", "createdAt", "merchant"]
-      },
-      "MerchantData": {
-        "type": "object",
-        "properties": {
-          "revenue": {
-            "$ref": "#/components/schemas/RevenueData"
-          },
-          "customer_orders": {
-            "$ref": "#/components/schemas/CustomerOrders"
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              }
+            }
           },
           "customer": {
-            "$ref": "#/components/schemas/CustomerData"
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              }
+            }
           },
           "product": {
-            "$ref": "#/components/schemas/ProductData"
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            }
           }
-        }
+        },
+        "required": ["order_id", "createdAt", "merchant", "customer", "product"]
       },
       "RevenueData": {
         "type": "object",
