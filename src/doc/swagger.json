@@ -1205,44 +1205,44 @@
                 "schema": {
                   "$ref": "#/components/schemas/searchOrder"
                 },
-                "example": [
-                  {
-                    "order_id": "1122",
-                    "order_price": 12.22,
-                    "createdAt": "2023-10-11T18:00:52.000Z",
-                    "merchant": {
-                      "revenue": [
-                        {
-                          "amount": 3000.5
-                        }
-                      ],
-                      "customer_orders": [
-                        {
-                          "status": "complete",
-                          "sales_report": [
-                            {
-                              "sales": 11
-                            }
-                          ]
-                        }
-                      ],
-                      "customer": [
-                        {
-                          "username": "Customer1"
-                        }
-                      ],
-                      "product": {
-                        "price": 12.34,
-                        "name": "Longchair",
-                        "categories": [
+                "example": {
+                  "totalResults": 1,
+                  "orders": [
+                    {
+                      "order_id": "1122",
+                      "order_price": 12.22,
+                      "createdAt": "2023-10-11T18:00:52.000Z",
+                      "merchant": {
+                        "revenue": [
                           {
-                            "name": "Software"
+                            "amount": 3000.5
                           }
-                        ]
+                        ],
+                        "customer_orders": [
+                          {
+                            "status": "complete",
+                            "sales_report": [
+                              {
+                                "sales": 11
+                              }
+                            ]
+                          }
+                        ],
+                        "customer": [
+                          {
+                            "first_name": "CustomerFirstName",
+                            "last_name": "CustomerLastName"
+                          }
+                        ],
+                        "product": {
+                          "price": 12.34,
+                          "name": "Longchair",
+                          "category_id": 1
+                        }
                       }
                     }
-                  }
-                ]
+                  ]
+                }
               }
             }
           },
