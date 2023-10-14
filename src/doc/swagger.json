@@ -834,8 +834,92 @@
           }
         ]
       }
+    },
+    
+    "/revenue/{order_id}": {
+      "patch": {
+        "tags": ["Revenue"],
+        "summary": "Update Revenue",
+        "description": "Update the revenue based on the order's status",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            },
+            "description": "ID of the order to update revenue for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Revenue updated successfully",
+                  "data": {
+                    "id": 1,
+                    "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
+                    "amount": 1500.0
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "--order/not-found",
+                  "message": "Order not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    "/revenues": {
+      "get": {
+        "summary": "Get Revenue for Today",
+        "description": "Get revenue data for today.",
+        "parameters": [
+          {
+            "name": "timeframe",
+            "in": "query",
+            "description": "Timeframe for calculating revenue (e.g., today)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["today"],
+              "example": "today"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Revenue fetched successfully"
+          },
+          "400": {
+            "description": "Missing parameter timeframe"
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
+
   "components": {
     "schemas": {
       "AddProduct": {
