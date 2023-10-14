@@ -1429,8 +1429,7 @@
         "type": "object",
         "properties": {
           "revenue": {
-            "$ref": "#/components/schemas/RevenueData"
-          },
+            "$ref": "#/components/schemas/RevenueData",
           "customer_orders": {
             "$ref": "#/components/schemas/CustomerOrders",
             "type": "object",
