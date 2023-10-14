@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import BaseController from './base.controller';
 import { createCategorySchema, productSchema, updatedProductSchema } from '../helper/validate';
 import { uploadSingleImage } from '../helper/uploadImage';
+import { deleteImage } from '../helper/deleteImage';
 import logger from '../config/logger';
 import { AddProductPayloadType } from '@types';
 import { v4 as uuidv4 } from 'uuid';
@@ -140,6 +141,167 @@ export default class ProductController extends BaseController {
 
     this.success(res, 'Product Updated', 'Product has been updated successfully', 200, {
       product,
+    });
+  }
+
+  async addImage(req: Request, res: Response) {
+    const file = req.file ?? null;
+    const productId = req.params['product_id'];
+
+    if (!file) {
+      return this.error(res, '--product/invalid-fields', 'product image is missing.', 400, null);
+    }
+
+    // Find the product by ID
+    const existingProduct = await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
+    // Check if the product exists
+    if (!existingProduct) {
+      return this.error(res, '--product/not-found', 'Product not found', 404);
+    }
+
+    const { isError, errorMsg, image } = await uploadSingleImage(file);
+
+    if (isError) {
+      logger.error(`Error uploading image: ${errorMsg}`);
+    }
+
+    const productImage = await prisma.product_image.create({
+      data: {
+        url: image.url,
+        product_id: productId,
+      },
+    });
+
+    this.success(res, 'Image Added', 'Product image added successfully', 201, {
+      existingProduct,
+      image: productImage,
+    });
+  }
+
+  async getProductImages(req: Request, res: Response) {
+    const file = req.file ?? null;
+    const productId = req.params['product_id'];
+
+    // Find the product by ID
+    const existingProduct = await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
+    // Check if the product exists
+    if (!existingProduct) {
+      return this.error(res, '--product/not-found', 'Product not found', 404);
+    }
+
+    const productImages = await prisma.product_image.findMany({
+      where: {
+        product_id: productId,
+      },
+    });
+
+    this.success(res, 'Image Added', 'Product image added successfully', 200, {
+      productImages,
+    });
+  }
+
+  async updateImage(req: Request, res: Response) {
+    const file = req.file ?? null;
+    const productId = req.params['product_id'];
+    const imageId = req.params['image_id'];
+
+    console.log(productId, imageId, req.body);
+
+    // Find the product by ID
+    const existingProduct = await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
+    // Check if the product exists
+    if (!existingProduct) {
+      return this.error(res, '--product/not-found', 'Product not found', 404);
+    }
+
+    // Find the image by ID
+    const existingImage = await prisma.product_image.findUnique({
+      where: {
+        id: parseInt(imageId),
+      },
+    });
+
+    // Check if the image exists
+    if (!existingImage) {
+      return this.error(res, '--iamge/not-found', 'Image not found', 404);
+    }
+
+    await deleteImage(existingImage.url);
+
+    const { isError, errorMsg, image } = await uploadSingleImage(file);
+
+    if (isError) {
+      logger.error(`Error uploading image: ${errorMsg}`);
+    }
+
+    const productImage = await prisma.product_image.update({
+      where: {
+        id: parseInt(imageId),
+      },
+      data: {
+        url: image.url,
+      },
+    });
+
+    this.success(res, 'Image updated', 'Product image updated successfully', 200, {
+      existingProduct,
+      image: productImage,
+    });
+  }
+
+  async deleteImage(req: Request, res: Response) {
+    const productId = req.params['product_id'];
+    const imageId = req.params['image_id'];
+
+    // Find the product by ID
+    const existingProduct = await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
+    // Check if the product exists
+    if (!existingProduct) {
+      return this.error(res, '--product/not-found', 'Product not found', 404);
+    }
+
+    // Find the image by ID
+    const existingImage = await prisma.product_image.findUnique({
+      where: {
+        id: parseInt(imageId),
+      },
+    });
+
+    // Check if the image exists
+    if (!existingImage) {
+      return this.error(res, '--iamge/not-found', 'Image not found', 404);
+    }
+
+    await deleteImage(existingImage.url);
+
+    await prisma.product_image.delete({
+      where: {
+        id: parseInt(imageId),
+      },
+    });
+
+    this.success(res, 'Image deleted', 'Product image deleted successfully', 200, {
+      existingImage,
     });
   }
 

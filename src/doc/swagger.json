@@ -97,7 +97,96 @@
         ]
       }
     },
+    "/product/category": {
+      "post": {
+        "tags": ["Product"],
+        "summary": "Create a product category",
+        "description": "Create a parent or subcategory.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategory"
+              },
+              "example": {
+                "name": "Software Enginering",
+                "parent_id": null
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Category created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                },
+                "example": {
+                  "parentCategory": {
+                    "$ref": "#/components/schemas/ProductCategory"
+                  },
+                  "subCategory": {
+                    "$ref": "#/components/schemas/ProductSubCategory"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters or status value."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "404": {
+            "description": "Order not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/product/categories": {
+      "get": {
+        "summary": "Retrieve Product Categories",
+        "description": "Get a list of all product categories along with their subcategories.",
+        "tags": ["Product"],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 11,
+                    "name": "Electronics",
+                    "product_id": "11",
+                    "createdAt": "2023-10-11T21:25:23.0000Z",
 
+                    "sub_categories": [
+                      {
+                        "id": 101,
+                        "name": "Smartphones",
+                        "parent_category_id": 1011,
+                        "createdAt": "2023-10-11T21:25:23.0000Z"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
     "/product/{product_id}": {
       "patch": {
         "tags": ["Product"],
@@ -153,6 +242,199 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Action authorized successfully."
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/product/{product_id}/image": {
+      "post": {
+        "tags": ["Product"],
+        "summary": "Upload a new Product Image",
+        "description": "",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "description": "Product Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "format": "binary",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Action authorized successfully."
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": ["Product"],
+        "summary": "Get Product Images",
+        "description": "",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "description": "Product Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Action authorized successfully."
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+
+    "/product/{product_id}/image/{image_id}": {
+      "patch": {
+        "tags": ["Product"],
+        "summary": "Update a Product image",
+        "description": "",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "description": "Product Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_id",
+            "in": "path",
+            "description": "Image Id",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "format": "binary",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Action authorized successfully."
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Product"],
+        "summary": "Delete a Product image",
+        "description": "",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "description": "Product Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_id",
+            "in": "path",
+            "description": "Image Id",
+            "required": true,
+            "schema": {
+              "type": "number"
             }
           }
         ],
@@ -234,7 +516,6 @@
         ]
       }
     },
-
     "/orders": {
       "get": {
         "tags": ["Order"],
@@ -259,63 +540,6 @@
                 }
               }
             }
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
-    "/product/category": {
-      "post": {
-        "tags": ["Product"],
-        "summary": "Create a product category",
-        "description": "Create a parent or subcategory.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCategory"
-              },
-              "example": {
-                "name": "Software Enginering",
-                "parent_id": null
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Category created successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryResponse"
-                },
-                "example": {
-                  "parentCategory": {
-                    "$ref": "#/components/schemas/ProductCategory"
-                  },
-                  "subCategory": {
-                    "$ref": "#/components/schemas/ProductSubCategory"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request. Please check the request parameters or status value."
-          },
-          "401": {
-            "description": "Unauthorized. Token is invalid or action is not permitted."
-          },
-          "404": {
-            "description": "Order not found."
-          },
-          "500": {
-            "description": "Internal server error."
           }
         },
         "security": [
@@ -402,7 +626,7 @@
         }
       }
     },
-      "/discount/promotions": {
+    "/discount/promotions": {
       "get": {
         "summary": "Retrieve Products with Promotions and number of sales",
         "tags": ["Discount"],
@@ -434,43 +658,42 @@
         "responses": {
           "200": {
             "description": "List of products with associated promotions and tracked promotions",
-            "content":{  "application/json": {
-              "example": [
-                {
-                  "product": {
-                    "id": "product1",
-                    "name": "Product A"
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "product": {
+                      "id": "product1",
+                      "name": "Product A"
+                    },
+                    "promo": {
+                      "id": "promo1",
+                      "discount_type": "Percentage",
+                      "quantity": 5,
+                      "amount": 10.0,
+                      "valid_from": "2023-10-15T00:00:00Z",
+                      "valid_to": "2023-10-30T00:00:00Z"
+                    },
+                    "sales": 2
                   },
-                  "promo": {
-                    "id": "promo1",
-                    "discount_type": "Percentage",
-                    "quantity": 5,
-                    "amount": 10.0,
-                    "valid_from": "2023-10-15T00:00:00Z",
-                    "valid_to": "2023-10-30T00:00:00Z"
-                  },
-                  "sales": 2
-                },
-                {
-                  "product": {
-                    "id": "product2",
-                    "name": "Product B"
-                  },
-                  "promo": {
-                    "id": "promo2",
-                    "discount_type": "Fixed",
-                    "quantity": 10,
-                    "amount": 50.0,
-                    "valid_from": "2023-11-01T00:00:00Z",
-                    "valid_to": "2023-11-15T00:00:00Z"
-               
-                  },
-                  " sales": 1
-                }
-      
-              ]
-            }}
-            
+                  {
+                    "product": {
+                      "id": "product2",
+                      "name": "Product B"
+                    },
+                    "promo": {
+                      "id": "promo2",
+                      "discount_type": "Fixed",
+                      "quantity": 10,
+                      "amount": 50.0,
+                      "valid_from": "2023-11-01T00:00:00Z",
+                      "valid_to": "2023-11-15T00:00:00Z"
+                    },
+                    " sales": 1
+                  }
+                ]
+              }
+            }
           },
           "401": {
             "description": "Unauthorized access"
@@ -480,8 +703,7 @@
           }
         }
       }
-    }
-,    
+    },
     "/shop": {
       "post": {
         "summary": "Create a shop",
@@ -551,39 +773,7 @@
         }
       }
     },
-    "/product/categories": {
-      "get": {
-        "summary": "Retrieve Product Categories",
-        "description": "Get a list of all product categories along with their subcategories.",
-        "tags": ["Product"],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "example": [
-                  {
-                    "id": 11,
-                    "name": "Electronics",
-                    "product_id": "11",
-                    "createdAt": "2023-10-11T21:25:23.0000Z",
 
-                    "sub_categories": [
-                      {
-                        "id": 101,
-                        "name": "Smartphones",
-                        "parent_category_id": 1011,
-                        "createdAt": "2023-10-11T21:25:23.0000Z"
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
-    },
     "/sales/reports": {
       "get": {
         "tags": ["Sales"],
