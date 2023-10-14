@@ -20,10 +20,9 @@ export default class OrderController extends BaseController {
   }
 
   async getOrder(req: Request, res: Response) {
-      const userId = (req as any).user?.id ?? TestUserId;
-      const orderId = req.params['order_id'];
+    const userId = (req as any).user?.id ?? TestUserId;
+    const orderId = req.params['order_id'];
 
-   
     const orderItem = await prisma.order_item.findFirst({
       where: {
         merchant_id: userId,
@@ -60,8 +59,6 @@ export default class OrderController extends BaseController {
 
     this.success(res, '--order/single', 'Order fetched successfully', 200, orderItem);
   }
-
-
 
   async getAllOrders(req: Request, res: Response) {
     const userId = req.params.id; // get the user id from the request params
