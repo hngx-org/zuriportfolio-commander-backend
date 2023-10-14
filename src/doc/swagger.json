@@ -387,7 +387,7 @@
         }
       }
     },
-      "/discount/promotions": {
+    "/discount/promotions": {
       "get": {
         "summary": "Retrieve Products with Promotions and number of sales",
         "tags": ["Discount"],
@@ -419,43 +419,42 @@
         "responses": {
           "200": {
             "description": "List of products with associated promotions and tracked promotions",
-            "content":{  "application/json": {
-              "example": [
-                {
-                  "product": {
-                    "id": "product1",
-                    "name": "Product A"
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "product": {
+                      "id": "product1",
+                      "name": "Product A"
+                    },
+                    "promo": {
+                      "id": "promo1",
+                      "discount_type": "Percentage",
+                      "quantity": 5,
+                      "amount": 10.0,
+                      "valid_from": "2023-10-15T00:00:00Z",
+                      "valid_to": "2023-10-30T00:00:00Z"
+                    },
+                    "sales": 2
                   },
-                  "promo": {
-                    "id": "promo1",
-                    "discount_type": "Percentage",
-                    "quantity": 5,
-                    "amount": 10.0,
-                    "valid_from": "2023-10-15T00:00:00Z",
-                    "valid_to": "2023-10-30T00:00:00Z"
-                  },
-                  "sales": 2
-                },
-                {
-                  "product": {
-                    "id": "product2",
-                    "name": "Product B"
-                  },
-                  "promo": {
-                    "id": "promo2",
-                    "discount_type": "Fixed",
-                    "quantity": 10,
-                    "amount": 50.0,
-                    "valid_from": "2023-11-01T00:00:00Z",
-                    "valid_to": "2023-11-15T00:00:00Z"
-               
-                  },
-                  " sales": 1
-                }
-      
-              ]
-            }}
-            
+                  {
+                    "product": {
+                      "id": "product2",
+                      "name": "Product B"
+                    },
+                    "promo": {
+                      "id": "promo2",
+                      "discount_type": "Fixed",
+                      "quantity": 10,
+                      "amount": 50.0,
+                      "valid_from": "2023-11-01T00:00:00Z",
+                      "valid_to": "2023-11-15T00:00:00Z"
+                    },
+                    " sales": 1
+                  }
+                ]
+              }
+            }
           },
           "401": {
             "description": "Unauthorized access"
@@ -465,8 +464,7 @@
           }
         }
       }
-    }
-,    
+    },
     "/shop": {
       "post": {
         "summary": "Create a shop",
@@ -504,6 +502,32 @@
         }
       }
     },
+
+    "/shops": {
+      "get": {
+        "tags": ["Shops"],
+        "summary": "Fetch all shops",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shops"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+
     "/shop/store-traffic": {
       "post": {
         "summary": "Used to track user visit to a shop",
