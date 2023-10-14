@@ -700,7 +700,7 @@
                     "merchant": {
                       "revenue": [
                         {
-                          "amount": 3000.50
+                          "amount": 3000.5
                         }
                       ],
                       "customer_orders": [
@@ -1009,7 +1009,7 @@
                     "merchant": {
                       "revenue": [
                         {
-                          "amount": 3000.50
+                          "amount": 3000.5
                         }
                       ],
                       "customer_orders": [
@@ -1059,7 +1059,7 @@
         ]
       }
     },
-    
+
     "/revenue/{order_id}": {
       "patch": {
         "tags": ["Revenue"],
@@ -1106,9 +1106,10 @@
           }
         }
       }
-    }
+    },
     "/revenues": {
       "get": {
+        "tags": ["Revenue"],
         "summary": "Get Revenue for Today",
         "description": "Get revenue data for today.",
         "parameters": [
