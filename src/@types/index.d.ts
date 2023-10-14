@@ -1,3 +1,4 @@
+import { ObjectEnumValue } from '@prisma/client/runtime/library';
 import { Router } from 'express';
 
 export interface Routes {

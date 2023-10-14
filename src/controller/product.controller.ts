@@ -407,16 +407,32 @@ export default class ProductController extends BaseController {
 
   async getAllProducts(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
+    const productname = req.query.productname as string
 
-    const products = await prisma.product.findMany({
-      where: {
-        AND: {
-          user_id: userId,
+    let products;
+    if (productname) {
+      products = await prisma.product.findMany({
+        where: {
+          name: {
+            contains: productname,
+            mode: 'insensitive'
+          },
           is_deleted: 'active',
         },
-      },
-      include: { image: true },
-    });
+        include: { image: true },
+      });
+    } else {
+      products = await prisma.product.findMany({
+        where: {
+          AND: {
+            user_id: userId,
+            is_deleted: 'active',
+          },
+        },
+        include: { image: true },
+      });
+    }
+
     const allProd = [];
     if (products.length > 0) {
       for (const p of products) {
@@ -440,6 +456,47 @@ export default class ProductController extends BaseController {
       }
     }
     return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
+  }
+
+  async getProductById(req: Request, res: Response) {
+    const userId = (req as any).user?.id ?? TestUserId;
+    const productId = req.params.product_id
+
+    const product = await prisma.product.findFirst({
+      where: {
+        AND: {
+          id: productId,
+          // user_id: userId,
+          is_deleted: 'active',
+        },
+      },
+      include: { image: true },
+    });
+
+    if (!product) {
+      return this.error(res, '--product/missing-product', 'Product not found.', 404, null)
+    }
+
+    let data = {}
+    const cat = await prisma.product_category.findFirst({
+      where: { id: product.category_id },
+      include: { sub_categories: true },
+    });
+    data = {
+      product: product,
+      category: {
+        ...cat,
+      },
+      image: product.image,
+      price: product.price,
+      discount: product.discount_price,
+      quantity: product.quantity,
+      currency: product.currency,
+      tax: product.tax,
+      description: product.description,
+    };
+
+    return this.success(res, `Product ${productId} Shown`, 'Products have been listed', 200, data);
   }
 
   async getMarketplaceProducts(req: Request, res: Response) {
