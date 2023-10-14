@@ -54,6 +54,11 @@ export const createCategorySchema = Joi.object({
   parent_id: Joi.alternatives(Joi.number().integer(), Joi.allow(null), Joi.allow('')).optional(),
 });
 
+export const addProductCategorySchema = Joi.object({
+  name: Joi.string().required(),
+  user_id: Joi.string().required(),
+});
+
 export const createDiscountSchema = Joi.object({
   discount_type: Joi.string().required(),
   amount: Joi.number().required(),

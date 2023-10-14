@@ -20,10 +20,10 @@ export default class OrderController extends BaseController {
   }
 
   async getOrder(req: Request, res: Response) {
-      const userId = (req as any).user?.id ?? TestUserId;
-      const orderId = req.params['order_id'];
+    const userId = (req as any).user?.id ?? TestUserId;
+    const orderId = req.params['order_id'];
 
-   
+
     const orderItem = await prisma.order_item.findFirst({
       where: {
         merchant_id: userId,
@@ -64,48 +64,89 @@ export default class OrderController extends BaseController {
 
 
   async getAllOrders(req: Request, res: Response) {
-    const userId = req.params.id; // get the user id from the request params
-
-    console.log(userId);
+    //const userId = req.user.id; // get the user id from the request params
+    const userId = (req as any).user?.id || TestUserId;
 
     if (!userId) {
       return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
     }
 
-    const { page = 1, pageSize = 10 } = req.query;
+   const pageSize = parseInt(req.query.pageSize?.toString(), 10) || 10;
+   const page = parseInt(req.query.page?.toString(), 10) || 1;
+ 
+    
+    const totalOrders = await prisma.order.count({
+      where: {
+        customer_id: userId,
+      },
+    });
+
     const orders = await prisma.order_item.findMany({
       where: {
         merchant_id: userId,
       },
       select: {
         order_id: true,
+        order_price: true,
         createdAt: true,
         merchant: {
           select: {
+            revenue: {
+              select: {
+                amount: true,
+              }
+            },
+            categories: {
+              select: {
+                name: true,
+              }
+            },
             customer_orders: {
               select: {
                 status: true,
-              },
-            },
+                sales_report: {
+                  select: {
+                    sales: true,
+                  }
+                }
+              }
+            }
           },
         },
         customer: {
           select: {
-            username: true,
+            first_name: true,
+            last_name: true,
           },
         },
         product: {
-          // Add the product selection here
           select: {
+            price: true,
             name: true,
+            category_id: true
           },
         },
       },
       skip: (+page - 1) * +pageSize,
       take: +pageSize,
     });
-
-    this.success(res, '--order/all', 'orders fetched successfully', 200, orders);
+    if (!orders) {
+      return this.error(res, '--order/all', 'An error occurred', 500, 'internal server error');
+    }
+    const pagination = {
+      page : +page,
+      pageSize: +pageSize,
+      totalOrders,
+      totalPages: Math.ceil(totalOrders/pageSize)
+    };
+    const response = {
+      data : {
+        totalResults : orders.length,
+        orders: orders,
+        pagination,
+      }
+    }
+    return this.success(res, '--order/all', 'Orders fetched successfully', 200, response);
   }
 
   async getOrdersCountByTimeframe(req: Request, res: Response) {
@@ -157,7 +198,7 @@ export default class OrderController extends BaseController {
 
   async getAverageOrderValue(req: Request, res: Response) {
     const timeframe = (req.query.timeframe as string)?.toLocaleLowerCase();
-    const merchantUserId = (req as any).user?.id ?? TestUserId;
+    const merchantUserId = (req as any).user['id'];
 
     if (!timeframe) {
       this.error(res, '--order/average', 'Missing timeframe parameter', 400);
@@ -177,6 +218,7 @@ export default class OrderController extends BaseController {
     const endOfDay = new Date(currentDate);
     endOfDay.setHours(23, 59, 59, 999);
 
+
     const orderItems = await prisma.order_item.findMany({
       where: {
         merchant_id: merchantUserId,
@@ -187,6 +229,7 @@ export default class OrderController extends BaseController {
       },
     });
 
+
     const totalSales = orderItems.reduce((sum, item) => sum + item.order_price, 0);
     const averageSales = parseFloat((totalSales / orderItems.length).toFixed(2));
 
@@ -194,6 +237,7 @@ export default class OrderController extends BaseController {
       averageSales,
     });
   }
+
   async updateOrderStatus(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
     const orderId = req.params['order_id'];
@@ -267,11 +311,6 @@ export default class OrderController extends BaseController {
                 amount: true,
               },
             },
-            categories: {
-              select: {
-                name: true,
-              },
-            },
             customer_orders: {
               select: {
                 status: true,
@@ -286,13 +325,15 @@ export default class OrderController extends BaseController {
         },
         customer: {
           select: {
-            username: true,
+            first_name: true,
+            last_name: true,
           },
         },
         product: {
           select: {
             price: true,
             name: true,
+            category_id: true
           },
         },
       },
@@ -304,6 +345,13 @@ export default class OrderController extends BaseController {
       return this.error(res, '--orders/internal-server-error', 'Internal server Error', 500);
     }
 
-    this.success(res, '--orders/all', 'orders fetched successfully', 200, orderItems);
+    const response = {
+      data: {
+        totalResults: orderItems.length,
+        orders: orderItems,
+      },
+    };
+
+    this.success(res, '--orders/all', 'orders fetched successfully', 200, response);
   }
 }
