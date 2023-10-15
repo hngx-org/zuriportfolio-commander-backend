@@ -131,7 +131,7 @@ export default class ShopController extends BaseController {
   } // end of shop traffic
 
   // Fetch the shop by its ID
-  async getShopByMerchantId(req: Request, res: Response) {
+  async getShopId(req: Request, res: Response) {
     const id = req.params.id;
 
     // Fetch the shop associated with the merchant, including all its products
