@@ -74,7 +74,7 @@ export default class ProductController extends BaseController {
     });
 
     if (category === null) {
-      return this.error(res, '--product/category-notfound', 'Failed to crete product, category do not exist.', 404);
+      return this.error(res, '--product/category-notfound', 'Failed to create product, category do not exist.', 404);
     }
 
     const { isError, errorMsg, image } = await uploadSingleImage(file);
@@ -405,7 +405,7 @@ export default class ProductController extends BaseController {
     this.success(res, 'Product Unpublished', 'Product has been unpublished successfully', 201, updatedProduct);
   }
 
-  async getAllProducts(req: Request, res: Response) {
+  async SearchProductsByName(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
     const productname = req.query.productname as string
 
@@ -458,6 +458,52 @@ export default class ProductController extends BaseController {
     return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
   }
 
+  async getAllProducts(req: Request, res: Response) {
+    const userId = (req as any).user?.id ?? TestUserId;
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    const itemsPerPage = req.query.itemsPerPage ? parseInt(req.query.itemsPerPage as string, 10) : 10;
+  
+    // Calculate the offset to skip the appropriate number of items
+    const offset = (page - 1) * itemsPerPage;
+  
+    // Get all products with pagination and include related data
+    const products = await prisma.product.findMany({
+      where: {
+        AND: {
+          user_id: userId,
+          is_deleted: 'active',
+        },
+      },
+      include: {
+        image: true,
+        
+      },
+      skip: offset,
+      take: itemsPerPage,
+    });
+  
+    const allProd = [];
+    if (products.length > 0) {
+      for (const p of products) {
+        allProd.push({
+          products: p,
+          category: p.category_id,
+          image: p.image,
+          price: p.price,
+          discount: p.discount_price,
+          quantity: p.quantity,
+          currency: p.currency,
+          tax: p.tax,
+          description: p.description,
+        });
+      }
+    }
+  
+    return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
+  }
+  
+  
+  
   async getProductById(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
     const productId = req.params.product_id
