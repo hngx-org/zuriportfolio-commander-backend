@@ -11,14 +11,6 @@ export default class OrderController extends BaseController {
     super();
   }
 
-  async createOrder(req: Request, res: Response) {
-    const payload = req.body;
-
-    const created = await prisma.order.create({ data: payload });
-
-    this.success(res, '--order/created', 'order created', 200, created);
-  }
-
   async getOrder(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
     const orderId = req.params['order_id'];
