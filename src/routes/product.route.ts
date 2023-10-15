@@ -73,9 +73,9 @@ export default class ProductRoute {
       useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
     );
     this.router.get(
-      `${this.path}s`,
+      `${this.path}`,
       // isAuthenticated,
-      useCatchErrors(this.productController.getAllProducts.bind(this.productController))
+      useCatchErrors(this.productController.SearchProductsByName.bind(this.productController))
     );
     this.router.get(
       `${this.path}s/marketplace`,
@@ -90,11 +90,7 @@ export default class ProductRoute {
       `${this.path}/categories`,
       useCatchErrors(this.productController.getAllCategories.bind(this.productController))
     );
-    this.router.post(
-      `${this.path}/categories`,
-      // isAuthenticated,
-      useCatchErrors(this.productController.createCategory.bind(this.productController))
-    );
+   
     this.router.post(
       `${this.path}/category`,
       // isAuthenticated,
@@ -104,6 +100,10 @@ export default class ProductRoute {
       `${this.path}/:product_id`,
       // isAuthenticated,
       useCatchErrors(this.productController.getProductById.bind(this.productController))
+    );
+    this.router.get(
+      `${this.path}s`,
+      useCatchErrors(this.productController.getAllProducts.bind(this.productController))
     );
   }
 }
