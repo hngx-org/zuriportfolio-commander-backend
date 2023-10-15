@@ -33,7 +33,7 @@ export default class ProductRoute {
     this.router.post(
       `${this.path}/add`,
       upload.single('image'),
-      isAuthenticated,
+      // isAuthenticated,
       useCatchErrors(this.productController.addProduct.bind(this.productController))
     );
 
@@ -46,20 +46,20 @@ export default class ProductRoute {
     this.router.post(
       `${this.path}/:product_id/image`,
       upload.single('image'),
-      isAuthenticated,
+      // isAuthenticated,
       useCatchErrors(this.productController.addImage.bind(this.productController))
     );
 
     this.router.patch(
       `${this.path}/:product_id/image/:image_id`,
       upload.single('image'),
-      isAuthenticated,
+      // isAuthenticated,
       useCatchErrors(this.productController.updateImage.bind(this.productController))
     );
 
     this.router.delete(
       `${this.path}/:product_id/image/:image_id`,
-      isAuthenticated,
+      // isAuthenticated,
       useCatchErrors(this.productController.deleteImage.bind(this.productController))
     );
 

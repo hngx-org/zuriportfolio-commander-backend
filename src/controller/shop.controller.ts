@@ -13,8 +13,6 @@ export default class ShopController extends BaseController {
   }
 
   async createShop(req: Request, res: Response) {
-    
-    const TestUserId = '02cac250-ccbf-409f-9c67-ecbbdb5bc31e';
     const merchant_id = (req as any).user?.id ?? TestUserId;
     const { error } = createShopSchema.validate(req.body);
     if (error) {
@@ -23,7 +21,6 @@ export default class ShopController extends BaseController {
     const { name } = req.body;
     const id = uuidv4();
 
-   
     const userExists = await prisma.user.findFirst({
       where: { id: merchant_id },
     });
@@ -32,7 +29,6 @@ export default class ShopController extends BaseController {
       return this.error(res, '--shop/merchant-notfound', 'merchant not find', 404);
     }
 
-  
     const shop = await prisma.shop.create({
       data: {
         id,
@@ -166,4 +162,3 @@ export default class ShopController extends BaseController {
     );
   }
 }
-

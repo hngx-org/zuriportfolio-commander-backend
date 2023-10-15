@@ -95,7 +95,7 @@ export default class ProductController extends BaseController {
         user_id: userId,
         currency,
         description,
-        discount_price: parseFloat(discountPrice),
+        discount_price: discountPrice ? parseFloat(discountPrice) : 0,
         quantity: parseInt(quantity),
         price: parseFloat(price),
         tax: parseFloat(tax),
@@ -111,7 +111,7 @@ export default class ProductController extends BaseController {
 
     this.success(res, 'Product Added', 'Product has been added successfully', 201, {
       ...product,
-      image: product.image,
+      image: (product as any)?.image,
     });
   }
 
