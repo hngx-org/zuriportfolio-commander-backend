@@ -16,6 +16,7 @@ export default class RevenueRoute {
   initializeRoutes() {
     this.router.patch(
       `${this.path}/:order_id`,
+      isAuthenticated,
       useCatchErrors(this.revenueController.updateRevenue.bind(this.revenueController))
     );
 
