@@ -27,7 +27,7 @@ export default class DiscountController extends BaseController {
       });
 
       if (product) {
-        if (product.promo_product.length > 0 || product.discount_price > 0) {
+        if (product.promo_product.length > 0) {
           // The product is associated with at least one promo
           canAddPromo.push({ productId, canAdd: false });
         }
