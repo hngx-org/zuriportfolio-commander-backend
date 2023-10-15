@@ -1,7 +1,7 @@
 import express from 'express';
 import useCatchErrors from '../error/catchErrors';
 import salesController from '../controller/sales.controller';
-import { isAuthenticated } from 'middlewares/auth';
+import { isAuthenticated } from '../middlewares/auth';
 
 export default class SalesRoute {
   router = express.Router();
@@ -19,7 +19,8 @@ export default class SalesRoute {
     );
 
     this.router.get(
-      `${this.path}/reports`, isAuthenticated,
+      `${this.path}/reports`,
+      isAuthenticated,
       useCatchErrors(this.salesController.getAllReport.bind(this.salesController))
     );
   }
