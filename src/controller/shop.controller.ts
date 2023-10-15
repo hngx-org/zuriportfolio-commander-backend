@@ -13,13 +13,14 @@ export default class ShopController extends BaseController {
   }
 
   async createShop(req: Request, res: Response) {
-    const payload = req.body;
+    
+    const TestUserId = '02cac250-ccbf-409f-9c67-ecbbdb5bc31e';
     const merchant_id = (req as any).user?.id ?? TestUserId;
-    const { error, value } = createShopSchema.validate(payload);
+    const { error } = createShopSchema.validate(req.body);
     if (error) {
       return this.error(res, '--shop/invalid-fields', error?.message ?? 'missing shop details.', 400, null);
     }
-    const { name } = payload;
+    const { name } = req.body;
     const id = uuidv4();
 
     //! check if user exists
@@ -31,8 +32,8 @@ export default class ShopController extends BaseController {
       return this.error(res, '--shop/merchant-notfound', 'merchant not find', 404);
     }
 
-    // create shop
-    const created = await prisma.shop.create({
+  
+    const shop = await prisma.shop.create({
       data: {
         id,
         name,
@@ -40,7 +41,7 @@ export default class ShopController extends BaseController {
       },
     });
 
-    this.success(res, '--shop/created', 'shop created', 200, created);
+    this.success(res, '--shop/created', 'shop created', 200, shop);
   }
 
   async deleteShop(req: Request, res: Response) {
@@ -81,7 +82,7 @@ export default class ShopController extends BaseController {
     if (shops.length > 0) {
       this.success(res, 'All shops', 'Shops have been listed successfully', 200, shops);
     } else {
-      this.success(res, '--shops-isEmpty', 'No Shop Found', 200, []);
+      this.success(res, '--shops-isEmpty', 'No Shops Found', 200, []);
     }
   }
   // Update existing shop controller
