@@ -13,14 +13,7 @@ export default class OrderRoute {
   }
 
   initializeRoutes() {
-<<<<<<< HEAD
     // get order count by timeframe
-=======
-
-    this.router.get(`${this.path}/:id`,
-      isAuthenticated, useCatchErrors(this.OrderController.getAllOrders.bind(this.OrderController)));
-
->>>>>>> 49279c07e29415110ea783067bf3d81bf641dd71
     this.router.get(
       `${this.path}s`,
       isAuthenticated,
@@ -28,12 +21,8 @@ export default class OrderRoute {
     );
 
     this.router.get(
-<<<<<<< HEAD
       `${this.path}/:order_id`,
       isAuthenticated,
-=======
-      `${this.path}/sales-report/:order_id`, isAuthenticated,
->>>>>>> 49279c07e29415110ea783067bf3d81bf641dd71
       useCatchErrors(this.OrderController.getOrder.bind(this.OrderController))
     );
 
