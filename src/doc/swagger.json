@@ -1127,7 +1127,9 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["today"],
+              "enum": [
+                "today", "week", "month"
+              ],
               "example": "today"
             }
           }
@@ -1634,14 +1636,14 @@
       "AverageOrderValue": {
         "type": "object",
         "properties": {
-          "averageSales": {
+          "averageOrderValue": {
             "type": "number",
             "format": "double",
             "description": "The average order value for today."
           }
         },
         "example": {
-          "averageSales": 50.45
+          "averageOrderValue": 50.45
         }
       },
       "searchOrder": {
