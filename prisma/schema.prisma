@@ -241,7 +241,7 @@ model store_traffic {
 }
 
 model sales_report {
-    id        String   @id
+    id        Int   @id @default(autoincrement())
     user_id   String
     sales     Int
     order_id  String

@@ -14,7 +14,7 @@ export const productSchema = Joi.object({
 });
 
 export const saleSchema = Joi.object({
-  user_id: Joi.string().required(),
+  user_id: Joi.number().required(),
   sales: Joi.number().required(),
   order_id: Joi.string().required(),
 });
