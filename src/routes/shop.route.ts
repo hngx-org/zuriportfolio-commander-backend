@@ -21,12 +21,12 @@ export default class ShopRoute {
     );
     // delete shop
     this.router.delete(
-      `${this.path}/delete/:id`,
+      `${this.path}/delete/:id`, isAuthenticated,
       useCatchErrors(this.shopController.deleteShop.bind(this.shopController))
     );
 
     // Get all shops
-    this.router.get(`${this.path}s`, useCatchErrors(this.shopController.getAllShops.bind(this.shopController)));
+    this.router.get(`${this.path}s`, isAuthenticated, useCatchErrors(this.shopController.getAllShops.bind(this.shopController)));
 
     // get a shop
     this.router.get(
