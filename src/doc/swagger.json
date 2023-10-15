@@ -22,9 +22,7 @@
   "paths": {
     "/product": {
       "get": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Fetch all products by name",
         "description": "",
         "parameters": [
@@ -60,9 +58,7 @@
     },
     "/products": {
       "get": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Fetch all products",
         "description": "Retrieve a list of products with pagination",
         "parameters": [
@@ -103,9 +99,7 @@
     },
     "/products/marketplace": {
       "get": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Fetch all marketplace products",
         "description": "",
         "responses": {
@@ -124,9 +118,7 @@
     },
     "/product/add": {
       "post": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Create a new Product",
         "description": "",
         "requestBody": {
@@ -249,9 +241,7 @@
     },
     "/product/{product_id}": {
       "get": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Fetch product by id",
         "description": "",
         "parameters": [
@@ -279,9 +269,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Delete a product",
         "description": "Delete a specific product.",
         "parameters": [
@@ -511,9 +499,7 @@
     },
     "/order/status/{order_id}": {
       "patch": {
-        "tags": [
-          "Order"
-        ],
+        "tags": ["Order"],
         "summary": "Update Order Status",
         "description": "Update the status of a specific order.",
         "parameters": [
@@ -535,17 +521,11 @@
                 "properties": {
                   "status": {
                     "type": "string",
-                    "enum": [
-                      "pending",
-                      "complete",
-                      "failed"
-                    ],
+                    "enum": ["pending", "complete", "failed"],
                     "example": "complete"
                   }
                 },
-                "required": [
-                  "status"
-                ]
+                "required": ["status"]
               }
             }
           }
@@ -576,9 +556,7 @@
     },
     "/orders": {
       "get": {
-        "tags": [
-          "Order"
-        ],
+        "tags": ["Order"],
         "summary": "Gets all order count withing a timeframe",
         "description": "Gets all order count withing a timeframe",
         "parameters": [
@@ -612,9 +590,7 @@
     "/discount": {
       "post": {
         "summary": "Create a discount",
-        "tags": [
-          "Discount"
-        ],
+        "tags": ["Discount"],
         "requestBody": {
           "description": "Discount data",
           "required": true,
@@ -691,9 +667,7 @@
     "/discount/promotions": {
       "get": {
         "summary": "Retrieve Products with Promotions and number of sales",
-        "tags": [
-          "Discount"
-        ],
+        "tags": ["Discount"],
         "security": [
           {
             "BearerAuth": []
@@ -771,9 +745,7 @@
     "/shop": {
       "post": {
         "summary": "Create a shop",
-        "tags": [
-          "Shop"
-        ],
+        "tags": ["Shop"],
         "requestBody": {
           "description": "Shop data",
           "required": true,
@@ -809,9 +781,7 @@
     },
     "/shops": {
       "get": {
-        "tags": [
-          "Shops"
-        ],
+        "tags": ["Shops"],
         "summary": "Fetch all shops",
         "description": "",
         "responses": {
@@ -836,9 +806,7 @@
     "/shop/store-traffic": {
       "post": {
         "summary": "Used to track user visit to a shop",
-        "tags": [
-          "Shop"
-        ],
+        "tags": ["Shop"],
         "requestBody": {
           "description": "Shop data",
           "required": true,
@@ -869,9 +837,7 @@
     },
     "/sales/reports": {
       "get": {
-        "tags": [
-          "Sales"
-        ],
+        "tags": ["Sales"],
         "summary": "Retrieve Sales Reports",
         "description": "Get sales reports based on timeframes.",
         "parameters": [
@@ -915,9 +881,7 @@
     },
     "/Orders/all": {
       "get": {
-        "tags": [
-          "Orders"
-        ],
+        "tags": ["Orders"],
         "summary": "get all orders",
         "description": "To get All orders",
         "responses": {
@@ -929,7 +893,7 @@
                   "$ref": "#/components/schemas/getOrderData"
                 },
                 "example": {
-                  "totalResults" : 1,
+                  "totalResults": 1,
                   "orders": [
                     {
                       "order_id": "1122",
@@ -941,9 +905,9 @@
                             "amount": 3000.5
                           }
                         ],
-                        "categories" : [
+                        "categories": [
                           {
-                            "name" : "nike"
+                            "name": "nike"
                           }
                         ],
                         "customer_orders": [
@@ -958,8 +922,8 @@
                         ],
                         "customer": [
                           {
-                            "first_name" : "customerFirstName",
-                            "last_name" : "customerLastName"
+                            "first_name": "customerFirstName",
+                            "last_name": "customerLastName"
                           }
                         ],
                         "product": {
@@ -968,13 +932,13 @@
                           "category_id": 1
                         }
                       }
-                    }  
+                    }
                   ],
-                  "pagination" : {
-                    "page" : 1,
-                    "pageSize" : 10,
-                    "totalOrders" : 1,
-                    "totalPages" : 1 
+                  "pagination": {
+                    "page": 1,
+                    "pageSize": 10,
+                    "totalOrders": 1,
+                    "totalPages": 1
                   }
                 }
               }
@@ -993,9 +957,7 @@
       },
       "/auth/send-verification": {
         "post": {
-          "tags": [
-            "Authentication"
-          ],
+          "tags": ["Authentication"],
           "summary": "Send Verification Code",
           "description": "Sends a verification code to the user's email for account activation.",
           "requestBody": {
@@ -1032,14 +994,7 @@
                       "example": "42e2a46a-e56f-4e4d-be0e-0675b7026f58"
                     }
                   },
-                  "required": [
-                    "first_name",
-                    "last_name",
-                    "username",
-                    "email",
-                    "password",
-                    "refresh_token"
-                  ]
+                  "required": ["first_name", "last_name", "username", "email", "password", "refresh_token"]
                 }
               }
             }
@@ -1062,9 +1017,7 @@
       },
       "/auth/confirm-verification": {
         "post": {
-          "tags": [
-            "Authentication"
-          ],
+          "tags": ["Authentication"],
           "summary": "Confirm Verification Code",
           "description": "Verifies the verification code against the stored code for the user in the database.",
           "requestBody": {
@@ -1083,10 +1036,7 @@
                       "example": "3903"
                     }
                   },
-                  "required": [
-                    "email",
-                    "verificationCode"
-                  ]
+                  "required": ["email", "verificationCode"]
                 }
               }
             }
@@ -1109,9 +1059,7 @@
       },
       "/order/status/{order_id}": {
         "patch": {
-          "tags": [
-            "Order"
-          ],
+          "tags": ["Order"],
           "summary": "Update Order Status",
           "description": "Update the status of a specific order.",
           "parameters": [
@@ -1133,17 +1081,11 @@
                   "properties": {
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "pending",
-                        "complete",
-                        "failed"
-                      ],
+                      "enum": ["pending", "complete", "failed"],
                       "example": "complete"
                     }
                   },
-                  "required": [
-                    "status"
-                  ]
+                  "required": ["status"]
                 }
               }
             }
@@ -1175,9 +1117,7 @@
     },
     "/orders/average": {
       "get": {
-        "tags": [
-          "Orders"
-        ],
+        "tags": ["Orders"],
         "summary": "Fetch the average order value for today",
         "parameters": [
           {
@@ -1188,7 +1128,7 @@
             "schema": {
               "type": "string",
               "enum": [
-                "today"
+                "today", "week", "month"
               ],
               "example": "today"
             }
@@ -1224,9 +1164,7 @@
     },
     "/order/search/{name}": {
       "get": {
-        "tags": [
-          "Orders"
-        ],
+        "tags": ["Orders"],
         "summary": "Search Order By Product Name",
         "description": "",
         "parameters": [
@@ -1401,6 +1339,12 @@
             "type": "string",
             "format": "binary"
           },
+          "shopId": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "integer"
+          },
           "name": {
             "type": "string"
           },
@@ -1408,9 +1352,6 @@
             "type": "string"
           },
           "quantity": {
-            "type": "integer"
-          },
-          "categoryId": {
             "type": "integer"
           },
           "price": {
@@ -1426,19 +1367,10 @@
             "type": "string"
           }
         },
-        "required": [
-          "image",
-          "name",
-          "description",
-          "quantity",
-          "categoryId",
-          "price",
-          "discountPrice",
-          "tax",
-          "currency"
-        ],
+        "required": ["image", "shopId", "categoryId", "name", "description", "price", "tax", "currency"],
         "example": {
           "categoryId": 1,
+          "shopId": "30e9ca17-e481-4a20-a1aa-2dccdb6175d5",
           "name": "HNGX polo",
           "description": "Red",
           "quantity": 4,
@@ -1488,12 +1420,7 @@
               },
               "adminStatus": {
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "review",
-                  "approved",
-                  "blacklist"
-                ],
+                "enum": ["pending", "review", "approved", "blacklist"],
                 "required": true
               }
             }
@@ -1524,9 +1451,7 @@
             "$ref": "#/components/schemas/UpdateProductData"
           }
         },
-        "required": [
-          "userId"
-        ],
+        "required": ["userId"],
         "example": {
           "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
           "newData": {
@@ -1567,20 +1492,13 @@
         "type": "object",
         "properties": {
           "parent_id": {
-            "type": [
-              "integer",
-              "null",
-              "undefined",
-              ""
-            ]
+            "type": ["integer", "null", "undefined", ""]
           },
           "name": {
             "type": "string"
           }
         },
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "ProductCategory": {
         "type": "object",
@@ -1652,13 +1570,7 @@
             "format": "date-time"
           }
         },
-        "required": [
-          "id",
-          "user_id",
-          "sales",
-          "order_id",
-          "createdAt"
-        ]
+        "required": ["id", "user_id", "sales", "order_id", "createdAt"]
       },
       "AddSales Report": {
         "type": "object",
@@ -1673,11 +1585,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "user_id",
-          "order_id",
-          "sales"
-        ],
+        "required": ["user_id", "order_id", "sales"],
         "example": {
           "user_id": "fecfd17b-51a3-4288-9bd0-77ac4b7d60a0",
           "order_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
@@ -1723,25 +1631,19 @@
             }
           }
         },
-        "required": [
-          "order_id",
-          "createdAt",
-          "merchant",
-          "customer",
-          "product"
-        ]
+        "required": ["order_id", "createdAt", "merchant", "customer", "product"]
       },
       "AverageOrderValue": {
         "type": "object",
         "properties": {
-          "averageSales": {
+          "averageOrderValue": {
             "type": "number",
             "format": "double",
             "description": "The average order value for today."
           }
         },
         "example": {
-          "averageSales": 50.45
+          "averageOrderValue": 50.45
         }
       },
       "searchOrder": {
@@ -1762,12 +1664,7 @@
             "$ref": "#/components/schemas/MerchantData"
           }
         },
-        "required": [
-          "order_id",
-          "order_price",
-          "createdAt",
-          "merchant"
-        ]
+        "required": ["order_id", "order_price", "createdAt", "merchant"]
       },
       "MerchantData": {
         "type": "object",
@@ -1801,13 +1698,7 @@
             }
           }
         },
-        "required": [
-          "order_id",
-          "createdAt",
-          "merchant",
-          "customer",
-          "product"
-        ]
+        "required": ["order_id", "createdAt", "merchant", "customer", "product"]
       },
       "RevenueData": {
         "type": "object",

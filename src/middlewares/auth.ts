@@ -10,7 +10,7 @@ export async function isAuthenticated(req: Request, res: Response, next: NextFun
   }
   try {
     // make api call to verify access token
-    const authUrl = `https://auth.akuya.tech/api/authorize`;
+    const authUrl = `https://staging.zuri.team/api/auth/api/authorize`;
     const request = await $axios.post(authUrl, { token });
     const resp: AuthenticatedMiddleware = request.data;
 
