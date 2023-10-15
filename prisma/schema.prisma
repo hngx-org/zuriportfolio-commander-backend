@@ -115,9 +115,9 @@ model product {
     category_id    Int
     name           String
     description    String
-    quantity       Int
+    quantity       Int            @default(1)
     price          Float
-    discount_price Float
+    discount_price Float          @default(0)
     tax            Float
     admin_status   ADMIN_STATUS   @default(pending)
     is_published   Boolean        @default(false)
