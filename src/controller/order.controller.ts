@@ -11,11 +11,12 @@ export default class OrderController extends BaseController {
     super();
   }
 
+  // get order by id
   async getOrder(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
     const orderId = req.params['order_id'];
 
-    console.log({ orderId });
+    console.log({ userId });
 
     if (!userId) {
       return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
