@@ -63,6 +63,8 @@ export default class OrderController extends BaseController {
 
   async getAllOrders(req: Request, res: Response) {
     //const userId = req.user.id; // get the user id from the request params
+
+    let TestUserId = 'asdg44dd';
     const userId = (req as any).user?.id || TestUserId;
 
     if (!userId) {
