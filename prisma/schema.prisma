@@ -46,6 +46,12 @@ enum shop_status {
     temporary
 }
 
+enum Order_Item_Status {
+    pending
+    completed
+    cancelled
+}
+
 model user {
     id                   String             @id @unique @default(uuid())
     username             String
@@ -90,7 +96,7 @@ model order {
 }
 
 model order_item {
-    id             Int      @id @unique
+    id             Int               @id @unique
     order_id       String
     product_id     String
     merchant_id    String
@@ -98,9 +104,10 @@ model order_item {
     order_price    Float
     order_VAT      Float
     order_discount Float
+    status         Order_Item_Status @default(pending)
     promo_id       Int?
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @default(now())
+    createdAt      DateTime          @default(now())
+    updatedAt      DateTime          @default(now())
 
     merchant user       @relation(name: "merchant_orders", fields: [merchant_id], references: [id])
     customer user       @relation(name: "customer_orders", fields: [customer_id], references: [id])
