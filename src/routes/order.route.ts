@@ -22,7 +22,7 @@ export default class OrderRoute {
 
     this.router.get(
       `${this.path}s/all`,
-      //isAuthenticated
+      // isAuthenticated,
       useCatchErrors(this.OrderController.getAllOrders.bind(this.OrderController))
     );
 
