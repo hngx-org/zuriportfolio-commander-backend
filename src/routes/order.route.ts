@@ -13,17 +13,16 @@ export default class OrderRoute {
   }
 
   initializeRoutes() {
-
-    this.router.get(`${this.path}/:id`,
-      isAuthenticated, useCatchErrors(this.OrderController.getAllOrders.bind(this.OrderController)));
-
+    // get order count by timeframe
     this.router.get(
       `${this.path}s`,
+      isAuthenticated,
       useCatchErrors(this.OrderController.getOrdersCountByTimeframe.bind(this.OrderController))
     );
 
     this.router.get(
-      `${this.path}/sales-report/:order_id`, isAuthenticated,
+      `${this.path}/:order_id`,
+      isAuthenticated,
       useCatchErrors(this.OrderController.getOrder.bind(this.OrderController))
     );
 

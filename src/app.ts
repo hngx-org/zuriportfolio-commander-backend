@@ -31,7 +31,7 @@ export default class App {
       cors({
         origin: '*',
         credentials: true,
-      }),
+      })
     );
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
@@ -58,11 +58,11 @@ export default class App {
     });
 
     this.app.use('/', (req, res) => {
-      res.json({ message: 'api endpoint is working' });
+      res.json({ message: 'Youve reached Zuriportfolio shop internal api' });
     });
 
     this.app.use('/api', (req, res) => {
-      res.json({ message: 'api endpoint is working' });
+      res.json({ message: 'Youve reached Zuriportfolio shop internal api' });
     });
 
     this.initSwaggerUI();

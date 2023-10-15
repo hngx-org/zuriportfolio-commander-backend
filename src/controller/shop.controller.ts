@@ -13,7 +13,6 @@ export default class ShopController extends BaseController {
   }
 
   async createShop(req: Request, res: Response) {
-    const TestUserId = '02cac250-ccbf-409f-9c67-ecbbdb5bc31e';
     const merchant_id = (req as any).user?.id ?? TestUserId;
     const { error } = createShopSchema.validate(req.body);
     if (error) {
