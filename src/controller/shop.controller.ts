@@ -21,7 +21,7 @@ export default class ShopController extends BaseController {
     }
     const { name } = payload;
     const id = uuidv4();
- 
+
     //! check if user exists
     const userExists = await prisma.user.findFirst({
       where: { id: merchant_id },
@@ -73,11 +73,11 @@ export default class ShopController extends BaseController {
 
   // Get all shop controller
   async getAllShops(req: Request, res: Response) {
-     const shops = await prisma.shop.findMany({
-       include: {
-         products: true, 
-       },
-     });
+    const shops = await prisma.shop.findMany({
+      include: {
+        products: true,
+      },
+    });
     if (shops.length > 0) {
       this.success(res, 'All shops', 'Shops have been listed successfully', 200, shops);
     } else {
@@ -136,5 +136,33 @@ export default class ShopController extends BaseController {
 
     this.success(res, '--shop/store-traffic', 'traffic added', 200, null);
   } // end of shop traffic
+
+  // Fetch the shop by its ID
+  async getShopByMerchantId(req: Request, res: Response) {
+    const merchantId = req.params.merchant_id;
+
+    // Fetch the shop associated with the merchant, including all its products
+    const shop = await prisma.shop.findFirst({
+      where: {
+        merchant: {
+          id: merchantId,
+        },
+        is_deleted: 'active',
+      },
+      include: { products: true },
+    });
+
+    if (!shop) {
+      return this.error(res, '--shop/missing-shop', 'Shop not found.', 404, null);
+    }
+
+    return this.success(
+      res,
+      `Shop and Products for Merchant ${merchantId} Shown`,
+      'Shop and its products retrieved successfully',
+      200,
+      shop
+    );
+  }
 }
 
