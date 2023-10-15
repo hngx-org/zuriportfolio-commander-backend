@@ -74,11 +74,7 @@ export default class ShopController extends BaseController {
 
   // Get all shop controller
   async getAllShops(req: Request, res: Response) {
-    const shops = await prisma.shop.findMany({
-      include: {
-        products: true,
-      },
-    });
+    const shops = await prisma.shop.findMany();
     if (shops.length > 0) {
       this.success(res, 'All shops', 'Shops have been listed successfully', 200, shops);
     } else {
@@ -140,14 +136,13 @@ export default class ShopController extends BaseController {
 
   // Fetch the shop by its ID
   async getShopByMerchantId(req: Request, res: Response) {
-    const merchantId = req.params.merchant_id;
+    const shop_id = req.params.id;
+    console.log(shop_id)
 
     // Fetch the shop associated with the merchant, including all its products
     const shop = await prisma.shop.findFirst({
       where: {
-        merchant: {
-          id: merchantId,
-        },
+        id:shop_id,
         is_deleted: 'active',
       },
       include: { products: true },
@@ -159,7 +154,7 @@ export default class ShopController extends BaseController {
 
     return this.success(
       res,
-      `Shop and Products for Merchant ${merchantId} Shown`,
+      `Shop and Products for Merchant ${shop_id} Shown`,
       'Shop and its products retrieved successfully',
       200,
       shop
