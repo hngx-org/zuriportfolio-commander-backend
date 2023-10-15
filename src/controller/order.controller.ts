@@ -172,7 +172,6 @@ export default class OrderController extends BaseController {
         startDate.setHours(0, 0, 0, 0);
         startDate.setDate(startDate.getDate() - 7);
         break;
-        break;
       case 'two-weeks-ago':
         startDate = new Date();
         startDate.setHours(0, 0, 0, 0);
