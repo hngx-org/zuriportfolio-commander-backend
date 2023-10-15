@@ -28,6 +28,12 @@ export default class ShopRoute {
     // Get all shops
     this.router.get(`${this.path}s`, useCatchErrors(this.shopController.getAllShops.bind(this.shopController)));
 
+    // get a shop
+    this.router.get(
+      `${this.path}/:merchant_id`,
+      useCatchErrors(this.shopController.getShopByMerchantId.bind(this.shopController))
+    );
+
     // update shop route
     this.router.patch(
       `${this.path}/:shop_id`,
