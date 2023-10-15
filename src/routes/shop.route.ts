@@ -16,7 +16,7 @@ export default class ShopRoute {
     // create shop
     this.router.post(
       `${this.path}`,
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.shopController.createShop.bind(this.shopController))
     );
     // delete shop

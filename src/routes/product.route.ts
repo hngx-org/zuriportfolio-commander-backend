@@ -21,19 +21,20 @@ export default class ProductRoute {
   initializeRoutes() {
     this.router.patch(
       `${this.path}/publish/:productId`,
+      isAuthenticated,
       useCatchErrors(this.productController.publishProduct.bind(this.productController))
     );
 
     this.router.patch(
       `${this.path}/:product_id`,
-      //upload.single('image'),
+      isAuthenticated,
       useCatchErrors(this.productController.updateProduct.bind(this.productController))
     );
 
     this.router.post(
       `${this.path}/add`,
       upload.single('image'),
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.productController.addProduct.bind(this.productController))
     );
 
@@ -46,26 +47,27 @@ export default class ProductRoute {
     this.router.post(
       `${this.path}/:product_id/image`,
       upload.single('image'),
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.productController.addImage.bind(this.productController))
     );
 
     this.router.patch(
       `${this.path}/:product_id/image/:image_id`,
       upload.single('image'),
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.productController.updateImage.bind(this.productController))
     );
 
     this.router.delete(
       `${this.path}/:product_id/image/:image_id`,
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.productController.deleteImage.bind(this.productController))
     );
 
     this.router.post(
       `${this.path}/:productId/draft`,
       upload.single('image'),
+      isAuthenticated,
       useCatchErrors(this.productController.addProductDraft.bind(this.productController))
     );
     this.router.patch(
@@ -74,16 +76,17 @@ export default class ProductRoute {
     );
     this.router.get(
       `${this.path}`,
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.productController.SearchProductsByName.bind(this.productController))
     );
+    // get product on marketplace
     this.router.get(
       `${this.path}s/marketplace`,
       useCatchErrors(this.productController.getMarketplaceProducts.bind(this.productController))
     );
     this.router.delete(
       `${this.path}/:product_id`,
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.productController.deleteProduct.bind(this.productController))
     );
     this.router.get(
@@ -93,14 +96,16 @@ export default class ProductRoute {
 
     this.router.post(
       `${this.path}/category`,
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.productController.createCategory.bind(this.productController))
     );
     this.router.get(
       `${this.path}/:product_id`,
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.productController.getProductById.bind(this.productController))
     );
+
+    // get products on merchant account
     this.router.get(
       `${this.path}s`,
       useCatchErrors(this.productController.getAllProducts.bind(this.productController))

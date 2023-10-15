@@ -117,16 +117,18 @@ export default class ProductController extends BaseController {
 
   async updateProduct(req: Request, res: Response) {
     const productId = req.params['product_id'];
-    const file = req.file ?? null;
     const userId = (req as any).user?.id ?? TestUserId;
 
     const payload: AddProductPayloadType = req.body;
     const { error, value } = updatedProductSchema.validate(payload);
 
     // Find the product by ID
-    const existingProduct = await prisma.product.findUnique({
+    const existingProduct = await prisma.product.findFirst({
       where: {
-        id: productId,
+        AND: {
+          id: productId,
+          user_id: userId,
+        },
       },
     });
 
