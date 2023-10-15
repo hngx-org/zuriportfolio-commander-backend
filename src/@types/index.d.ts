@@ -7,17 +7,16 @@ export interface Routes {
 }
 
 export interface AddProductPayloadType {
-  product_id?: string;
   name: string;
   description: string;
-  quantity: string;
+  quantity?: string;
   price: string;
-  discountPrice: string;
+  discountPrice?: string;
   tax: string;
   currency: string;
   categoryId: string;
   shopId: string;
-  userId: string; //! remove this once auth is working
+  //userId: string; //! auth is working !!! let's leave this just in case 😁
 }
 
 export interface AddSalesReportType {

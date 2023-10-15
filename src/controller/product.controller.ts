@@ -53,14 +53,15 @@ export default class ProductController extends BaseController {
       return this.error(res, '--product/invalid-fields', error?.message ?? 'product image is missing.', 400, null);
     }
 
-    // upload image to cloudinary
-    //TODO get userId from Auth
-    const { name, currency, description, discountPrice, price, quantity, tax, categoryId } = payload;
+    const { name, currency, description, discountPrice, price, quantity, tax, categoryId, shopId } = payload;
 
-    // check if user has a shop
+    // check if user is the owner of this shop
     const shopExists = await prisma.shop.findFirst({
       where: {
-        merchant_id: userId,
+        AND: {
+          merchant_id: userId,
+          id: shopId,
+        },
       },
     });
 
@@ -74,7 +75,7 @@ export default class ProductController extends BaseController {
     });
 
     if (category === null) {
-      return this.error(res, '--product/category-notfound', 'Failed to crete product, category do not exist.', 404);
+      return this.error(res, '--product/category-notfound', 'Failed to create product, category do not exist.', 404);
     }
 
     const { isError, errorMsg, image } = await uploadSingleImage(file);
@@ -146,16 +147,20 @@ export default class ProductController extends BaseController {
 
   async addImage(req: Request, res: Response) {
     const file = req.file ?? null;
+    const userId = (req as any).user?.id ?? TestUserId;
     const productId = req.params['product_id'];
 
     if (!file) {
       return this.error(res, '--product/invalid-fields', 'product image is missing.', 400, null);
     }
 
-    // Find the product by ID
-    const existingProduct = await prisma.product.findUnique({
+    // Find the product by ID and ensure is owned by auth user
+    const existingProduct = await prisma.product.findFirst({
       where: {
-        id: productId,
+        AND: {
+          id: productId,
+          user_id: userId,
+        },
       },
     });
 
@@ -186,11 +191,15 @@ export default class ProductController extends BaseController {
   async getProductImages(req: Request, res: Response) {
     const file = req.file ?? null;
     const productId = req.params['product_id'];
+    const userId = (req as any).user?.id ?? TestUserId;
 
-    // Find the product by ID
-    const existingProduct = await prisma.product.findUnique({
+    // Find the product by ID and ensure is owned by auth user
+    const existingProduct = await prisma.product.findFirst({
       where: {
-        id: productId,
+        AND: {
+          id: productId,
+          user_id: userId,
+        },
       },
     });
 
@@ -205,7 +214,7 @@ export default class ProductController extends BaseController {
       },
     });
 
-    this.success(res, 'Image Added', 'Product image added successfully', 200, {
+    this.success(res, 'Images', 'Product images found successfully', 200, {
       productImages,
     });
   }
@@ -214,13 +223,15 @@ export default class ProductController extends BaseController {
     const file = req.file ?? null;
     const productId = req.params['product_id'];
     const imageId = req.params['image_id'];
+    const userId = (req as any).user?.id ?? TestUserId;
 
-    console.log(productId, imageId, req.body);
-
-    // Find the product by ID
-    const existingProduct = await prisma.product.findUnique({
+    // Find the product by ID and ensure is owned by auth user
+    const existingProduct = await prisma.product.findFirst({
       where: {
-        id: productId,
+        AND: {
+          id: productId,
+          user_id: userId,
+        },
       },
     });
 
@@ -267,11 +278,15 @@ export default class ProductController extends BaseController {
   async deleteImage(req: Request, res: Response) {
     const productId = req.params['product_id'];
     const imageId = req.params['image_id'];
+    const userId = (req as any).user?.id ?? TestUserId;
 
-    // Find the product by ID
-    const existingProduct = await prisma.product.findUnique({
+    // Find the product by ID and ensure is owned by auth user
+    const existingProduct = await prisma.product.findFirst({
       where: {
-        id: productId,
+        AND: {
+          id: productId,
+          user_id: userId,
+        },
       },
     });
 
@@ -405,9 +420,9 @@ export default class ProductController extends BaseController {
     this.success(res, 'Product Unpublished', 'Product has been unpublished successfully', 201, updatedProduct);
   }
 
-  async getAllProducts(req: Request, res: Response) {
+  async SearchProductsByName(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
-    const productname = req.query.productname as string
+    const productname = req.query.productname as string;
 
     let products;
     if (productname) {
@@ -415,7 +430,7 @@ export default class ProductController extends BaseController {
         where: {
           name: {
             contains: productname,
-            mode: 'insensitive'
+            mode: 'insensitive',
           },
           is_deleted: 'active',
         },
@@ -458,9 +473,52 @@ export default class ProductController extends BaseController {
     return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
   }
 
+  async getAllProducts(req: Request, res: Response) {
+    const userId = (req as any).user?.id ?? TestUserId;
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    const itemsPerPage = req.query.itemsPerPage ? parseInt(req.query.itemsPerPage as string, 10) : 10;
+
+    // Calculate the offset to skip the appropriate number of items
+    const offset = (page - 1) * itemsPerPage;
+
+    // Get all products with pagination and include related data
+    const products = await prisma.product.findMany({
+      where: {
+        AND: {
+          user_id: userId,
+          is_deleted: 'active',
+        },
+      },
+      include: {
+        image: true,
+      },
+      skip: offset,
+      take: itemsPerPage,
+    });
+
+    const allProd = [];
+    if (products.length > 0) {
+      for (const p of products) {
+        allProd.push({
+          products: p,
+          category: p.category_id,
+          image: p.image,
+          price: p.price,
+          discount: p.discount_price,
+          quantity: p.quantity,
+          currency: p.currency,
+          tax: p.tax,
+          description: p.description,
+        });
+      }
+    }
+
+    return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
+  }
+
   async getProductById(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
-    const productId = req.params.product_id
+    const productId = req.params.product_id;
 
     const product = await prisma.product.findFirst({
       where: {
@@ -474,10 +532,10 @@ export default class ProductController extends BaseController {
     });
 
     if (!product) {
-      return this.error(res, '--product/missing-product', 'Product not found.', 404, null)
+      return this.error(res, '--product/missing-product', 'Product not found.', 404, null);
     }
 
-    let data = {}
+    let data = {};
     const cat = await prisma.product_category.findFirst({
       where: { id: product.category_id },
       include: { sub_categories: true },

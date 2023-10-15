@@ -23,7 +23,7 @@ export default class OrderController extends BaseController {
     const userId = (req as any).user?.id ?? TestUserId;
     const orderId = req.params['order_id'];
 
-
+   
     const orderItem = await prisma.order_item.findFirst({
       where: {
         merchant_id: userId,
@@ -61,10 +61,10 @@ export default class OrderController extends BaseController {
     this.success(res, '--order/single', 'Order fetched successfully', 200, orderItem);
   }
 
-
-
   async getAllOrders(req: Request, res: Response) {
     //const userId = req.user.id; // get the user id from the request params
+
+    let TestUserId = 'asdg44dd';
     const userId = (req as any).user?.id || TestUserId;
 
     if (!userId) {
@@ -172,7 +172,6 @@ export default class OrderController extends BaseController {
         startDate.setHours(0, 0, 0, 0);
         startDate.setDate(startDate.getDate() - 7);
         break;
-        break;
       case 'two-weeks-ago':
         startDate = new Date();
         startDate.setHours(0, 0, 0, 0);
@@ -198,7 +197,7 @@ export default class OrderController extends BaseController {
 
   async getAverageOrderValue(req: Request, res: Response) {
     const timeframe = (req.query.timeframe as string)?.toLocaleLowerCase();
-    const merchantUserId = (req as any).user['id'];
+    const merchantUserId = (req as any).user?.id ?? TestUserId;
 
     if (!timeframe) {
       this.error(res, '--order/average', 'Missing timeframe parameter', 400);
@@ -229,12 +228,18 @@ export default class OrderController extends BaseController {
       },
     });
 
+    if (orderItems.length === 0) {
+      this.success(res, '--order/average', 'No order items found for today', 200, {
+        averageOrderValue: 0,
+      });
+      return;
+    }
 
     const totalSales = orderItems.reduce((sum, item) => sum + item.order_price, 0);
-    const averageSales = parseFloat((totalSales / orderItems.length).toFixed(2));
+    const averageOrderValue = parseFloat((totalSales / orderItems.length).toFixed(2));
 
     this.success(res, '--order/average', 'Average order value for today fetched successfully', 200, {
-      averageSales,
+      averageOrderValue,
     });
   }
 
