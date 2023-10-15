@@ -20,12 +20,12 @@
     }
   ],
   "paths": {
-    "/products": {
+    "/product": {
       "get": {
         "tags": [
           "Product"
         ],
-        "summary": "Fetch all products",
+        "summary": "Fetch all products by name",
         "description": "",
         "parameters": [
           {
@@ -56,6 +56,49 @@
             "BearerAuth": []
           }
         ]
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "Fetch all products",
+        "description": "Retrieve a list of products with pagination",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number (default is 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "Number of items per page (default is 10)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProduct"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/products/marketplace": {
@@ -885,44 +928,55 @@
                 "schema": {
                   "$ref": "#/components/schemas/getOrderData"
                 },
-                "example": [
-                  {
-                    "order_id": "1122",
-                    "order_price": 12.22,
-                    "createdAt": "2023-10-11T18:00:52.000Z",
-                    "merchant": {
-                      "revenue": [
-                        {
-                          "amount": 3000.5
-                        }
-                      ],
-                      "customer_orders": [
-                        {
-                          "status": "complete",
-                          "sales_report": [
-                            {
-                              "sales": 11
-                            }
-                          ]
-                        }
-                      ],
-                      "customer": [
-                        {
-                          "username": "Customer1"
-                        }
-                      ],
-                      "product": {
-                        "price": 12.34,
-                        "name": "Longchair",
-                        "categories": [
+                "example": {
+                  "totalResults" : 1,
+                  "orders": [
+                    {
+                      "order_id": "1122",
+                      "order_price": 12.22,
+                      "createdAt": "2023-10-11T18:00:52.000Z",
+                      "merchant": {
+                        "revenue": [
                           {
-                            "name": "Software"
+                            "amount": 3000.5
                           }
-                        ]
+                        ],
+                        "categories" : [
+                          {
+                            "name" : "nike"
+                          }
+                        ],
+                        "customer_orders": [
+                          {
+                            "status": "complete",
+                            "sales_report": [
+                              {
+                                "sales": 11
+                              }
+                            ]
+                          }
+                        ],
+                        "customer": [
+                          {
+                            "first_name" : "customerFirstName",
+                            "last_name" : "customerLastName"
+                          }
+                        ],
+                        "product": {
+                          "price": 12.34,
+                          "name": "shoe",
+                          "category_id": 1
+                        }
                       }
-                    }
+                    }  
+                  ],
+                  "pagination" : {
+                    "page" : 1,
+                    "pageSize" : 10,
+                    "totalOrders" : 1,
+                    "totalPages" : 1 
                   }
-                ]
+                }
               }
             }
           },
@@ -1168,7 +1222,7 @@
         ]
       }
     },
-    "/orders/search/{name}": {
+    "/order/search/{name}": {
       "get": {
         "tags": [
           "Orders"
@@ -1194,44 +1248,44 @@
                 "schema": {
                   "$ref": "#/components/schemas/searchOrder"
                 },
-                "example": [
-                  {
-                    "order_id": "1122",
-                    "order_price": 12.22,
-                    "createdAt": "2023-10-11T18:00:52.000Z",
-                    "merchant": {
-                      "revenue": [
-                        {
-                          "amount": 3000.5
-                        }
-                      ],
-                      "customer_orders": [
-                        {
-                          "status": "complete",
-                          "sales_report": [
-                            {
-                              "sales": 11
-                            }
-                          ]
-                        }
-                      ],
-                      "customer": [
-                        {
-                          "username": "Customer1"
-                        }
-                      ],
-                      "product": {
-                        "price": 12.34,
-                        "name": "Longchair",
-                        "categories": [
+                "example": {
+                  "totalResults": 1,
+                  "orders": [
+                    {
+                      "order_id": "1122",
+                      "order_price": 12.22,
+                      "createdAt": "2023-10-11T18:00:52.000Z",
+                      "merchant": {
+                        "revenue": [
                           {
-                            "name": "Software"
+                            "amount": 3000.5
                           }
-                        ]
+                        ],
+                        "customer_orders": [
+                          {
+                            "status": "complete",
+                            "sales_report": [
+                              {
+                                "sales": 11
+                              }
+                            ]
+                          }
+                        ],
+                        "customer": [
+                          {
+                            "first_name": "CustomerFirstName",
+                            "last_name": "CustomerLastName"
+                          }
+                        ],
+                        "product": {
+                          "price": 12.34,
+                          "name": "Longchair",
+                          "category_id": 1
+                        }
                       }
                     }
-                  }
-                ]
+                  ]
+                }
               }
             }
           },

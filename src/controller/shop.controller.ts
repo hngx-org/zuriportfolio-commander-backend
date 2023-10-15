@@ -21,7 +21,7 @@ export default class ShopController extends BaseController {
     }
     const { name } = payload;
     const id = uuidv4();
-
+ 
     //! check if user exists
     const userExists = await prisma.user.findFirst({
       where: { id: merchant_id },
