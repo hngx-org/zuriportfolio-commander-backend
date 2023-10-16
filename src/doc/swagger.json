@@ -843,7 +843,7 @@
         ]
       }
     },
-    "/shop/{shopId}": {
+    "/shop/{shop_id}": {
       "get": {
         "tags": [
           "Shops"
