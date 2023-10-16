@@ -17,7 +17,7 @@ export const productSchema = Joi.object({
 export const productSubcategoriesSchema = Joi.array().items(Joi.number()).required();
 
 export const saleSchema = Joi.object({
-  user_id: Joi.number().required(),
+  user_id: Joi.string().required(),
   sales: Joi.number().required(),
   order_id: Joi.string().required(),
 });

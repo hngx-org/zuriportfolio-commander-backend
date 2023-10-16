@@ -68,7 +68,7 @@ export default class SalesController extends BaseController {
 
   async addReport(req: Request, res: Response) {
     const payload: AddSalesReportType = req.body;
-    const { error, value } = saleSchema.validate(payload);
+    const { error } = saleSchema.validate(payload);
 
     if (error) {
       return this.error(res, '--sales/invalid-fields', error?.message ?? 'missing order details', 400);
@@ -78,7 +78,7 @@ export default class SalesController extends BaseController {
     const { user_id, sales, order_id } = payload;
 
     // check if user exist
-    const userExists = await prisma.user.findUnique({
+    const userExists = await prisma.user.findFirst({
       where: { id: user_id },
     });
 
