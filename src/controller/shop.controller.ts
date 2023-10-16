@@ -131,21 +131,31 @@ export default class ShopController extends BaseController {
   } // end of shop traffic
 
   // Fetch the shop by its ID
-  async getShopByMerchantId(req: Request, res: Response) {
-    const id = req.params.id;
+  async getShopId(req: Request, res: Response) {
+    const shopId = req.params.shop_id;
 
     // Fetch the shop associated with the merchant, including all its products
     const shop = await prisma.shop.findFirst({
       where: {
         AND: {
-          id,
+          id: shopId,
           is_deleted: 'active',
         },
       },
+      // include: {
+      //   products: true,
+
+      // },
       include: {
-        products: true,
+        products: {
+          include: {
+            image: true,
+          },
+        },
       },
     });
+
+    
 
     if (!shop) {
       return this.error(res, '--shop/missing-shop', 'Shop not found.', 404, null);
@@ -153,7 +163,7 @@ export default class ShopController extends BaseController {
 
     return this.success(
       res,
-      `Shop and Products for Merchant ${id} Shown`,
+      `Shop and Products for Merchant ${shopId} Shown`,
       'Shop and its products retrieved successfully',
       200,
       shop
