@@ -478,7 +478,7 @@ export default class ProductController extends BaseController {
   async getAllProducts(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
     const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
-    const itemsPerPage = req.query.itemsPerPage ? parseInt(req.query.itemsPerPage as string, 10) : 10;
+    const itemsPerPage = req.query.itemsPerPage ? parseInt(req.query.itemsPerPage as string, 10) : 12;
 
     // Calculate the offset to skip the appropriate number of items
     const offset = (page - 1) * itemsPerPage;
