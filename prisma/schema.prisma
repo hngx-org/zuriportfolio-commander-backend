@@ -52,6 +52,11 @@ enum ORDER_STATUS {
     cancelled
 }
 
+enum Product_Asset_Type {
+    internal
+    external
+}
+
 model user {
     id                   String             @id @unique @default(uuid())
     username             String
@@ -140,22 +145,25 @@ model product {
     promo_product   promo_product[]
     order_items     order_item[]
 
-    user                user?                 @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    shop                shop                  @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+    user                user?                  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    shop                shop                   @relation(fields: [shop_id], references: [id], onDelete: Cascade)
     selected_categories selected_categories[]
-    // digital_assets      produc_digital_assets?
+    digital_assets      produc_digital_assets?
     //   rating
 }
 
-// model produc_digital_assets {
-//     id         String   @id @unique @default(uuid())
-//     name       String
-//     notes      String
-//     createdAt  DateTime @default(now())
-//     product_id String   @unique
+model produc_digital_assets {
+    id         String             @id @unique @default(uuid())
+    name       String
+    notes      String
+    link       String
+    type       Product_Asset_Type @default(external)
+    createdAt  DateTime           @default(now())
+    updatedAt  DateTime           @default(now())
+    product_id String             @unique
 
-//     product product @relation(fields: [product_id], references: [id])
-// }
+    product product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+}
 
 model product_image {
     id         Int     @id @default(autoincrement())
@@ -166,7 +174,7 @@ model product_image {
 
 model product_category {
     id        Int      @id @default(autoincrement())
-    name      String
+    name      String   @unique // update in prod db
     createdAt DateTime @default(now())
     user_id   String
     user      user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -177,7 +185,7 @@ model product_category {
 
 model product_sub_category {
     id                 Int      @id @default(autoincrement())
-    name               String
+    name               String   @unique // update in prod db
     parent_category_id Int
     createdAt          DateTime @default(now())
 

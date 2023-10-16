@@ -663,6 +663,31 @@
         }
       }
     },
+    "/discount/{discount_id}": {
+      "delete": {
+        "summary": "Delete a discount",
+        "tags": ["Discount"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discount_id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the discount"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Discount created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
     "/discount/promotions": {
       "get": {
         "summary": "Retrieve Products with Promotions and number of sales",
