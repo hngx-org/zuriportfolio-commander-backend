@@ -5,6 +5,7 @@
   "scripts": {
     "test": "",
     "dev": "nodemon ./dist/server.js",
+    "nodemon_ts": "nodemon",
     "generate": "prisma generate",
     "build": "npx rimraf ./dist && tsc",
     "dbPush": "prisma db push",

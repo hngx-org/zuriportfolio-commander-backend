@@ -22,9 +22,7 @@
   "paths": {
     "/product": {
       "get": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Fetch all products by name",
         "description": "",
         "parameters": [
@@ -60,9 +58,7 @@
     },
     "/products": {
       "get": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Fetch all products",
         "description": "Retrieve a list of products with pagination",
         "parameters": [
@@ -103,9 +99,7 @@
     },
     "/products/marketplace": {
       "get": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Fetch all marketplace products",
         "description": "",
         "responses": {
@@ -124,9 +118,7 @@
     },
     "/product/add": {
       "post": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Create a new Product",
         "description": "",
         "requestBody": {
@@ -157,11 +149,10 @@
         ]
       }
     },
+
     "/product/category": {
       "post": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Create a product category",
         "description": "Create a parent or subcategory.",
         "requestBody": {
@@ -220,9 +211,7 @@
       "get": {
         "summary": "Retrieve Product Categories",
         "description": "Get a list of all product categories along with their subcategories.",
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -252,9 +241,7 @@
     },
     "/product/{product_id}": {
       "get": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Fetch product by id",
         "description": "",
         "parameters": [
@@ -282,9 +269,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Delete a product",
         "description": "Delete a specific product.",
         "parameters": [
@@ -321,9 +306,7 @@
     },
     "/product/{product_id}/image": {
       "post": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Upload a new Product Image",
         "description": "",
         "parameters": [
@@ -373,9 +356,7 @@
         ]
       },
       "get": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Get Product Images",
         "description": "",
         "parameters": [
@@ -412,9 +393,7 @@
     },
     "/product/{product_id}/image/{image_id}": {
       "patch": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Update a Product image",
         "description": "",
         "parameters": [
@@ -473,9 +452,7 @@
         ]
       },
       "delete": {
-        "tags": [
-          "Product"
-        ],
+        "tags": ["Product"],
         "summary": "Delete a Product image",
         "description": "",
         "parameters": [
@@ -521,9 +498,7 @@
     },
     "/order/status/{order_id}": {
       "patch": {
-        "tags": [
-          "Order"
-        ],
+        "tags": ["Order"],
         "summary": "Update Order Status",
         "description": "Update the status of a specific order.",
         "parameters": [
@@ -545,17 +520,11 @@
                 "properties": {
                   "status": {
                     "type": "string",
-                    "enum": [
-                      "pending",
-                      "complete",
-                      "failed"
-                    ],
+                    "enum": ["pending", "complete", "failed"],
                     "example": "complete"
                   }
                 },
-                "required": [
-                  "status"
-                ]
+                "required": ["status"]
               }
             }
           }
@@ -586,9 +555,7 @@
     },
     "/orders": {
       "get": {
-        "tags": [
-          "Order"
-        ],
+        "tags": ["Order"],
         "summary": "Gets all order count withing a timeframe",
         "description": "Gets all order count withing a timeframe",
         "parameters": [
@@ -622,9 +589,7 @@
     "/discount": {
       "post": {
         "summary": "Create a discount",
-        "tags": [
-          "Discount"
-        ],
+        "tags": ["Discount"],
         "requestBody": {
           "description": "Discount data",
           "required": true,
@@ -698,12 +663,35 @@
         }
       }
     },
+    "/discount/{discount_id}": {
+      "delete": {
+        "summary": "Delete a discount",
+        "tags": ["Discount"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discount_id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the discount"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Discount created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
     "/discount/promotions": {
       "get": {
         "summary": "Retrieve Products with Promotions and number of sales",
-        "tags": [
-          "Discount"
-        ],
+        "tags": ["Discount"],
         "security": [
           {
             "BearerAuth": []
@@ -781,9 +769,7 @@
     "/shop": {
       "post": {
         "summary": "Create a shop",
-        "tags": [
-          "Shop"
-        ],
+        "tags": ["Shop"],
         "requestBody": {
           "description": "Shop data",
           "required": true,
@@ -819,9 +805,7 @@
     },
     "/shops": {
       "get": {
-        "tags": [
-          "Shops"
-        ],
+        "tags": ["Shops"],
         "summary": "Fetch all shops",
         "description": "",
         "responses": {
@@ -845,9 +829,7 @@
     },
     "/shop/{shop_id}": {
       "get": {
-        "tags": [
-          "Shops"
-        ],
+        "tags": ["Shops"],
         "summary": "Fetch a shop and its products by shopId",
         "parameters": [
           {
@@ -909,9 +891,7 @@
     "/shop/store-traffic": {
       "post": {
         "summary": "Used to track user visit to a shop",
-        "tags": [
-          "Shop"
-        ],
+        "tags": ["Shop"],
         "requestBody": {
           "description": "Shop data",
           "required": true,
@@ -942,9 +922,7 @@
     },
     "/sales/reports": {
       "get": {
-        "tags": [
-          "Sales"
-        ],
+        "tags": ["Sales"],
         "summary": "Retrieve Sales Reports",
         "description": "Get sales reports based on timeframes.",
         "parameters": [
@@ -988,9 +966,7 @@
     },
     "/Orders/all": {
       "get": {
-        "tags": [
-          "Orders"
-        ],
+        "tags": ["Orders"],
         "summary": "get all orders",
         "description": "To get All orders",
         "responses": {
@@ -1066,9 +1042,7 @@
       },
       "/auth/send-verification": {
         "post": {
-          "tags": [
-            "Authentication"
-          ],
+          "tags": ["Authentication"],
           "summary": "Send Verification Code",
           "description": "Sends a verification code to the user's email for account activation.",
           "requestBody": {
@@ -1105,14 +1079,7 @@
                       "example": "42e2a46a-e56f-4e4d-be0e-0675b7026f58"
                     }
                   },
-                  "required": [
-                    "first_name",
-                    "last_name",
-                    "username",
-                    "email",
-                    "password",
-                    "refresh_token"
-                  ]
+                  "required": ["first_name", "last_name", "username", "email", "password", "refresh_token"]
                 }
               }
             }
@@ -1135,9 +1102,7 @@
       },
       "/auth/confirm-verification": {
         "post": {
-          "tags": [
-            "Authentication"
-          ],
+          "tags": ["Authentication"],
           "summary": "Confirm Verification Code",
           "description": "Verifies the verification code against the stored code for the user in the database.",
           "requestBody": {
@@ -1156,10 +1121,7 @@
                       "example": "3903"
                     }
                   },
-                  "required": [
-                    "email",
-                    "verificationCode"
-                  ]
+                  "required": ["email", "verificationCode"]
                 }
               }
             }
@@ -1182,9 +1144,7 @@
       },
       "/order/status/{order_id}": {
         "patch": {
-          "tags": [
-            "Order"
-          ],
+          "tags": ["Order"],
           "summary": "Update Order Status",
           "description": "Update the status of a specific order.",
           "parameters": [
@@ -1206,17 +1166,11 @@
                   "properties": {
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "pending",
-                        "complete",
-                        "failed"
-                      ],
+                      "enum": ["pending", "complete", "failed"],
                       "example": "complete"
                     }
                   },
-                  "required": [
-                    "status"
-                  ]
+                  "required": ["status"]
                 }
               }
             }
@@ -1248,9 +1202,7 @@
     },
     "/orders/average": {
       "get": {
-        "tags": [
-          "Orders"
-        ],
+        "tags": ["Orders"],
         "summary": "Fetch the average order value for today",
         "parameters": [
           {
@@ -1260,11 +1212,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "today",
-                "week",
-                "month"
-              ],
+              "enum": ["today", "week", "month"],
               "example": "today"
             }
           }
@@ -1299,9 +1247,7 @@
     },
     "/order/search/{name}": {
       "get": {
-        "tags": [
-          "Orders"
-        ],
+        "tags": ["Orders"],
         "summary": "Search Order By Product Name",
         "description": "",
         "parameters": [
@@ -1383,9 +1329,7 @@
     },
     "/revenue/{order_id}": {
       "patch": {
-        "tags": [
-          "Revenue"
-        ],
+        "tags": ["Revenue"],
         "summary": "Update Revenue",
         "description": "Update the revenue based on the order's status",
         "parameters": [
@@ -1432,9 +1376,7 @@
     },
     "/revenues": {
       "get": {
-        "tags": [
-          "Revenue"
-        ],
+        "tags": ["Revenue"],
         "summary": "Get Revenue for Today",
         "description": "Get revenue data for today.",
         "parameters": [
@@ -1445,9 +1387,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "today"
-              ],
+              "enum": ["today"],
               "example": "today"
             }
           }
@@ -1483,8 +1423,12 @@
           "shopId": {
             "type": "string"
           },
-          "categoryId": {
+          "parent_category_id": {
             "type": "integer"
+          },
+          "sub_category_ids": {
+            "type": "integer",
+            "example": [1, 2]
           },
           "name": {
             "type": "string"
@@ -1508,18 +1452,10 @@
             "type": "string"
           }
         },
-        "required": [
-          "image",
-          "shopId",
-          "categoryId",
-          "name",
-          "description",
-          "price",
-          "tax",
-          "currency"
-        ],
+        "required": ["image", "shopId", "parent_category_id", "name", "description", "price", "currency"],
         "example": {
-          "categoryId": 1,
+          "parent_category_id": 1,
+          "sub_category_ids": [1],
           "shopId": "30e9ca17-e481-4a20-a1aa-2dccdb6175d5",
           "name": "HNGX polo",
           "description": "Red",
@@ -1548,7 +1484,7 @@
                 "type": "integer",
                 "required": true
               },
-              "categoryId": {
+              "parent_category_id": {
                 "type": "integer",
                 "required": true
               },
@@ -1570,12 +1506,7 @@
               },
               "adminStatus": {
                 "type": "string",
-                "enum": [
-                  "pending",
-                  "review",
-                  "approved",
-                  "blacklist"
-                ],
+                "enum": ["pending", "review", "approved", "blacklist"],
                 "required": true
               }
             }
@@ -1591,7 +1522,8 @@
             "discountPrice": 4500,
             "tax": 200,
             "currency": "Naira",
-            "categoryId": 1,
+            "parent_category_id": 1,
+            "sub_category_ids": [1],
             "adminStatus": "approved"
           }
         }
@@ -1606,9 +1538,7 @@
             "$ref": "#/components/schemas/UpdateProductData"
           }
         },
-        "required": [
-          "userId"
-        ],
+        "required": ["userId"],
         "example": {
           "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
           "newData": {
@@ -1649,20 +1579,13 @@
         "type": "object",
         "properties": {
           "parent_id": {
-            "type": [
-              "integer",
-              "null",
-              "undefined",
-              ""
-            ]
+            "type": ["integer", "null", "undefined", ""]
           },
           "name": {
             "type": "string"
           }
         },
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "ProductCategory": {
         "type": "object",
@@ -1734,13 +1657,7 @@
             "format": "date-time"
           }
         },
-        "required": [
-          "id",
-          "user_id",
-          "sales",
-          "order_id",
-          "createdAt"
-        ]
+        "required": ["id", "user_id", "sales", "order_id", "createdAt"]
       },
       "AddSales Report": {
         "type": "object",
@@ -1755,11 +1672,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "user_id",
-          "order_id",
-          "sales"
-        ],
+        "required": ["user_id", "order_id", "sales"],
         "example": {
           "user_id": "fecfd17b-51a3-4288-9bd0-77ac4b7d60a0",
           "order_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
@@ -1805,13 +1718,7 @@
             }
           }
         },
-        "required": [
-          "order_id",
-          "createdAt",
-          "merchant",
-          "customer",
-          "product"
-        ]
+        "required": ["order_id", "createdAt", "merchant", "customer", "product"]
       },
       "AverageOrderValue": {
         "type": "object",
@@ -1844,12 +1751,7 @@
             "$ref": "#/components/schemas/MerchantData"
           }
         },
-        "required": [
-          "order_id",
-          "order_price",
-          "createdAt",
-          "merchant"
-        ]
+        "required": ["order_id", "order_price", "createdAt", "merchant"]
       },
       "MerchantData": {
         "type": "object",
@@ -1883,13 +1785,7 @@
             }
           }
         },
-        "required": [
-          "order_id",
-          "createdAt",
-          "merchant",
-          "customer",
-          "product"
-        ]
+        "required": ["order_id", "createdAt", "merchant", "customer", "product"]
       },
       "RevenueData": {
         "type": "object",
