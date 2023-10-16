@@ -90,6 +90,6 @@ export const createShopTrafficSchema = Joi.object({
 export const validateUUID = Joi.string()
   .pattern(customUUIDPattern)
   .messages({
-    'string.pattern.base': 'product_id has an invalid uuid.',
+    'string.pattern.base': 'invalid uuid format.',
   })
   .required();

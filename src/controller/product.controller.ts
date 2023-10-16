@@ -899,11 +899,7 @@ export default class ProductController extends BaseController {
   }
 
   async getAllCategories(req: Request | any, res: Response | any) {
-    const userId = (req as any).user?.id ?? TestUserId;
     const categories = await prisma.product_category.findMany({
-      where: {
-        user_id: userId,
-      },
       include: {
         sub_categories: true,
       },
