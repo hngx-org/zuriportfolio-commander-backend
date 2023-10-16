@@ -27,14 +27,15 @@ export default class ProductRoute {
 
     this.router.patch(
       `${this.path}/:product_id`,
-      isAuthenticated,
+      upload.single('image'), // dont remove this, this is the only way we can handle formData
+      // isAuthenticated,
       useCatchErrors(this.productController.updateProduct.bind(this.productController))
     );
 
     this.router.post(
       `${this.path}/add`,
       upload.single('image'),
-      isAuthenticated,
+      // isAuthenticated,
       useCatchErrors(this.productController.addProduct.bind(this.productController))
     );
 
@@ -64,12 +65,12 @@ export default class ProductRoute {
       useCatchErrors(this.productController.deleteImage.bind(this.productController))
     );
 
-    this.router.post(
-      `${this.path}/:productId/draft`,
-      upload.single('image'),
-      isAuthenticated,
-      useCatchErrors(this.productController.addProductDraft.bind(this.productController))
-    );
+    // this.router.post(
+    //   `${this.path}/:productId/draft`,
+    //   upload.single('image'),
+    //   isAuthenticated,
+    //   useCatchErrors(this.productController.addProductDraft.bind(this.productController))
+    // );
     this.router.patch(
       `${this.path}/unpublish/:productId`,
       useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
@@ -89,6 +90,12 @@ export default class ProductRoute {
       isAuthenticated,
       useCatchErrors(this.productController.deleteProduct.bind(this.productController))
     );
+    // delete category
+    this.router.delete(
+      `${this.path}/category/:cat_id/:type`,
+      isAuthenticated,
+      useCatchErrors(this.productController.deleteCategory.bind(this.productController))
+    );
     this.router.get(
       `${this.path}/categories`,
       isAuthenticated,
@@ -97,7 +104,7 @@ export default class ProductRoute {
 
     this.router.post(
       `${this.path}/category`,
-      isAuthenticated,
+      // isAuthenticated,
       useCatchErrors(this.productController.createCategory.bind(this.productController))
     );
     this.router.get(
@@ -109,7 +116,7 @@ export default class ProductRoute {
     // get products on merchant account
     this.router.get(
       `${this.path}s`,
-      isAuthenticated,
+      // isAuthenticated,
       useCatchErrors(this.productController.getAllProducts.bind(this.productController))
     );
   }

@@ -9,3 +9,6 @@
 pnpm-lock.yaml
 
 /test.js
+
+/nodemon.json
+/nodemon.txt

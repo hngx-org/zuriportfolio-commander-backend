@@ -149,6 +149,7 @@
         ]
       }
     },
+
     "/product/category": {
       "post": {
         "tags": ["Product"],
@@ -1127,9 +1128,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "today", "week", "month"
-              ],
+              "enum": ["today", "week", "month"],
               "example": "today"
             }
           }
@@ -1342,8 +1341,12 @@
           "shopId": {
             "type": "string"
           },
-          "categoryId": {
+          "parent_category_id": {
             "type": "integer"
+          },
+          "sub_category_ids": {
+            "type": "integer",
+            "example": [1, 2]
           },
           "name": {
             "type": "string"
@@ -1367,9 +1370,10 @@
             "type": "string"
           }
         },
-        "required": ["image", "shopId", "categoryId", "name", "description", "price", "tax", "currency"],
+        "required": ["image", "shopId", "parent_category_id", "name", "description", "price", "currency"],
         "example": {
-          "categoryId": 1,
+          "parent_category_id": 1,
+          "sub_category_ids": [1],
           "shopId": "30e9ca17-e481-4a20-a1aa-2dccdb6175d5",
           "name": "HNGX polo",
           "description": "Red",
@@ -1398,7 +1402,7 @@
                 "type": "integer",
                 "required": true
               },
-              "categoryId": {
+              "parent_category_id": {
                 "type": "integer",
                 "required": true
               },
@@ -1436,7 +1440,8 @@
             "discountPrice": 4500,
             "tax": 200,
             "currency": "Naira",
-            "categoryId": 1,
+            "parent_category_id": 1,
+            "sub_category_ids": [1],
             "adminStatus": "approved"
           }
         }

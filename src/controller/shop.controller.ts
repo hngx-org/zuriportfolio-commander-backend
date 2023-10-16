@@ -135,7 +135,7 @@ export default class ShopController extends BaseController {
     const id = req.params.id;
 
     // Fetch the shop associated with the merchant, including all its products
-    const shop = await prisma.shop.findMany({
+    const shop = await prisma.shop.findFirst({
       where: {
         AND: {
           id,

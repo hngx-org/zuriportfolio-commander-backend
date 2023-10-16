@@ -50,3 +50,12 @@ export function genRandNum(len: number = 10) {
   }
   return Number(id);
 }
+
+export function removeDuplicate(arr: any[]) {
+  const removedDuplicates = [];
+  if (arr.length === 0) return [];
+  for (const item of arr) {
+    if (!removedDuplicates.includes(item)) removedDuplicates.push(item);
+  }
+  return removedDuplicates;
+}
