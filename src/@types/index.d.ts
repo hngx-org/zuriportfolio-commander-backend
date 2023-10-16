@@ -17,6 +17,10 @@ export interface AddProductPayloadType {
   categoryId: string;
   shopId: string;
   parent_category_id: number;
+  assets_name: string;
+  assets_link: string;
+  assets_notes: string;
+  assets_type: 'external' | 'internal';
 }
 
 export interface AddSalesReportType {

@@ -4,6 +4,7 @@ import {
   createCategorySchema,
   productSchema,
   productSubcategoriesSchema,
+  updateProductAssets,
   updatedProductSchema,
 } from '../helper/validate';
 import { uploadSingleImage } from '../helper/uploadImage';
@@ -14,6 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
 import { isUUID, removeDuplicate } from '../helper';
 import { TestUserId } from '../config/test';
+import validurl from 'valid-url';
 
 export default class ProductController extends BaseController {
   constructor() {
@@ -92,7 +94,21 @@ export default class ProductController extends BaseController {
       return this.error(res, '--product/invalid-fields', error?.message ?? 'product image is missing.', 400, null);
     }
 
-    const { name, currency, description, discountPrice, price, quantity, tax, parent_category_id, shopId } = payload;
+    const {
+      name,
+      currency,
+      description,
+      discountPrice,
+      price,
+      quantity,
+      tax,
+      parent_category_id,
+      shopId,
+      assets_link,
+      assets_name,
+      assets_notes,
+      assets_type,
+    } = payload;
 
     // check if user is the owner of this shop
     const shopExists = await prisma.shop.findFirst({
@@ -106,6 +122,11 @@ export default class ProductController extends BaseController {
 
     if (shopExists === null) {
       return this.error(res, '--product/shop-notfound', 'Failed to crete product, shop not found.', 404);
+    }
+
+    // validate
+    if (assets_link && !validurl.isUri(assets_link)) {
+      return this.error(res, '--product/invalid-asset-link', 'Invalid asset link', 400);
     }
 
     // check if parent or child category exists
@@ -184,6 +205,17 @@ export default class ProductController extends BaseController {
         });
       }
     }
+
+    // create assets
+    await prisma.product_digital_assets.create({
+      data: {
+        name: assets_name,
+        notes: assets_notes ?? '',
+        link: assets_link,
+        product_id: prodId,
+        type: assets_type,
+      },
+    });
 
     this.success(res, 'Product Added', 'Product has been added successfully', 201, {
       ...product,
@@ -320,6 +352,53 @@ export default class ProductController extends BaseController {
     this.success(res, 'Product Updated', 'Product has been updated successfully', 200, {
       productResp,
     });
+  }
+
+  async updateProductAssets(req: Request, res: Response) {
+    const productId = req.params['product_id'];
+    const userId = (req as any).user?.id ?? TestUserId;
+
+    const payload = req.body;
+    const { error, value } = updateProductAssets.validate(payload);
+    if (error) {
+      return this.error(res, '--product/invalid-fields', error?.message ?? 'product image is missing.', 400, null);
+    }
+
+    // Find the product by ID
+    const existingProduct = await prisma.product.findFirst({
+      where: {
+        AND: {
+          id: productId,
+          user_id: userId,
+        },
+      },
+      include: { digital_assets: true },
+    });
+
+    // Check if the product exists
+    if (!existingProduct) {
+      return this.error(res, '--product/not-found', 'Product not found', 404);
+    }
+
+    // validate the assets url
+    if (value.link && !validurl.isUri(value.link)) {
+      return this.error(res, '--product/invalid-asset-link', 'Invalid asset link', 400);
+    }
+
+    // check if product has an assets
+    if (!existingProduct.digital_assets) {
+      return this.error(res, '--product/asset-notfound', 'Failed to update, asset not found.', 404);
+    }
+
+    // update product assets
+    await prisma.product_digital_assets.update({
+      where: {
+        id: existingProduct.digital_assets.id,
+      },
+      data: value,
+    });
+
+    this.success(res, '--product/assets-updated', 'product assets updated successfully', 200, value);
   }
 
   async addImage(req: Request, res: Response) {
