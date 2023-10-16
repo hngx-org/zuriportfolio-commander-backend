@@ -514,7 +514,7 @@ export default class ProductController extends BaseController {
         });
       }
     }
-
+    console.log(allProd);
     return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
   }
 

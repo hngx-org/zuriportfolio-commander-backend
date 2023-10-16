@@ -15,7 +15,7 @@
       "description": "Production server"
     },
     {
-      "url": "https://auth.akuya.tech/api",
+      "url": "https://staging.zuri.team/api/auth/api/authorize",
       "description": "Authentication server"
     }
   ],
