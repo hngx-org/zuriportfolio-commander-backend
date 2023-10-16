@@ -35,7 +35,7 @@ export default class ProductRoute {
     this.router.post(
       `${this.path}/add`,
       upload.single('image'),
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.productController.addProduct.bind(this.productController))
     );
 
@@ -104,7 +104,7 @@ export default class ProductRoute {
 
     this.router.post(
       `${this.path}/category`,
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.productController.createCategory.bind(this.productController))
     );
     this.router.get(
@@ -116,7 +116,7 @@ export default class ProductRoute {
     // get products on merchant account
     this.router.get(
       `${this.path}s`,
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.productController.getAllProducts.bind(this.productController))
     );
   }

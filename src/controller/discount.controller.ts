@@ -39,7 +39,6 @@ export default class DiscountController extends BaseController {
 
   async createDiscount(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
-    // const userId = 'dcb5b46a-9391-474c-9e69-fe37cfe821e9';
     const validateSchema = createDiscountSchema.validate(req.body);
     if (validateSchema.error) {
       return this.error(res, '--discount/invalid-fields', validateSchema.error.message, 400);
