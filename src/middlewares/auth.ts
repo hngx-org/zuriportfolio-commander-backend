@@ -23,7 +23,8 @@ export async function isAuthenticated(req: Request, res: Response, next: NextFun
     (req as any).user.id = resp.user?.id;
     next();
   } catch (err) {
-    const msg = err.response?.data?.message ?? err.message;
+    // console.log(err);
+    const msg = err.response?.data?.error ?? err.response?.data?.message ?? err.message;
     logger.error(`Forbidden: ${msg}`);
     return res.status(403).json({ message: msg });
   }

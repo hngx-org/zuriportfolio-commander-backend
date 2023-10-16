@@ -11,146 +11,216 @@ export default class OrderController extends BaseController {
     super();
   }
 
-  async createOrder(req: Request, res: Response) {
-    const payload = req.body;
-
-    const created = await prisma.order.create({ data: payload });
-
-    this.success(res, '--order/created', 'order created', 200, created);
-  }
-
+  // get order by id
   async getOrder(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
     const orderId = req.params['order_id'];
 
-   
-    const orderItem = await prisma.order_item.findFirst({
-      where: {
-        merchant_id: userId,
-        order_id: orderId,
-      },
-      select: {
-        order_id: true,
-        createdAt: true,
-        merchant: {
-          select: {
-            customer_orders: {
-              select: {
-                status: true,
-              },
-            },
-          },
-        },
-        customer: {
-          select: {
-            username: true,
-          },
-        },
-        product: {
-          select: {
-            name: true,
-          },
-        },
-      },
-    });
+    console.log({ userId });
 
-    if (!orderItem) {
-      this.error(res, '--order/single', 'Order not found', 404);
+    if (!userId) {
+      return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
     }
 
-    this.success(res, '--order/single', 'Order fetched successfully', 200, orderItem);
+    const page = parseInt(req.query.page?.toString()) || 1;
+    const pageSize = parseInt(req.query.pageSize?.toString()) || 10;
+    const skip = (page - 1) * pageSize;
+    const take = pageSize;
+
+    const merchantOrders = await prisma.order_item.findMany({
+      where: {
+        AND: {
+          order_id: orderId,
+          merchant_id: userId,
+        },
+      },
+      include: {
+        order: true,
+      },
+      skip,
+      take,
+    });
+
+    if (merchantOrders.length === 0) {
+      return this.error(res, '--order/order_not_found', `Order not found`, 404);
+    }
+
+    const orderMap = new Map();
+    const userInfoMap = new Map();
+
+    for (const ord of merchantOrders) {
+      const orderKey = ord.order_id;
+
+      if (!orderMap.has(orderKey)) {
+        orderMap.set(orderKey, {
+          id: orderKey,
+          order_status: ord.order.status,
+          date: ord.order.createdAt,
+          customerInfo: {},
+          items: [],
+        });
+      }
+
+      // Check if userInfo is already in the map to avoid repeated queries
+      if (!userInfoMap.has(ord.customer_id)) {
+        const userInfo = await prisma.user.findFirst({
+          where: { id: ord.customer_id },
+        });
+        if (userInfo) {
+          userInfoMap.set(ord.customer_id, userInfo);
+        }
+      }
+
+      // Retrieve userInfo from the map
+      const userInfo = userInfoMap.get(ord.customer_id);
+      orderMap.get(orderKey).customerInfo = {
+        id: userInfo?.id || '',
+        firstName: userInfo?.first_name || '',
+        lastName: userInfo?.last_name || '',
+      };
+
+      const products = await prisma.product.findFirst({
+        where: {
+          id: ord.product_id,
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          is_deleted: true,
+          currency: true,
+          createdAt: true,
+          image: true,
+          category_id: true,
+        },
+      });
+
+      if (products) {
+        orderMap.get(orderKey).items.push({
+          ...products,
+          price: ord.order_price,
+          order_item_status: ord.status,
+          category: await prisma.product_category.findFirst({
+            where: { id: products.category_id },
+            include: { sub_categories: true },
+          }),
+        });
+      }
+    }
+
+    const allOrders = Array.from(orderMap.values());
+
+    const response = {
+      orders: allOrders,
+      page: +page,
+      pageSize: +pageSize,
+      totalOrders: merchantOrders.length, // Use the length of merchantOrders
+      totalPages: Math.ceil(merchantOrders.length / pageSize), // Use the length of merchantOrders
+    };
+    return this.success(res, '--order/success', 'Orders fetched successfully', 200, response);
   }
 
   async getAllOrders(req: Request, res: Response) {
-    //const userId = req.user.id; // get the user id from the request params
-
-    let TestUserId = 'asdg44dd';
     const userId = (req as any).user?.id || TestUserId;
 
     if (!userId) {
       return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
     }
 
-   const pageSize = parseInt(req.query.pageSize?.toString(), 10) || 10;
-   const page = parseInt(req.query.page?.toString(), 10) || 1;
- 
-    
-    const totalOrders = await prisma.order.count({
-      where: {
-        customer_id: userId,
-      },
-    });
+    const page = parseInt(req.query.page?.toString()) || 1;
+    const pageSize = parseInt(req.query.pageSize?.toString()) || 10;
+    const skip = (page - 1) * pageSize;
+    const take = pageSize;
 
-    const orders = await prisma.order_item.findMany({
+    const merchantOrders = await prisma.order_item.findMany({
       where: {
         merchant_id: userId,
       },
-      select: {
-        order_id: true,
-        order_price: true,
-        createdAt: true,
-        merchant: {
-          select: {
-            revenue: {
-              select: {
-                amount: true,
-              }
-            },
-            categories: {
-              select: {
-                name: true,
-              }
-            },
-            customer_orders: {
-              select: {
-                status: true,
-                sales_report: {
-                  select: {
-                    sales: true,
-                  }
-                }
-              }
-            }
-          },
-        },
-        customer: {
-          select: {
-            first_name: true,
-            last_name: true,
-          },
-        },
-        product: {
-          select: {
-            price: true,
-            name: true,
-            category_id: true
-          },
-        },
+      include: {
+        order: true,
       },
-      skip: (+page - 1) * +pageSize,
-      take: +pageSize,
+      skip,
+      take,
     });
-    if (!orders) {
-      return this.error(res, '--order/all', 'An error occurred', 500, 'internal server error');
-    }
-    const pagination = {
-      page : +page,
-      pageSize: +pageSize,
-      totalOrders,
-      totalPages: Math.ceil(totalOrders/pageSize)
-    };
-    const response = {
-      data : {
-        totalResults : orders.length,
-        orders: orders,
-        pagination,
+
+    const orderMap = new Map();
+    const userInfoMap = new Map();
+
+    for (const ord of merchantOrders) {
+      const orderKey = ord.order_id;
+
+      if (!orderMap.has(orderKey)) {
+        orderMap.set(orderKey, {
+          id: orderKey,
+          order_status: ord.order.status,
+          date: ord.order.createdAt,
+          customerInfo: {},
+          items: [],
+        });
+      }
+
+      // Check if userInfo is already in the map to avoid repeated queries
+      if (!userInfoMap.has(ord.customer_id)) {
+        const userInfo = await prisma.user.findFirst({
+          where: { id: ord.customer_id },
+        });
+        if (userInfo) {
+          userInfoMap.set(ord.customer_id, userInfo);
+        }
+      }
+
+      // Retrieve userInfo from the map
+      const userInfo = userInfoMap.get(ord.customer_id);
+      orderMap.get(orderKey).customerInfo = {
+        id: userInfo?.id || '',
+        firstName: userInfo?.first_name || '',
+        lastName: userInfo?.last_name || '',
+      };
+
+      const products = await prisma.product.findFirst({
+        where: {
+          id: ord.product_id,
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          is_deleted: true,
+          currency: true,
+          createdAt: true,
+          image: true,
+          category_id: true,
+        },
+      });
+
+      if (products) {
+        orderMap.get(orderKey).items.push({
+          ...products,
+          price: ord.order_price,
+          order_item_status: ord.status,
+          category: await prisma.product_category.findFirst({
+            where: { id: products.category_id },
+            include: { sub_categories: true },
+          }),
+        });
       }
     }
+
+    const allOrders = Array.from(orderMap.values());
+
+    const response = {
+      orders: allOrders,
+      page: +page,
+      pageSize: +pageSize,
+      totalOrders: merchantOrders.length, // Use the length of merchantOrders
+      totalPages: Math.ceil(merchantOrders.length / pageSize), // Use the length of merchantOrders
+    };
     return this.success(res, '--order/all', 'Orders fetched successfully', 200, response);
   }
 
   async getOrdersCountByTimeframe(req: Request, res: Response) {
     const { timeframe } = req.query;
+    const userId = (req as any).user?.id || TestUserId;
 
     let startDate: Date;
     let endDate: Date = new Date(); // default to cuo the current date
@@ -181,15 +251,25 @@ export default class OrderController extends BaseController {
       default:
         this.success(res, 'error', 'invalid timeframe', 400);
     }
-    console.log(startDate, endDate);
-    const orderCount = await prisma.order.count({
+
+    let orderCount = 0;
+    const orderItems = await prisma.order_item.findMany({
       where: {
-        createdAt: {
-          gte: startDate,
-          lte: endDate,
-        },
+        merchant_id: userId,
       },
     });
+
+    for (const order of orderItems) {
+      const ord = await prisma.order_item.findFirst({
+        where: {
+          customer_id: order.customer_id,
+        },
+      });
+      if (ord !== null) {
+        orderCount++;
+      }
+    }
+
     this.success(res, 'order Counted', ` successfully returned orders within ${timeframe} `, 200, {
       orderCount,
     });
@@ -216,7 +296,6 @@ export default class OrderController extends BaseController {
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(currentDate);
     endOfDay.setHours(23, 59, 59, 999);
-
 
     const orderItems = await prisma.order_item.findMany({
       where: {
@@ -338,7 +417,7 @@ export default class OrderController extends BaseController {
           select: {
             price: true,
             name: true,
-            category_id: true
+            category_id: true,
           },
         },
       },

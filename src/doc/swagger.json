@@ -149,6 +149,7 @@
         ]
       }
     },
+
     "/product/category": {
       "post": {
         "tags": ["Product"],
@@ -222,7 +223,6 @@
                     "name": "Electronics",
                     "product_id": "11",
                     "createdAt": "2023-10-11T21:25:23.0000Z",
-
                     "sub_categories": [
                       {
                         "id": 101,
@@ -391,7 +391,6 @@
         ]
       }
     },
-
     "/product/{product_id}/image/{image_id}": {
       "patch": {
         "tags": ["Product"],
@@ -664,6 +663,31 @@
         }
       }
     },
+    "/discount/{discount_id}": {
+      "delete": {
+        "summary": "Delete a discount",
+        "tags": ["Discount"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discount_id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the discount"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Discount created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
     "/discount/promotions": {
       "get": {
         "summary": "Retrieve Products with Promotions and number of sales",
@@ -794,6 +818,67 @@
                 }
               }
             }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/shop/{shop_id}": {
+      "get": {
+        "tags": ["Shops"],
+        "summary": "Fetch a shop and its products by shopId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shopId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the shop"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of shop and its products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the shop"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the shop"
+                    },
+                    "products": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Shop not found"
           }
         },
         "security": [
@@ -1127,9 +1212,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "today", "week", "month"
-              ],
+              "enum": ["today", "week", "month"],
               "example": "today"
             }
           }
@@ -1244,7 +1327,6 @@
         ]
       }
     },
-
     "/revenue/{order_id}": {
       "patch": {
         "tags": ["Revenue"],
@@ -1329,7 +1411,6 @@
       }
     }
   },
-
   "components": {
     "schemas": {
       "AddProduct": {
@@ -1342,8 +1423,12 @@
           "shopId": {
             "type": "string"
           },
-          "categoryId": {
+          "parent_category_id": {
             "type": "integer"
+          },
+          "sub_category_ids": {
+            "type": "integer",
+            "example": [1, 2]
           },
           "name": {
             "type": "string"
@@ -1367,9 +1452,10 @@
             "type": "string"
           }
         },
-        "required": ["image", "shopId", "categoryId", "name", "description", "price", "tax", "currency"],
+        "required": ["image", "shopId", "parent_category_id", "name", "description", "price", "currency"],
         "example": {
-          "categoryId": 1,
+          "parent_category_id": 1,
+          "sub_category_ids": [1],
           "shopId": "30e9ca17-e481-4a20-a1aa-2dccdb6175d5",
           "name": "HNGX polo",
           "description": "Red",
@@ -1398,7 +1484,7 @@
                 "type": "integer",
                 "required": true
               },
-              "categoryId": {
+              "parent_category_id": {
                 "type": "integer",
                 "required": true
               },
@@ -1436,7 +1522,8 @@
             "discountPrice": 4500,
             "tax": 200,
             "currency": "Naira",
-            "categoryId": 1,
+            "parent_category_id": 1,
+            "sub_category_ids": [1],
             "adminStatus": "approved"
           }
         }

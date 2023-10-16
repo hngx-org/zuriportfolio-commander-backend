@@ -11,14 +11,17 @@ export const productSchema = Joi.object({
   discountPrice: Joi.number().greater(0).optional().default(0),
   tax: Joi.number().optional(),
   currency: Joi.string().required(),
-  categoryId: Joi.number().required(),
+  parent_category_id: Joi.number().required(),
 });
+
+export const productSubcategoriesSchema = Joi.array().items(Joi.number()).required();
 
 export const saleSchema = Joi.object({
   user_id: Joi.number().required(),
   sales: Joi.number().required(),
   order_id: Joi.string().required(),
 });
+
 export const updatedProductSchema = Joi.object({
   name: Joi.string().optional(),
   description: Joi.string().optional(),
@@ -27,7 +30,7 @@ export const updatedProductSchema = Joi.object({
   discountPrice: Joi.number().optional(),
   tax: Joi.number().optional(),
   currency: Joi.string().optional(),
-  categoryId: Joi.number().optional(),
+  parent_category_id: Joi.number().optional(),
 });
 
 export const saveProductDraftSchema = Joi.object({
@@ -83,3 +86,10 @@ export const createShopTrafficSchema = Joi.object({
   shop_id: Joi.string().required(),
   ip_addr: Joi.string().required(),
 });
+
+export const validateUUID = Joi.string()
+  .pattern(customUUIDPattern)
+  .messages({
+    'string.pattern.base': 'invalid uuid format.',
+  })
+  .required();

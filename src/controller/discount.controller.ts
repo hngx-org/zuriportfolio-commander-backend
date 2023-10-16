@@ -3,7 +3,7 @@ import BaseController from './base.controller';
 import { AddPromotionPayloadType } from '@types';
 import prisma from '../config/prisma';
 import { v4 as uuidv4 } from 'uuid';
-import { createDiscountSchema } from '../helper/validate';
+import { createDiscountSchema, validateUUID } from '../helper/validate';
 import { CreateDiscountType } from '../@types';
 import { genRandNum, validateDateRange } from '../helper';
 import logger from '../config/logger';
@@ -27,7 +27,7 @@ export default class DiscountController extends BaseController {
       });
 
       if (product) {
-        if (product.promo_product.length > 0 || product.discount_price > 0) {
+        if (product.promo_product.length > 0) {
           // The product is associated with at least one promo
           canAddPromo.push({ productId, canAdd: false });
         }
@@ -39,7 +39,6 @@ export default class DiscountController extends BaseController {
 
   async createDiscount(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
-    // const userId = 'dcb5b46a-9391-474c-9e69-fe37cfe821e9';
     const validateSchema = createDiscountSchema.validate(req.body);
     if (validateSchema.error) {
       return this.error(res, '--discount/invalid-fields', validateSchema.error.message, 400);
@@ -208,6 +207,7 @@ export default class DiscountController extends BaseController {
         });
 
         allPromotions.push({
+          id: promo.id,
           name: pInfo.name,
           quantity: promo.quantity,
           type: promo.discount_type,
@@ -282,5 +282,29 @@ export default class DiscountController extends BaseController {
         productsWithPromotionsAndTrackedCounts
       );
     }
+  }
+
+  async deleteDiscount(req: Request, res: Response) {
+    const userId = (req as any).user?.id ?? TestUserId;
+    const discountId = req.params['discount_id'] as string;
+
+    if (!discountId || isNaN(+discountId)) {
+      return this.error(res, '--discount/invalid-id', 'Invalid discount id', 400);
+    }
+
+    // check if discount exists
+    const discountExists = await prisma.promotion.findFirst({
+      where: { AND: { id: +discountId, user_id: userId } },
+    });
+
+    if (!discountExists) {
+      return this.error(res, '--discount/notfound', `Discount not found.`, 404);
+    }
+
+    await prisma.promotion.delete({
+      where: { id: +discountId },
+    });
+
+    this.success(res, '--discount/success', 'discount deleted successfully', 200);
   }
 }

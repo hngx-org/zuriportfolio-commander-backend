@@ -46,10 +46,15 @@ enum shop_status {
     temporary
 }
 
-enum Order_Item_Status {
+enum ORDER_STATUS {
     pending
     completed
     cancelled
+}
+
+enum Product_Asset_Type {
+    internal
+    external
 }
 
 model user {
@@ -82,7 +87,7 @@ model user {
 }
 
 model order {
-    id          String   @id @unique
+    id          String   @id @unique @default(uuid())
     customer_id String
     subtotal    Float?
     VAT         Float?
@@ -93,10 +98,11 @@ model order {
 
     customer     user           @relation(name: "customer_orders", fields: [customer_id], references: [id])
     sales_report sales_report[]
+    order_items  order_item[]
 }
 
 model order_item {
-    id             Int               @id @unique
+    id             Int          @id @unique
     order_id       String
     product_id     String
     merchant_id    String
@@ -104,15 +110,16 @@ model order_item {
     order_price    Float
     order_VAT      Float
     order_discount Float
-    status         Order_Item_Status @default(pending)
+    status         ORDER_STATUS @default(pending)
     promo_id       Int?
-    createdAt      DateTime          @default(now())
-    updatedAt      DateTime          @default(now())
+    createdAt      DateTime     @default(now())
+    updatedAt      DateTime     @default(now())
 
     merchant user       @relation(name: "merchant_orders", fields: [merchant_id], references: [id])
     customer user       @relation(name: "customer_orders", fields: [customer_id], references: [id])
     promo    promotion? @relation(fields: [promo_id], references: [id])
     product  product    @relation(fields: [product_id], references: [id], onDelete: Cascade)
+    order    order      @relation(fields: [order_id], references: [id], onDelete: Cascade)
 }
 
 model product {
@@ -138,9 +145,24 @@ model product {
     promo_product   promo_product[]
     order_items     order_item[]
 
-    user user @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    shop shop @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+    user                user?                  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    shop                shop                   @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+    selected_categories selected_categories[]
+    digital_assets      produc_digital_assets?
     //   rating
+}
+
+model produc_digital_assets {
+    id         String             @id @unique @default(uuid())
+    name       String
+    notes      String
+    link       String
+    type       Product_Asset_Type @default(external)
+    createdAt  DateTime           @default(now())
+    updatedAt  DateTime           @default(now())
+    product_id String             @unique
+
+    product product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
 model product_image {
@@ -151,21 +173,35 @@ model product_image {
 }
 
 model product_category {
-    id             Int                    @id @default(autoincrement())
-    name           String
-    createdAt      DateTime               @default(now())
-    sub_categories product_sub_category[]
-    user_id        String
-    user           user                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    id        Int      @id @default(autoincrement())
+    name      String   @unique // update in prod db
+    createdAt DateTime @default(now())
+    user_id   String
+    user      user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+    sub_categories      product_sub_category[]
+    selected_categories selected_categories[]
 }
 
 model product_sub_category {
     id                 Int      @id @default(autoincrement())
-    name               String
+    name               String   @unique // update in prod db
     parent_category_id Int
     createdAt          DateTime @default(now())
 
-    parent_category product_category @relation(fields: [parent_category_id], references: [id], onDelete: Cascade)
+    parent_category         product_category      @relation(fields: [parent_category_id], references: [id], onDelete: Cascade)
+    selected_sub_categories selected_categories[]
+}
+
+model selected_categories {
+    id                  Int    @id @default(autoincrement())
+    sub_category_id     Int?
+    product_category_id Int
+    product_id          String
+
+    sub_category     product_sub_category? @relation(fields: [sub_category_id], references: [id], onDelete: Cascade)
+    product_category product_category      @relation(fields: [product_category_id], references: [id], onDelete: Cascade)
+    product          product               @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
 model promo_product {

@@ -9,14 +9,14 @@ export interface Routes {
 export interface AddProductPayloadType {
   name: string;
   description: string;
-  quantity?: string;
+  quantity?: number;
   price: string;
   discountPrice?: string;
   tax: string;
   currency: string;
   categoryId: string;
   shopId: string;
-  //userId: string; //! auth is working !!! let's leave this just in case 😁
+  parent_category_id: number;
 }
 
 export interface AddSalesReportType {

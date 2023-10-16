@@ -22,6 +22,7 @@ export default class ShopRoute {
     // delete shop
     this.router.delete(
       `${this.path}/delete/:id`,
+      isAuthenticated,
       useCatchErrors(this.shopController.deleteShop.bind(this.shopController))
     );
 
@@ -29,10 +30,7 @@ export default class ShopRoute {
     this.router.get(`${this.path}s`, useCatchErrors(this.shopController.getAllShops.bind(this.shopController)));
 
     // get a shop
-    this.router.get(
-      `${this.path}/:merchant_id`,
-      useCatchErrors(this.shopController.getShopByMerchantId.bind(this.shopController))
-    );
+    this.router.get(`${this.path}/:shop_id`, useCatchErrors(this.shopController.getShopId.bind(this.shopController)));
 
     // update shop route
     this.router.patch(

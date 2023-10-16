@@ -13,8 +13,6 @@ export default class ShopController extends BaseController {
   }
 
   async createShop(req: Request, res: Response) {
-    
-    const TestUserId = '02cac250-ccbf-409f-9c67-ecbbdb5bc31e';
     const merchant_id = (req as any).user?.id ?? TestUserId;
     const { error } = createShopSchema.validate(req.body);
     if (error) {
@@ -23,7 +21,6 @@ export default class ShopController extends BaseController {
     const { name } = req.body;
     const id = uuidv4();
 
-   
     const userExists = await prisma.user.findFirst({
       where: { id: merchant_id },
     });
@@ -32,7 +29,6 @@ export default class ShopController extends BaseController {
       return this.error(res, '--shop/merchant-notfound', 'merchant not find', 404);
     }
 
-  
     const shop = await prisma.shop.create({
       data: {
         id,
@@ -74,11 +70,7 @@ export default class ShopController extends BaseController {
 
   // Get all shop controller
   async getAllShops(req: Request, res: Response) {
-    const shops = await prisma.shop.findMany({
-      include: {
-        products: true,
-      },
-    });
+    const shops = await prisma.shop.findMany();
     if (shops.length > 0) {
       this.success(res, 'All shops', 'Shops have been listed successfully', 200, shops);
     } else {
@@ -139,19 +131,31 @@ export default class ShopController extends BaseController {
   } // end of shop traffic
 
   // Fetch the shop by its ID
-  async getShopByMerchantId(req: Request, res: Response) {
-    const merchantId = req.params.merchant_id;
+  async getShopId(req: Request, res: Response) {
+    const shopId = req.params.shop_id;
 
     // Fetch the shop associated with the merchant, including all its products
     const shop = await prisma.shop.findFirst({
       where: {
-        merchant: {
-          id: merchantId,
+        AND: {
+          id: shopId,
+          is_deleted: 'active',
         },
-        is_deleted: 'active',
       },
-      include: { products: true },
+      // include: {
+      //   products: true,
+
+      // },
+      include: {
+        products: {
+          include: {
+            image: true,
+          },
+        },
+      },
     });
+
+    
 
     if (!shop) {
       return this.error(res, '--shop/missing-shop', 'Shop not found.', 404, null);
@@ -159,11 +163,10 @@ export default class ShopController extends BaseController {
 
     return this.success(
       res,
-      `Shop and Products for Merchant ${merchantId} Shown`,
+      `Shop and Products for Merchant ${shopId} Shown`,
       'Shop and its products retrieved successfully',
       200,
       shop
     );
   }
 }
-
