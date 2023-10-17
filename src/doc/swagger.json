@@ -1480,9 +1480,6 @@
           "tax": {
             "type": "number"
           },
-          "ass": {
-            "type": "string"
-          },
           "assets_name": {
             "type": "string"
           },
