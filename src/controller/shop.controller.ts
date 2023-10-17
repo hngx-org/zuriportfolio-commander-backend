@@ -6,6 +6,7 @@ import { AddProductPayloadType } from '@types';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
 import { TestUserId } from '../config/test';
+import { isUUID } from '../helper';
 
 export default class ShopController extends BaseController {
   constructor() {
@@ -145,6 +146,10 @@ export default class ShopController extends BaseController {
   // Fetch the shop by its ID
   async getShopId(req: Request, res: Response) {
     const shopId = req.params.shop_id;
+
+    if (!isUUID(shopId)) {
+      return this.error(res, '--shop/invalid-id', 'Invalid uuid format.', 400);
+    }
 
     // Fetch the shop associated with the merchant, including all its products
     const shop = await prisma.shop.findFirst({
