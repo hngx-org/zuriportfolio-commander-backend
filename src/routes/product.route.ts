@@ -28,6 +28,7 @@ export default class ProductRoute {
     this.router.patch(
       `${this.path}/:product_id`,
       upload.single('image'), // dont remove this, this is the only way we can handle formData
+      isAuthenticated,
       useCatchErrors(this.productController.updateProduct.bind(this.productController))
     );
 

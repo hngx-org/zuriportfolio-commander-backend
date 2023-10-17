@@ -15,9 +15,9 @@ enum STATUS {
 
 enum ADMIN_STATUS {
     pending
-    review
     approved
-    blacklist
+    reviewed
+    blacklisted
     suspended
 }
 
@@ -145,10 +145,9 @@ model product {
     promo_product   promo_product[]
     order_items     order_item[]
 
-    user                user?                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    shop                shop                    @relation(fields: [shop_id], references: [id], onDelete: Cascade)
-    selected_categories selected_categories[]
-    digital_assets      product_digital_assets?
+    user           user?                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    shop           shop                    @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+    digital_assets product_digital_assets?
     //   rating
 }
 
@@ -174,34 +173,21 @@ model product_image {
 
 model product_category {
     id        Int      @id @default(autoincrement())
-    name      String   @unique // update in prod db
+    name      String   @unique
     createdAt DateTime @default(now())
     user_id   String
     user      user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-    sub_categories      product_sub_category[]
-    selected_categories selected_categories[]
+    sub_categories product_sub_category[]
 }
 
 model product_sub_category {
     id                 Int      @id @default(autoincrement())
-    name               String   @unique // update in prod db
+    name               String   @unique
     parent_category_id Int
     createdAt          DateTime @default(now())
 
-    parent_category         product_category      @relation(fields: [parent_category_id], references: [id], onDelete: Cascade)
-    selected_sub_categories selected_categories[]
-}
-
-model selected_categories {
-    id                  Int    @id @default(autoincrement())
-    sub_category_id     Int?
-    product_category_id Int
-    product_id          String
-
-    sub_category     product_sub_category? @relation(fields: [sub_category_id], references: [id], onDelete: Cascade)
-    product_category product_category      @relation(fields: [product_category_id], references: [id], onDelete: Cascade)
-    product          product               @relation(fields: [product_id], references: [id], onDelete: Cascade)
+    parent_category product_category @relation(fields: [parent_category_id], references: [id], onDelete: Cascade)
 }
 
 model promo_product {

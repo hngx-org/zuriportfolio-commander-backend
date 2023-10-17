@@ -1458,9 +1458,9 @@
           "parent_category_id": {
             "type": "integer"
           },
-          "sub_category_ids": {
+          "sub_category_id": {
             "type": "integer",
-            "example": [1, 2]
+            "example": 3
           },
           "name": {
             "type": "string"
@@ -1499,7 +1499,7 @@
         "required": [
           "image",
           "shopId",
-          "parent_category_id",
+          "sub_category_id",
           "name",
           "description",
           "price",
@@ -1510,8 +1510,7 @@
           "assets_type"
         ],
         "example": {
-          "parent_category_id": 1,
-          "sub_category_ids": [1],
+          "sub_category_id": 1,
           "shopId": "30e9ca17-e481-4a20-a1aa-2dccdb6175d5",
           "name": "HNGX polo",
           "description": "Red",
@@ -1544,7 +1543,7 @@
                 "type": "integer",
                 "required": true
               },
-              "parent_category_id": {
+              "sub_category_id": {
                 "type": "integer",
                 "required": true
               },
