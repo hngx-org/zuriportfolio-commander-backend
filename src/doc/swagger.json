@@ -7,16 +7,12 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8080/api",
-      "description": "Zuriportfolio shop internal / external api."
-    },
-    {
       "url": "https://zuriportfolio-shop-internal-api.onrender.com/api",
       "description": "Production server"
     },
     {
-      "url": "https://staging.zuri.team/api/auth/api/authorize",
-      "description": "Authentication server"
+      "url": "http://localhost:8080/api",
+      "description": "Zuriportfolio shop internal / external api."
     }
   ],
   "paths": {
@@ -140,6 +136,28 @@
         "tags": ["Product"],
         "summary": "Fetch all marketplace products",
         "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number (default is 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "Number of items per page (default is 10)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -1497,9 +1515,9 @@
           "parent_category_id": {
             "type": "integer"
           },
-          "sub_category_ids": {
+          "sub_category_id": {
             "type": "integer",
-            "example": [1, 2]
+            "example": 3
           },
           "name": {
             "type": "string"
@@ -1519,9 +1537,6 @@
           "tax": {
             "type": "number"
           },
-          "ass": {
-            "type": "string"
-          },
           "assets_name": {
             "type": "string"
           },
@@ -1538,7 +1553,7 @@
         "required": [
           "image",
           "shopId",
-          "parent_category_id",
+          "sub_category_id",
           "name",
           "description",
           "price",
@@ -1549,8 +1564,7 @@
           "assets_type"
         ],
         "example": {
-          "parent_category_id": 1,
-          "sub_category_ids": [1],
+          "sub_category_id": 1,
           "shopId": "30e9ca17-e481-4a20-a1aa-2dccdb6175d5",
           "name": "HNGX polo",
           "description": "Red",
@@ -1583,7 +1597,7 @@
                 "type": "integer",
                 "required": true
               },
-              "parent_category_id": {
+              "sub_category_id": {
                 "type": "integer",
                 "required": true
               },

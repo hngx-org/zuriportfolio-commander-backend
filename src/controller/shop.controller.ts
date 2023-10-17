@@ -6,6 +6,7 @@ import { AddProductPayloadType } from '@types';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
 import { TestUserId } from '../config/test';
+import { isUUID } from '../helper';
 
 export default class ShopController extends BaseController {
   constructor() {
@@ -69,6 +70,17 @@ export default class ShopController extends BaseController {
   }
 
   // Get all shop controller
+  async getMerchantShops(req: Request, res: Response) {
+    const merchant_id = (req as any).user?.id ?? TestUserId;
+    const shops = await prisma.shop.findMany({
+      where: {
+        merchant_id,
+      },
+    });
+    this.success(res, '--shops-isEmpty', 'No Shops Found', 200, shops);
+  }
+
+  // Get merchant shops
   async getAllShops(req: Request, res: Response) {
     const shops = await prisma.shop.findMany();
     if (shops.length > 0) {
@@ -77,6 +89,7 @@ export default class ShopController extends BaseController {
       this.success(res, '--shops-isEmpty', 'No Shops Found', 200, []);
     }
   }
+
   // Update existing shop controller
   async updateShop(req: Request, res: Response) {
     const shopId = req.params.shop_id;
@@ -137,6 +150,10 @@ export default class ShopController extends BaseController {
   async getShopId(req: Request, res: Response) {
     const shopId = req.params.shop_id;
 
+    if (!isUUID(shopId)) {
+      return this.error(res, '--shop/invalid-id', 'Invalid uuid format.', 400);
+    }
+
     // Fetch the shop associated with the merchant, including all its products
     const shop = await prisma.shop.findFirst({
       where: {
@@ -145,12 +162,11 @@ export default class ShopController extends BaseController {
           is_deleted: 'active',
         },
       },
-      // include: {
-      //   products: true,
-
-      // },
       include: {
         products: {
+          where: {
+            is_deleted: 'active',
+          },
           include: {
             image: true,
           },
