@@ -1493,12 +1493,8 @@
           "shopId": {
             "type": "string"
           },
-          "parent_category_id": {
+          "category_id": {
             "type": "integer"
-          },
-          "sub_category_id": {
-            "type": "integer",
-            "example": 3
           },
           "name": {
             "type": "string"
@@ -1534,7 +1530,6 @@
         "required": [
           "image",
           "shopId",
-          "sub_category_id",
           "name",
           "description",
           "price",
@@ -1542,7 +1537,8 @@
           "assets_name",
           "assets_link",
           "assets_notes",
-          "assets_type"
+          "assets_type",
+          "category_id"
         ],
         "example": {
           "sub_category_id": 1,
@@ -1578,7 +1574,7 @@
                 "type": "integer",
                 "required": true
               },
-              "sub_category_id": {
+              "category_id": {
                 "type": "integer",
                 "required": true
               },
