@@ -304,6 +304,38 @@
         ]
       }
     },
+    "/product/assets/{product_id}": {
+      "patch": {
+        "tags": ["Product"],
+        "summary": "Update product assets",
+        "description": "",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "description": "Product id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductAssets"
+              }
+            }
+          }
+        }
+      }
+    },
     "/product/{product_id}/image": {
       "post": {
         "tags": ["Product"],
@@ -1426,9 +1458,9 @@
           "parent_category_id": {
             "type": "integer"
           },
-          "sub_category_ids": {
+          "sub_category_id": {
             "type": "integer",
-            "example": [1, 2]
+            "example": 3
           },
           "name": {
             "type": "string"
@@ -1448,14 +1480,37 @@
           "tax": {
             "type": "number"
           },
-          "currency": {
+          "ass": {
+            "type": "string"
+          },
+          "assets_name": {
+            "type": "string"
+          },
+          "assets_link": {
+            "type": "string"
+          },
+          "assets_notes": {
+            "type": "string"
+          },
+          "assets_type": {
             "type": "string"
           }
         },
-        "required": ["image", "shopId", "parent_category_id", "name", "description", "price", "currency"],
+        "required": [
+          "image",
+          "shopId",
+          "sub_category_id",
+          "name",
+          "description",
+          "price",
+          "currency",
+          "assets_name",
+          "assets_link",
+          "assets_notes",
+          "assets_type"
+        ],
         "example": {
-          "parent_category_id": 1,
-          "sub_category_ids": [1],
+          "sub_category_id": 1,
           "shopId": "30e9ca17-e481-4a20-a1aa-2dccdb6175d5",
           "name": "HNGX polo",
           "description": "Red",
@@ -1463,7 +1518,11 @@
           "price": 500,
           "discount_price": 455,
           "tax": 2.2,
-          "currency": "USD"
+          "currency": "USD",
+          "assets_name": "nft",
+          "assets_link": "https://benrobo.co",
+          "assets_notes": "some notes",
+          "assets_type": "external"
         }
       },
       "UpdateProductData": {
@@ -1484,7 +1543,7 @@
                 "type": "integer",
                 "required": true
               },
-              "parent_category_id": {
+              "sub_category_id": {
                 "type": "integer",
                 "required": true
               },
@@ -1552,6 +1611,33 @@
             "categoryId": 1,
             "adminStatus": "approved"
           }
+        }
+      },
+      "UpdateProductAssets": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "required": false
+          },
+          "link": {
+            "type": "string",
+            "required": false
+          },
+          "notes": {
+            "type": "string",
+            "required": false
+          },
+          "type": {
+            "type": "string",
+            "required": false
+          }
+        },
+        "example": {
+          "name": "Nike Wears",
+          "link": "https://benrobo.co",
+          "notes": "some notes",
+          "type": "external"
         }
       },
       "UpdateProductWithImage": {

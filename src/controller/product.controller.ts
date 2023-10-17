@@ -4,6 +4,7 @@ import {
   createCategorySchema,
   productSchema,
   productSubcategoriesSchema,
+  updateProductAssets,
   updatedProductSchema,
 } from '../helper/validate';
 import { uploadSingleImage } from '../helper/uploadImage';
@@ -14,6 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
 import { isUUID, removeDuplicate } from '../helper';
 import { TestUserId } from '../config/test';
+import validurl from 'valid-url';
 
 export default class ProductController extends BaseController {
   constructor() {
@@ -65,34 +67,28 @@ export default class ProductController extends BaseController {
     const userId = (req as any).user?.id ?? TestUserId;
     const file = req.file ?? null;
     const payload: AddProductPayloadType = req.body;
-    let sub_category_ids = payload['sub_category_ids'];
-
-    delete payload['sub_category_ids'];
 
     const { error, value } = productSchema.validate(payload);
-
-    // if provided, parse it
-    if (sub_category_ids) {
-      try {
-        sub_category_ids = JSON.parse(sub_category_ids);
-      } catch (e: any) {
-        return this.error(res, '--product/invalid-fields', 'Invalid sub_category_ids format.', 400, null);
-      }
-    }
-
-    // if existing, validate it
-    if (sub_category_ids) {
-      const { error } = productSubcategoriesSchema.validate(sub_category_ids);
-      if (error) {
-        return this.error(res, '--product/invalid-fields', error.message, 400, null);
-      }
-    }
 
     if (error || !file) {
       return this.error(res, '--product/invalid-fields', error?.message ?? 'product image is missing.', 400, null);
     }
 
-    const { name, currency, description, discountPrice, price, quantity, tax, parent_category_id, shopId } = payload;
+    const {
+      name,
+      currency,
+      description,
+      discountPrice,
+      price,
+      quantity,
+      tax,
+      sub_category_id,
+      shopId,
+      assets_link,
+      assets_name,
+      assets_notes,
+      assets_type,
+    } = payload;
 
     // check if user is the owner of this shop
     const shopExists = await prisma.shop.findFirst({
@@ -108,33 +104,21 @@ export default class ProductController extends BaseController {
       return this.error(res, '--product/shop-notfound', 'Failed to crete product, shop not found.', 404);
     }
 
-    // check if parent or child category exists
-    const parentCatExists = await prisma.product_category.findFirst({
-      where: {
-        AND: {
-          user_id: userId,
-          id: +parent_category_id,
-        },
-      },
-    });
-
-    if (parentCatExists === null) {
-      return this.error(res, '--product/category-notfound', 'Failed to create product, category do not exist.', 404);
+    // validate
+    if (assets_link && !validurl.isUri(assets_link)) {
+      return this.error(res, '--product/invalid-asset-link', 'Invalid asset link', 400);
     }
 
-    if (sub_category_ids && sub_category_ids.length > 0) {
-      const notfoundCategories = await this.checkSubCategoriesExists(sub_category_ids);
+    // check if parent or child category exists
+    const subCatExists = await prisma.product_sub_category.findFirst({
+      where: {
+        id: +sub_category_id,
+      },
+      include: { parent_category: true },
+    });
 
-      logger.info(`Notfound subcategories: ${notfoundCategories}`);
-
-      if (notfoundCategories.length > 0) {
-        return this.error(
-          res,
-          '--product/category-notfound',
-          'Failed to create product, one of more of subcategory do not exist.',
-          404
-        );
-      }
+    if (!subCatExists) {
+      return this.error(res, '--product/category-notfound', 'Failed to create product, category do not exist.', 404);
     }
 
     const { isError, errorMsg, image } = await uploadSingleImage(file);
@@ -159,7 +143,7 @@ export default class ProductController extends BaseController {
         quantity: +quantity,
         price: parseFloat(price),
         tax: parseFloat(tax),
-        category_id: +parent_category_id,
+        category_id: +sub_category_id,
         image: {
           create: {
             url: image.url ?? placeHolderImg,
@@ -169,26 +153,25 @@ export default class ProductController extends BaseController {
       include: { image: true },
     });
 
-    // create selected sub categories
-    let selectedCategories;
-    const notDuplicatedSubCatId = removeDuplicate(sub_category_ids);
-    if (notDuplicatedSubCatId.length > 0) {
-      for (const cat of notDuplicatedSubCatId) {
-        selectedCategories = await prisma.selected_categories.create({
-          data: {
-            sub_category_id: cat,
-            product_category_id: +parent_category_id,
-            product_id: prodId,
-          },
-          include: { product_category: true, sub_category: true },
-        });
-      }
-    }
+    // create assets
+    await prisma.product_digital_assets.create({
+      data: {
+        name: assets_name,
+        notes: assets_notes ?? '',
+        link: assets_link,
+        product_id: prodId,
+        type: assets_type,
+      },
+    });
 
     this.success(res, 'Product Added', 'Product has been added successfully', 201, {
       ...product,
       image: (product as any)?.image,
-      selectedCategories: selectedCategories,
+      category: {
+        id: subCatExists.id,
+        name: subCatExists.name,
+        parent: subCatExists.parent_category.name,
+      },
     });
   }
 
@@ -197,9 +180,6 @@ export default class ProductController extends BaseController {
     const userId = (req as any).user?.id ?? TestUserId;
 
     const payload: AddProductPayloadType = req.body;
-    let sub_category_ids = payload['sub_category_ids'];
-
-    delete payload['sub_category_ids'];
 
     const { error, value } = updatedProductSchema.validate(payload);
 
@@ -217,109 +197,92 @@ export default class ProductController extends BaseController {
       },
     });
 
-    // if provided, parse it
-    if (sub_category_ids) {
-      try {
-        sub_category_ids = JSON.parse(sub_category_ids);
-      } catch (e: any) {
-        return this.error(res, '--product/invalid-fields', 'Invalid sub_category_ids format.', 400, null);
-      }
-    }
-
-    // if existing, validate it
-    if (sub_category_ids) {
-      const { error } = productSubcategoriesSchema.validate(sub_category_ids);
-      if (error) {
-        return this.error(res, '--product/invalid-fields', error.message, 400, null);
-      }
-    }
-
     // Check if the product exists
     if (!existingProduct) {
       return this.error(res, '--product/not-found', 'Product not found', 404);
     }
 
-    // check if subcategories exist
-    if (sub_category_ids && sub_category_ids.length > 0) {
-      const notfoundCategories = await this.checkSubCategoriesExists(sub_category_ids);
-
-      if (notfoundCategories.length > 0) {
-        logger.info(`Notfound subcategories: ${notfoundCategories}`);
-        return this.error(
-          res,
-          '--product/category-notfound',
-          'Failed to create product, one of more of subcategory do not exist.',
-          404
-        );
-      }
-    }
-
     // update parent category and subcategory
-    let parentCatSelectedId = await prisma.selected_categories.findFirst({
-      where: { product_id: productId },
+    let subCatExists = await prisma.product_sub_category.findFirst({
+      where: { id: +value.sub_category_id },
+      include: { parent_category: true },
     });
 
-    if (!parentCatSelectedId) {
-      // create it if not found
-      const notDuplicatedSubCatId = removeDuplicate(sub_category_ids);
-      for (const subId of notDuplicatedSubCatId) {
-        parentCatSelectedId = await prisma.selected_categories.create({
-          data: {
-            sub_category_id: subId,
-            product_id: productId,
-            product_category_id: +value.parent_category_id,
-          },
-        });
-      }
-    }
-
-    if (value.parent_category_id) {
-      if (parentCatSelectedId) {
-        await prisma.selected_categories.update({
-          where: { id: parentCatSelectedId.id },
-          data: {
-            product_category_id: value.parent_category_id,
-          },
-        });
-        logger.info('Updated parent category');
-      }
-    }
-
-    const notDuplicatedSubCatId = removeDuplicate(sub_category_ids);
-    if (sub_category_ids && notDuplicatedSubCatId.length > 0) {
-      for (const subId of notDuplicatedSubCatId) {
-        await prisma.selected_categories.update({
-          where: {
-            id: parentCatSelectedId.id,
-          },
-          data: {
-            sub_category_id: +subId,
-          },
-        });
-        logger.info('Product sub category updated');
-      }
+    if (!subCatExists) {
+      return this.error(res, '--product/category-notfound', 'Failed to update product, category do not exist.', 404);
     }
 
     // remove parent_category_id
-    delete value['parent_category_id'];
+    delete value['sub_category_id'];
     delete value['shopId'];
 
     await prisma.product.update({
       where: { id: productId },
-      data: { ...value, category_id: +payload.parent_category_id },
+      data: { ...value, category_id: +payload.sub_category_id },
     });
 
     const productResp = await prisma.product.findFirst({
       where: { id: productId },
       include: {
-        selected_categories: true,
         image: true,
       },
     });
 
     this.success(res, 'Product Updated', 'Product has been updated successfully', 200, {
       productResp,
+      category: {
+        id: subCatExists.id,
+        name: subCatExists.name,
+        parent: subCatExists.parent_category.name,
+      },
     });
+  }
+
+  async updateProductAssets(req: Request, res: Response) {
+    const productId = req.params['product_id'];
+    const userId = (req as any).user?.id ?? TestUserId;
+
+    const payload = req.body;
+    const { error, value } = updateProductAssets.validate(payload);
+    if (error) {
+      return this.error(res, '--product/invalid-fields', error?.message ?? 'product image is missing.', 400, null);
+    }
+
+    // Find the product by ID
+    const existingProduct = await prisma.product.findFirst({
+      where: {
+        AND: {
+          id: productId,
+          user_id: userId,
+        },
+      },
+      include: { digital_assets: true },
+    });
+
+    // Check if the product exists
+    if (!existingProduct) {
+      return this.error(res, '--product/not-found', 'Product not found', 404);
+    }
+
+    // validate the assets url
+    if (value.link && !validurl.isUri(value.link)) {
+      return this.error(res, '--product/invalid-asset-link', 'Invalid asset link', 400);
+    }
+
+    // check if product has an assets
+    if (!existingProduct.digital_assets) {
+      return this.error(res, '--product/asset-notfound', 'Failed to update, asset not found.', 404);
+    }
+
+    // update product assets
+    await prisma.product_digital_assets.update({
+      where: {
+        id: existingProduct.digital_assets.id,
+      },
+      data: value,
+    });
+
+    this.success(res, '--product/assets-updated', 'product assets updated successfully', 200, value);
   }
 
   async addImage(req: Request, res: Response) {
@@ -597,27 +560,27 @@ export default class ProductController extends BaseController {
 
     if (products.length > 0) {
       for (const p of products) {
-        const allCategories = [];
-        const selectedCategories = await prisma.selected_categories.findMany({
-          where: { product_id: p.id },
-          select: { sub_category: true, product_category: true, sub_category_id: true },
+        let categories: object | null = null;
+        const category = await prisma.product_sub_category.findFirst({
+          where: { id: +p.category_id },
+          include: { parent_category: true },
         });
 
-        for (const selCat of selectedCategories) {
-          const sub_categories = await prisma.product_sub_category.findFirst({
-            where: { id: selCat.sub_category_id },
-          });
-          allCategories.push({
-            id: selCat.product_category.id,
-            name: selCat.product_category.name,
-            sub_categories: sub_categories,
-          });
+        if (category) {
+          categories = {
+            name: category.parent_category.name,
+            id: category.parent_category.id,
+            sub_category: {
+              id: category.id,
+              name: category.name,
+            },
+          };
         }
 
         const promoProd = await prisma.promo_product.findFirst({ where: { product_id: p.id } });
         allProd.push({
           ...p,
-          categories: allCategories,
+          categories,
           image: p.image,
           promo: promoProd,
         });
@@ -652,19 +615,20 @@ export default class ProductController extends BaseController {
       return this.error(res, '--product/missing-product', 'Product not found.', 404, null);
     }
 
-    const selectedCategories = await prisma.selected_categories.findMany({
-      where: { product_id: productId },
-      select: { sub_category: true, product_category: true, sub_category_id: true },
+    let category: object | null = null;
+    const subCategory = await prisma.product_sub_category.findFirst({
+      where: { id: +product.category_id },
+      include: { parent_category: true },
     });
 
-    const allCategories = [];
-    for (const selCat of selectedCategories) {
-      const sub_categories = await prisma.product_sub_category.findFirst({ where: { id: selCat.sub_category_id } });
-      allCategories.push({
-        id: selCat.product_category.id,
-        name: selCat.product_category.name,
-        sub_categories: sub_categories,
-      });
+    if (subCategory) {
+      category = {
+        name: subCategory.parent_category.name,
+        sub_category: {
+          id: subCategory.id,
+          name: subCategory.name,
+        },
+      };
     }
 
     // include promo if needed
@@ -677,7 +641,7 @@ export default class ProductController extends BaseController {
       currency: product.currency,
       tax: product.tax,
       description: product.description,
-      categories: allCategories,
+      category,
     };
 
     return this.success(res, `Product ${productId} Shown`, 'Products have been listed', 200, data);
@@ -695,21 +659,21 @@ export default class ProductController extends BaseController {
     const allProd = [];
     if (products.length > 0) {
       for (const p of products) {
-        const allCategories = [];
-        const selectedCategories = await prisma.selected_categories.findMany({
-          where: { product_id: p.id },
-          select: { sub_category: true, product_category: true, sub_category_id: true },
+        let categories: object | null = null;
+        const category = await prisma.product_sub_category.findFirst({
+          where: { id: +p.category_id },
+          include: { parent_category: true },
         });
 
-        for (const selCat of selectedCategories) {
-          const sub_categories = await prisma.product_sub_category.findFirst({
-            where: { id: selCat.sub_category_id },
-          });
-          allCategories.push({
-            id: selCat.product_category.id,
-            name: selCat.product_category.name,
-            sub_categories: sub_categories,
-          });
+        if (category) {
+          categories = {
+            name: category.parent_category.name,
+            id: category.parent_category.id,
+            sub_category: {
+              id: category.id,
+              name: category.name,
+            },
+          };
         }
 
         const promoProd = await prisma.promo_product.findFirst({ where: { product_id: p.id } });
@@ -719,7 +683,7 @@ export default class ProductController extends BaseController {
         });
         allProd.push({
           ...p,
-          categories: allCategories,
+          categories,
           image: p.image,
           promo: promoProd,
         });

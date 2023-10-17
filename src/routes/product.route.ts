@@ -28,7 +28,7 @@ export default class ProductRoute {
     this.router.patch(
       `${this.path}/:product_id`,
       upload.single('image'), // dont remove this, this is the only way we can handle formData
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.productController.updateProduct.bind(this.productController))
     );
 
@@ -65,14 +65,9 @@ export default class ProductRoute {
       useCatchErrors(this.productController.deleteImage.bind(this.productController))
     );
 
-    // this.router.post(
-    //   `${this.path}/:productId/draft`,
-    //   upload.single('image'),
-    //   isAuthenticated,
-    //   useCatchErrors(this.productController.addProductDraft.bind(this.productController))
-    // );
     this.router.patch(
       `${this.path}/unpublish/:productId`,
+      isAuthenticated,
       useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
     );
     this.router.get(
@@ -107,10 +102,17 @@ export default class ProductRoute {
       isAuthenticated,
       useCatchErrors(this.productController.createCategory.bind(this.productController))
     );
+
     this.router.get(
       `${this.path}/:product_id`,
-      isAuthenticated,
       useCatchErrors(this.productController.getProductById.bind(this.productController))
+    );
+
+    // update product assets
+    this.router.patch(
+      `${this.path}/assets/:product_id`,
+      isAuthenticated,
+      useCatchErrors(this.productController.updateProductAssets.bind(this.productController))
     );
 
     // get products on merchant account
