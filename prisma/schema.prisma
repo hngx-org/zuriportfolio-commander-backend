@@ -15,9 +15,9 @@ enum STATUS {
 
 enum ADMIN_STATUS {
     pending
+    review
     approved
-    reviewed
-    blacklisted
+    blacklist
     suspended
 }
 
@@ -50,11 +50,6 @@ enum ORDER_STATUS {
     pending
     completed
     cancelled
-}
-
-enum Product_Asset_Type {
-    internal
-    external
 }
 
 model user {
@@ -126,7 +121,7 @@ model product {
     id             String         @id @unique
     user_id        String
     shop_id        String
-    sub_category_id    Int
+    category_id    Int
     name           String
     description    String
     quantity       Int            @default(1)
@@ -139,29 +134,15 @@ model product {
     currency       String
     createdAt      DateTime       @default(now())
     updatedAt      DateTime       @default(now())
+
     image           product_image[]
     track_promotion track_promotion[]
     promo_product   promo_product[]
     order_items     order_item[]
 
-    user           user?                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    shop           shop                    @relation(fields: [shop_id], references: [id], onDelete: Cascade)
-    subcategory  product_sub_category      @relation(fields: [sub_category_id], references: [id])
-    digital_assets product_digital_assets?
+    user user? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    shop shop  @relation(fields: [shop_id], references: [id], onDelete: Cascade)
     //   rating
-}
-
-model product_digital_assets {
-    id         String             @id @unique @default(uuid())
-    name       String
-    notes      String
-    link       String
-    type       Product_Asset_Type @default(external)
-    createdAt  DateTime           @default(now())
-    updatedAt  DateTime           @default(now())
-    product_id String             @unique
-
-    product product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
 model product_image {
@@ -172,22 +153,20 @@ model product_image {
 }
 
 model product_category {
-    id        Int      @id @default(autoincrement())
-    name      String   @unique
-    createdAt DateTime @default(now())
-    user_id   String
-    user      user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
+    id             Int                    @id @default(autoincrement())
+    name           String
+    createdAt      DateTime               @default(now())
     sub_categories product_sub_category[]
+    user_id        String
+    user           user                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model product_sub_category {
     id                 Int      @id @default(autoincrement())
-    name               String   @unique
+    name               String
     parent_category_id Int
     createdAt          DateTime @default(now())
 
-    product product[]
     parent_category product_category @relation(fields: [parent_category_id], references: [id], onDelete: Cascade)
 }
 
