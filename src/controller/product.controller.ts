@@ -701,8 +701,8 @@ export default class ProductController extends BaseController {
     return this.success(res, 'All Products Shown', 'Products have been listed', 200, {
       page: +page,
       pageSize: +itemsPerPage,
-      totalProducts: allProd.length, // Use the length of merchantOrders
-      totalPages: Math.floor(allProd.length / itemsPerPage),
+      totalProducts: allProd.length,
+      totalPages: Math.ceil(allProd.length / itemsPerPage),
       products: allProd,
     });
   }
