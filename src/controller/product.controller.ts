@@ -131,6 +131,7 @@ export default class ProductController extends BaseController {
     const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
 
     const prodId = uuidv4();
+    console.log({ sub_category_id, subCatExists });
     const product = await prisma.product.create({
       data: {
         id: prodId,
@@ -608,7 +609,19 @@ export default class ProductController extends BaseController {
           is_deleted: 'active',
         },
       },
-      include: { image: true },
+      select: {
+        id: true,
+        image: true,
+        is_deleted: true,
+        is_published: true,
+        price: true,
+        discount_price: true,
+        quantity: true,
+        currency: true,
+        tax: true,
+        description: true,
+        category_id: true,
+      },
     });
 
     if (!product) {
@@ -620,6 +633,8 @@ export default class ProductController extends BaseController {
       where: { id: +product.category_id },
       include: { parent_category: true },
     });
+
+    delete product['category_id'];
 
     if (subCategory) {
       category = {
@@ -634,13 +649,7 @@ export default class ProductController extends BaseController {
     // include promo if needed
 
     const data = {
-      image: product.image,
-      price: product.price,
-      discount: product.discount_price,
-      quantity: product.quantity,
-      currency: product.currency,
-      tax: product.tax,
-      description: product.description,
+      ...product,
       category,
     };
 

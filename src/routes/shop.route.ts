@@ -29,6 +29,13 @@ export default class ShopRoute {
     // Get all shops
     this.router.get(`${this.path}s`, useCatchErrors(this.shopController.getAllShops.bind(this.shopController)));
 
+    // Get shop by authenticated user
+    this.router.get(
+      `${this.path}s/merchant`,
+      isAuthenticated,
+      useCatchErrors(this.shopController.getMerchantShops.bind(this.shopController))
+    );
+
     // get a shop
     this.router.get(`${this.path}/:shop_id`, useCatchErrors(this.shopController.getShopId.bind(this.shopController)));
 
