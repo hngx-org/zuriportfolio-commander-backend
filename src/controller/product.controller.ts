@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import BaseController from './base.controller';
 import {
   createCategorySchema,
+  createSubCategorySchema,
   productSchema,
   productSubcategoriesSchema,
   updateProductAssets,
@@ -804,6 +805,67 @@ export default class ProductController extends BaseController {
     return this.success(res, '--created-subCategory/success', `${lowercaseName} created successfully`, 201, {
       subCategory,
     });
+  }
+
+  async createCategoryV2(req: Request, res: Response) {
+    const { error, value } = createCategorySchema.validate(req.body);
+    const userId = (req as any).user?.id ?? TestUserId;
+    if (error) {
+      return this.error(res, '--product_category/invalid-category data', 'Please provide a valid category name.', 400);
+    }
+
+    const category = await prisma.product_category.create({
+      data: {
+        name: value.name ?? '',
+        user_id: userId,
+      },
+    });
+    return this.success(res, '--created-Category/success', `${category} created successfully`, 201, {
+      category,
+    });
+  }
+
+  async createSubCategoryV2(req: Request, res: Response) {
+    const { error, value } = createSubCategorySchema.validate(req.body);
+    const userId = (req as any).user?.id ?? TestUserId;
+
+    console.log(value);
+
+    if (error) {
+      return this.error(res, '--product_category/invalid-category data', 'Please provide a valid category name.', 400);
+    }
+
+    const existingCategory = await prisma.product_category.findFirst({
+      where: {
+        id: value.parent_id,
+      },
+    });
+
+    if (!existingCategory) {
+      return this.error(
+        res,
+        '--product_category/category-exists',
+        `Category with id ${value.parent_id} does not exists.`,
+        409
+      );
+    }
+
+    const category = await prisma.product_sub_category.create({
+      data: {
+        name: value.name,
+        parent_category_id: value.parent_id,
+      },
+    });
+
+    return this.success(
+      res,
+      '--created-SubCategory/success',
+      `Sub category '${category.name}' created successfully`,
+      201,
+      {
+        category,
+      }
+    );
   }
 
   async deleteCategory(req: Request, res: Response) {
