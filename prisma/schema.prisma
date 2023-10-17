@@ -126,7 +126,7 @@ model product {
     id             String         @id @unique
     user_id        String
     shop_id        String
-    category_id    Int
+    sub_category_id    Int
     name           String
     description    String
     quantity       Int            @default(1)
@@ -139,7 +139,6 @@ model product {
     currency       String
     createdAt      DateTime       @default(now())
     updatedAt      DateTime       @default(now())
-
     image           product_image[]
     track_promotion track_promotion[]
     promo_product   promo_product[]
@@ -147,6 +146,7 @@ model product {
 
     user           user?                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
     shop           shop                    @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+    subcategory  product_sub_category      @relation(fields: [sub_category_id], references: [id])
     digital_assets product_digital_assets?
     //   rating
 }
@@ -187,6 +187,7 @@ model product_sub_category {
     parent_category_id Int
     createdAt          DateTime @default(now())
 
+    product product[]
     parent_category product_category @relation(fields: [parent_category_id], references: [id], onDelete: Cascade)
 }
 
