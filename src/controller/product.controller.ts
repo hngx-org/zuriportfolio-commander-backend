@@ -648,6 +648,13 @@ export default class ProductController extends BaseController {
   }
 
   async getMarketplaceProducts(req: Request, res: Response) {
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    const itemsPerPage = req.query.itemsPerPage ? parseInt(req.query.itemsPerPage as string, 10) : 10;
+
+    // Calculate the offset to skip the appropriate number of items
+    const skip = (page - 1) * itemsPerPage;
+    const take = itemsPerPage;
+
     const products = await prisma.product.findMany({
       where: {
         AND: {
@@ -655,6 +662,8 @@ export default class ProductController extends BaseController {
         },
       },
       include: { image: true },
+      skip,
+      take,
     });
     const allProd = [];
     if (products.length > 0) {
@@ -689,7 +698,13 @@ export default class ProductController extends BaseController {
         });
       }
     }
-    return this.success(res, 'All Products Shown', 'Products have been listed', 200, allProd);
+    return this.success(res, 'All Products Shown', 'Products have been listed', 200, {
+      page: +page,
+      pageSize: +itemsPerPage,
+      totalProducts: allProd.length, // Use the length of merchantOrders
+      totalPages: Math.floor(allProd.length / itemsPerPage),
+      products: allProd,
+    });
   }
 
   async deleteProduct(req: Request, res: Response) {
