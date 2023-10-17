@@ -103,6 +103,18 @@ export default class ProductRoute {
       useCatchErrors(this.productController.createCategory.bind(this.productController))
     );
 
+    this.router.post(
+      `${this.path}/category-v2`,
+      isAuthenticated,
+      useCatchErrors(this.productController.createCategoryV2.bind(this.productController))
+    );
+
+    this.router.post(
+      `${this.path}/subcategory-v2`,
+      isAuthenticated,
+      useCatchErrors(this.productController.createSubCategoryV2.bind(this.productController))
+    );
+
     this.router.get(
       `${this.path}/:product_id`,
       useCatchErrors(this.productController.getProductById.bind(this.productController))
