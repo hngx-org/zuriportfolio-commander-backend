@@ -106,7 +106,7 @@ export const validateUUID = Joi.string()
   .required();
 
 export const createActivitySchema = Joi.object({
-    action: Joi.string().required(),
-    title: Joi.string().required(),
-    description: Joi.string().required(),
-  });
+  action: Joi.string().required(),
+  title: Joi.string().required(),
+  description: Joi.string().required(),
+});
