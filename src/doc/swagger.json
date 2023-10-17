@@ -877,6 +877,26 @@
         ]
       }
     },
+    "/shops/merchant": {
+      "get": {
+        "tags": ["Shops"],
+        "summary": "Fetch all created shops from merchant.",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {}
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/shop/{shop_id}": {
       "get": {
         "tags": ["Shops"],

@@ -74,7 +74,10 @@ export default class ShopController extends BaseController {
     const merchant_id = (req as any).user?.id ?? TestUserId;
     const shops = await prisma.shop.findMany({
       where: {
-        merchant_id,
+        AND: {
+          merchant_id,
+          is_deleted: 'active',
+        },
       },
     });
     this.success(res, '--shops-isEmpty', 'No Shops Found', 200, shops);
