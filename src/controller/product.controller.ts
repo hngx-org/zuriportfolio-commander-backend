@@ -673,7 +673,7 @@ export default class ProductController extends BaseController {
           is_deleted: 'active',
         },
       },
-      include: { image: true },
+      include: { image: true, shop: true },
       skip,
       take,
     });
@@ -698,16 +698,25 @@ export default class ProductController extends BaseController {
         }
 
         const promoProd = await prisma.promo_product.findFirst({ where: { product_id: p.id } });
-        const cat = await prisma.product_category.findFirst({
-          where: { id: p.category_id },
-          include: { sub_categories: true },
+        const shop = await prisma.shop.findFirst({
+          where: {
+            AND: {
+              id: p.shop_id,
+              is_deleted: 'active',
+            },
+          },
+          select: { name: true, rating: true, id: true },
         });
-        allProd.push({
-          ...p,
-          categories,
-          image: p.image,
-          promo: promoProd,
-        });
+
+        if (shop) {
+          allProd.push({
+            ...p,
+            shop,
+            categories,
+            image: p.image,
+            promo: promoProd,
+          });
+        }
       }
     }
     return this.success(res, 'All Products Shown', 'Products have been listed', 200, {
