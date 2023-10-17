@@ -145,8 +145,8 @@ model product {
     promo_product   promo_product[]
     order_items     order_item[]
 
-    user                user?                  @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    shop                shop                   @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+    user                user?                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    shop                shop                    @relation(fields: [shop_id], references: [id], onDelete: Cascade)
     selected_categories selected_categories[]
     digital_assets      product_digital_assets?
     //   rating

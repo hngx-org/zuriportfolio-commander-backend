@@ -6,12 +6,16 @@ export const productSchema = Joi.object({
   name: Joi.string().required(),
   shopId: Joi.string().required(),
   description: Joi.string().required(),
-  quantity: Joi.number().greater(0).optional().default(1),
+  quantity: Joi.number().min(1).optional().default(1),
   price: Joi.number().required(),
   discountPrice: Joi.number().min(0).optional().default(0),
   tax: Joi.number().optional(),
   currency: Joi.string().required(),
   parent_category_id: Joi.number().required(),
+  assets_name: Joi.string().required(),
+  assets_link: Joi.string().required(),
+  assets_notes: Joi.string().optional(),
+  assets_type: Joi.string().valid('external', 'internal').required(),
 });
 
 export const productSubcategoriesSchema = Joi.array().items(Joi.number()).required();
@@ -31,6 +35,13 @@ export const updatedProductSchema = Joi.object({
   tax: Joi.number().optional(),
   currency: Joi.string().optional(),
   parent_category_id: Joi.number().optional(),
+});
+
+export const updateProductAssets = Joi.object({
+  name: Joi.string().optional(),
+  link: Joi.string().optional(),
+  notes: Joi.string().optional(),
+  type: Joi.string().valid('external', 'internal').optional(),
 });
 
 export const saveProductDraftSchema = Joi.object({

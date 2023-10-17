@@ -5,7 +5,6 @@
   "scripts": {
     "test": "",
     "dev": "nodemon ./dist/server.js",
-    "nodemon_ts": "nodemon",
     "generate": "prisma generate",
     "build": "npx rimraf ./dist && tsc",
     "dbPush": "prisma db push",
@@ -34,6 +33,7 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "uuid": "^9.0.1",
+    "valid-url": "^1.0.9",
     "validate": "^5.2.0",
     "winston": "^3.8.2",
     "yaml": "^2.3.2"
