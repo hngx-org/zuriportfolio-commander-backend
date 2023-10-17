@@ -623,6 +623,7 @@ export default class ProductController extends BaseController {
         description: true,
         category_id: true,
         name: true,
+        shop: true,
       },
     });
 
