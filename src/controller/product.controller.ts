@@ -622,6 +622,7 @@ export default class ProductController extends BaseController {
         tax: true,
         description: true,
         category_id: true,
+        name: true,
       },
     });
 
