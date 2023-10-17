@@ -8,7 +8,7 @@ export const productSchema = Joi.object({
   description: Joi.string().required(),
   quantity: Joi.number().greater(0).optional().default(1),
   price: Joi.number().required(),
-  discountPrice: Joi.number().greater(0).optional().default(0),
+  discountPrice: Joi.number().min(0).optional().default(0),
   tax: Joi.number().optional(),
   currency: Joi.string().required(),
   parent_category_id: Joi.number().required(),
@@ -93,3 +93,9 @@ export const validateUUID = Joi.string()
     'string.pattern.base': 'invalid uuid format.',
   })
   .required();
+
+export const createActivitySchema = Joi.object({
+    action: Joi.string().required(),
+    title: Joi.string().required(),
+    description: Joi.string().required(),
+  });

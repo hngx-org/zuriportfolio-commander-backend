@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
 import { isUUID, removeDuplicate } from '../helper';
 import { TestUserId } from '../config/test';
+import { capitalizeFisrtLetter } from '../helper/capitalizeFirstLetter';
 
 export default class ProductController extends BaseController {
   constructor() {
@@ -132,7 +133,7 @@ export default class ProductController extends BaseController {
           res,
           '--product/category-notfound',
           'Failed to create product, one of more of subcategory do not exist.',
-          404
+          404,
         );
       }
     }
@@ -249,7 +250,7 @@ export default class ProductController extends BaseController {
           res,
           '--product/category-notfound',
           'Failed to create product, one of more of subcategory do not exist.',
-          404
+          404,
         );
       }
     }
@@ -742,7 +743,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_delete/invalid-field',
         'product id is invalid, expected product_id in uuid format.',
-        400
+        400,
       );
     }
 
@@ -779,18 +780,19 @@ export default class ProductController extends BaseController {
       return this.error(res, '--product_category/invalid-category data', 'Please provide a valid category name.', 400);
     }
     const { parent_id, name } = value;
-    const lowercaseName = name.toLowerCase();
+
+    const newName = capitalizeFisrtLetter(name);
     const existingCategory = await prisma.product_category.findFirst({
       where: {
-        name: lowercaseName,
+        name: newName,
       },
     });
     if (existingCategory) {
       return this.error(
         res,
         '--product_category/category-exists',
-        `Category with name '${lowercaseName}' already exists. Please choose a different name.`,
-        409
+        `Category with name '${newName}' already exists. Please choose a different name.`,
+        409,
       );
     }
 
@@ -799,7 +801,7 @@ export default class ProductController extends BaseController {
       // Creating a parent category
       const parentCategory = await prisma.product_category.create({
         data: {
-          name: lowercaseName,
+          name: newName,
           user: {
             connect: {
               id: userId,
@@ -808,28 +810,28 @@ export default class ProductController extends BaseController {
         },
       });
 
-      return this.success(res, '--created-parentCategory/success', `${lowercaseName} created successfully`, 201, {
+      return this.success(res, '--created-parentCategory/success', `${newName} created successfully`, 201, {
         parentCategory,
       });
     }
     //create a subCategory
     const existingSubCategory = await prisma.product_sub_category.findFirst({
       where: {
-        name: lowercaseName,
+        name: newName,
       },
     });
     if (existingSubCategory) {
       return this.error(
         res,
         '--product_sub_category/category-exists',
-        `Sub-category with name '${lowercaseName}' already exists. Please choose a different name.`,
-        409
+        `Sub-category with name '${newName}' already exists. Please choose a different name.`,
+        409,
       );
     }
 
     const subCategory = await prisma.product_sub_category.create({
       data: {
-        name: lowercaseName,
+        name: newName,
         parent_category: {
           connect: {
             id: parent_id,
@@ -837,7 +839,7 @@ export default class ProductController extends BaseController {
         },
       },
     });
-    return this.success(res, '--created-subCategory/success', `${lowercaseName} created successfully`, 201, {
+    return this.success(res, '--created-subCategory/success', `${newName} created successfully`, 201, {
       subCategory,
     });
   }

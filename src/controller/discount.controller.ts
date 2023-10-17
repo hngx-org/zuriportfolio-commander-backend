@@ -279,7 +279,7 @@ export default class DiscountController extends BaseController {
         '--discount/promotions',
         'Products with promotions and tracked promotions fetched successfully',
         200,
-        productsWithPromotionsAndTrackedCounts
+        productsWithPromotionsAndTrackedCounts,
       );
     }
   }

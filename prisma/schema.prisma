@@ -148,11 +148,11 @@ model product {
     user                user?                  @relation(fields: [user_id], references: [id], onDelete: Cascade)
     shop                shop                   @relation(fields: [shop_id], references: [id], onDelete: Cascade)
     selected_categories selected_categories[]
-    digital_assets      produc_digital_assets?
+    digital_assets      product_digital_assets?
     //   rating
 }
 
-model produc_digital_assets {
+model product_digital_assets {
     id         String             @id @unique @default(uuid())
     name       String
     notes      String
