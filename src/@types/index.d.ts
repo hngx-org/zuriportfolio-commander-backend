@@ -17,6 +17,7 @@ export interface AddProductPayloadType {
   categoryId: string;
   shopId: string;
   sub_category_id: number;
+  category_id: number; //!Remove this.
   assets_name: string;
   assets_link: string;
   assets_notes: string;
