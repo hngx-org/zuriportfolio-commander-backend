@@ -16,42 +16,6 @@
     }
   ],
   "paths": {
-    "/product": {
-      "get": {
-        "tags": ["Product"],
-        "summary": "Fetch all products by name",
-        "description": "",
-        "parameters": [
-          {
-            "name": "productname",
-            "in": "query",
-            "description": "Use to search for product by name",
-            "required": false,
-            "explode": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetProduct"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
     "/products": {
       "get": {
         "tags": ["Product"],
@@ -285,6 +249,7 @@
           }
         }
       },
+      
       "delete": {
         "tags": ["Product"],
         "summary": "Delete a product",
@@ -1995,7 +1960,52 @@
             "type": "string"
           }
         }
-      }
+      },
+      "Subcategory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentCategoryId": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ProductCategoryWithSubcategory": {
+        "type": "object",
+        "properties": {
+          "subCategory": {
+            "$ref": "#/components/schemas/Subcategory"
+          },
+          "productCategory": {
+            "$ref": "#/components/schemas/ProductCategory"
+          }
+        }
+      },
+      "ProductWithCategories": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductCategoryWithSubcategory"
+            }
+          }
+        }
     },
     "securitySchemes": {
       "BearerAuth": {
@@ -2003,6 +2013,6 @@
         "scheme": "bearer",
         "bearerFormat": "JWT"
       }
-    }
+    } 
   }
-}
+}}

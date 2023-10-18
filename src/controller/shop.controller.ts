@@ -126,11 +126,18 @@ export default class ShopController extends BaseController {
   async shopTraffic(req: Request, res: Response) {
     const data = req.body;
     data.ip_addr = req.socket.remoteAddress;
+    logger.info(data.ip_addr);
+  
 
     const { error, value } = createShopTrafficSchema.validate(data);
 
     if (error) {
       return this.error(res, '--shop/store-traffic', error?.message ?? 'missing required field.', 400, null);
+    }
+    const shopExists = await prisma.shop.findFirst({where:{id:data.shop_id}});
+
+    if(!shopExists){
+      return this.error(res, '--shop/store-traffic', 'shop doesnt exits', 401, null)
     }
 
     await prisma.store_traffic.create({ data });
@@ -169,13 +176,13 @@ export default class ShopController extends BaseController {
     if (!shop) {
       return this.error(res, '--shop/missing-shop', 'Shop not found.', 404, null);
     }
-
+    logger.info(shop);
     return this.success(
       res,
       `Shop and Products for Merchant ${shopId} Shown`,
       'Shop and its products retrieved successfully',
       200,
-      shop
+      shop,
     );
   }
 }

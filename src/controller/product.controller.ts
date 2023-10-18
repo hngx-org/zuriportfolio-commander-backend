@@ -16,6 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
 import { isUUID, removeDuplicate } from '../helper';
 import { TestUserId } from '../config/test';
+import { capitalizeFisrtLetter } from '../helper/capitalizeFirstLetter';
 import validurl from 'valid-url';
 
 export default class ProductController extends BaseController {
@@ -605,7 +606,7 @@ export default class ProductController extends BaseController {
   async getAllProducts(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
     const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
-    const itemsPerPage = req.query.itemsPerPage ? parseInt(req.query.itemsPerPage as string, 10) : 10;
+    const itemsPerPage = req.query.itemsPerPage ? parseInt(req.query.itemsPerPage as string, 10) : 12;
 
     // Calculate the offset to skip the appropriate number of items
     const offset = (page - 1) * itemsPerPage;
@@ -817,7 +818,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_delete/invalid-field',
         'product id is invalid, expected product_id in uuid format.',
-        400
+        400,
       );
     }
 
@@ -854,18 +855,19 @@ export default class ProductController extends BaseController {
       return this.error(res, '--product_category/invalid-category data', 'Please provide a valid category name.', 400);
     }
     const { parent_id, name } = value;
-    const lowercaseName = name.toLowerCase();
+
+    const newName = capitalizeFisrtLetter(name);
     const existingCategory = await prisma.product_category.findFirst({
       where: {
-        name: lowercaseName,
+        name: newName,
       },
     });
     if (existingCategory) {
       return this.error(
         res,
         '--product_category/category-exists',
-        `Category with name '${lowercaseName}' already exists. Please choose a different name.`,
-        409
+        `Category with name '${newName}' already exists. Please choose a different name.`,
+        409,
       );
     }
 
@@ -874,7 +876,7 @@ export default class ProductController extends BaseController {
       // Creating a parent category
       const parentCategory = await prisma.product_category.create({
         data: {
-          name: lowercaseName,
+          name: newName,
           user: {
             connect: {
               id: userId,
@@ -883,28 +885,28 @@ export default class ProductController extends BaseController {
         },
       });
 
-      return this.success(res, '--created-parentCategory/success', `${lowercaseName} created successfully`, 201, {
+      return this.success(res, '--created-parentCategory/success', `${newName} created successfully`, 201, {
         parentCategory,
       });
     }
     //create a subCategory
     const existingSubCategory = await prisma.product_sub_category.findFirst({
       where: {
-        name: lowercaseName,
+        name: newName,
       },
     });
     if (existingSubCategory) {
       return this.error(
         res,
         '--product_sub_category/category-exists',
-        `Sub-category with name '${lowercaseName}' already exists. Please choose a different name.`,
-        409
+        `Sub-category with name '${newName}' already exists. Please choose a different name.`,
+        409,
       );
     }
 
     const subCategory = await prisma.product_sub_category.create({
       data: {
-        name: lowercaseName,
+        name: newName,
         parent_category: {
           connect: {
             id: parent_id,
@@ -912,7 +914,7 @@ export default class ProductController extends BaseController {
         },
       },
     });
-    return this.success(res, '--created-subCategory/success', `${lowercaseName} created successfully`, 201, {
+    return this.success(res, '--created-subCategory/success', `${newName} created successfully`, 201, {
       subCategory,
     });
   }
@@ -1042,4 +1044,40 @@ export default class ProductController extends BaseController {
     });
     this.success(res, '--categories/all', 'categories fetched successfully', 200, categories);
   }
+
+//   async getProductSelectedCategories(req: Request, res: Response) {
+//     const productId = req.params.productId;
+//     // Fetch the selected categories for the given product_id
+//     const selectedCategories = await prisma.selected_categories.findMany({
+//       where: { product_id: productId },
+//       include: {
+//         product: true,
+//         sub_category: true,
+//         product_category: true,
+//       },
+//     });
+
+//     if (selectedCategories.length == 0) {
+//       return this.error(res, '--selectedCategories/invalid req', 'Product not found', 404);
+//     }
+
+//     const productName = selectedCategories[0].product.name;
+//     const data = {
+//       id: productId,
+//       name: productName,
+//       categories: selectedCategories.map((selectedCategory) => ({
+//         subCategory: selectedCategory.sub_category,
+//         productCategory: selectedCategory.product_category,
+//       })),
+//     };
+
+//     return this.success(
+//       res,
+//       '--selectedCategories/product selected category retreived',
+//       'produt categories successfully retreived',
+//       200,
+//       [data],
+//     );
+//   }
+// 
 }
