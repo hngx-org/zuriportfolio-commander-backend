@@ -25,6 +25,13 @@ export default class DiscountRoute {
       useCatchErrors(this.discountController.getAllDiscount.bind(this.discountController))
     );
 
+    // track promotions
+    this.router.post(
+      `${this.path}/track`,
+      isAuthenticated,
+      useCatchErrors(this.discountController.trackDiscount.bind(this.discountController))
+    );
+
     this.router.get(
       `${this.path}/promotions`,
       isAuthenticated,

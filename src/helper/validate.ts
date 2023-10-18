@@ -97,7 +97,8 @@ export const createDiscountSchema = Joi.object({
 
 export const trackPromotionSchema = Joi.object({
   promo_id: Joi.string().required(),
-  sales: Joi.string().required(),
+  productId: Joi.string().required(),
+  merchant_id: Joi.string().required(),
 });
 
 export const createShopTrafficSchema = Joi.object({

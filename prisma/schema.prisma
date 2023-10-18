@@ -159,9 +159,10 @@ model product_digital_assets {
     notes      String
     link       String
     type       PRODUCT_ASSET_TYPE @default(external)
+    product_id String             @unique
+    // user_id String
     created_at DateTime           @default(now())
     updated_at DateTime           @default(now())
-    product_id String             @unique
 
     product product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
@@ -206,7 +207,7 @@ model promo_product {
 }
 
 model promotion {
-    id                     Int           @id
+    id                     Int           @id @default(autoincrement())
     user_id                String
     promotion_type         String
     code                   String

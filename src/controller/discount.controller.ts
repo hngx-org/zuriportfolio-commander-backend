@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller';
-import { AddPromotionPayloadType } from '@types';
+import { AddPromotionPayloadType, TrackPromo } from '@types';
 import prisma from '../config/prisma';
 import { v4 as uuidv4 } from 'uuid';
-import { createDiscountSchema, validateUUID } from '../helper/validate';
+import { createDiscountSchema, trackPromotionSchema, validateUUID } from '../helper/validate';
 import { CreateDiscountType } from '../@types';
 import { genRandNum, validateDateRange } from '../helper';
 import logger from '../config/logger';
@@ -140,22 +140,77 @@ export default class DiscountController extends BaseController {
 
   async trackDiscount(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
-    const validateSchema = createDiscountSchema.validate(req.body);
+    const payload: TrackPromo = req.body;
+    const validateSchema = trackPromotionSchema.validate(req.body);
     if (validateSchema.error) {
       return this.error(res, '--discount/invalid-fields', validateSchema.error.message, 400);
     }
 
     // check if product exists
-    const productExists = await prisma.product.findFirst({
-      where: { id: validateSchema.value.productId },
+    const { promo_id, productId, merchant_id } = payload;
+    const promo_product_exists = await prisma.promo_product.findFirst({
+      where: {
+        AND: {
+          product_id: productId,
+          id: +promo_id,
+          user_id: merchant_id,
+        },
+      },
+      include: { promo: true, product: true, user: true },
     });
+
+    if (!promo_product_exists) {
+      // log error message
+      logger.error(`[Track Promo]: failed to track promo, product promo with this id ${promo_id} doesn't exist.`);
+
+      // return if possible.
+      return this.error(
+        res,
+        '--discount/promo-notfound',
+        `product promo with this id ${promo_id} doesn't exist. `,
+        404
+      );
+    }
+
+    await prisma.track_promotion.create({
+      data: {
+        id: uuidv4(),
+        product: {
+          connect: {
+            id: productId,
+          },
+        },
+        user: {
+          connect: {
+            id: merchant_id,
+          },
+        },
+        promotion: {
+          connect: { id: promo_id },
+        },
+      },
+    });
+
+    logger.info(`
+      [Track Promo]: 
+      > Promo tracked for product ${promo_product_exists.product.name}
+      > Merchant: ${promo_product_exists.user.email}  
+    `);
+
+    this.success(
+      res,
+      '--discount/promo-notfound',
+      `> Promo tracked for product ${promo_product_exists.product.name}
+      > Merchant: ${promo_product_exists.user.email}`,
+      404
+    );
   }
 
   async computePromoUsage(prodId: string, promoId: number, userId: string) {
     const trackPromos = await prisma.track_promotion.findMany({
       where: {
         AND: {
-          promo_id: promoId,
+          promo_id: +promoId,
           product_id: prodId,
           user_id: userId,
         },
