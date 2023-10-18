@@ -127,6 +127,13 @@ export default class ProductRoute {
       useCatchErrors(this.productController.updateProductAssets.bind(this.productController))
     );
 
+    // get product assets
+    this.router.get(
+      `${this.path}/assets/:product_id`,
+      isAuthenticated,
+      useCatchErrors(this.productController.getProductAssets.bind(this.productController))
+    );
+
     // get products on merchant account
     this.router.get(
       `${this.path}s`,

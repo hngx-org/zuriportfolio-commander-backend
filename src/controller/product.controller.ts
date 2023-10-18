@@ -320,6 +320,37 @@ export default class ProductController extends BaseController {
     this.success(res, '--product/assets-updated', 'product assets updated successfully', 200, value);
   }
 
+  async getProductAssets(req: Request, res: Response) {
+    const userId = ((req as any).user?.id as never) ?? (TestUserId as never);
+    const productId = req.params['product_id'];
+
+    // check if it a valid uuid
+    if (!isUUID(productId)) {
+      return this.error(res, '--product_assets/invalid-id', 'Invalid product uuid format', 400);
+    }
+
+    // check if product exists
+    const prodExists = await prisma.product.findFirst({
+      where: {
+        AND: {
+          id: productId,
+          user_id: userId,
+        },
+      },
+      include: { digital_assets: true },
+    });
+
+    if (!prodExists) {
+      return this.error(res, '--product_assets/product-notfound', 'product asset not found', 404);
+    }
+
+    if (!prodExists.digital_assets) {
+      return this.error(res, '--product_assets/assets-notfound', 'Assets not found', 404);
+    }
+
+    return this.success(res, '--product_assets/assets', 'Product assets', 200, prodExists.digital_assets);
+  }
+
   async addImage(req: Request, res: Response) {
     const file = req.file ?? null;
     const userId = (req as any).user?.id ?? TestUserId;
