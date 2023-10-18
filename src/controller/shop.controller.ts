@@ -22,14 +22,6 @@ export default class ShopController extends BaseController {
     const { name } = req.body;
     const id = uuidv4();
 
-    const userExists = await prisma.user.findFirst({
-      where: { id: merchant_id },
-    });
-
-    if (!userExists) {
-      return this.error(res, '--shop/merchant-notfound', 'merchant not find', 404);
-    }
-
     const shop = await prisma.shop.create({
       data: {
         id,
@@ -74,7 +66,10 @@ export default class ShopController extends BaseController {
     const merchant_id = (req as any).user?.id ?? TestUserId;
     const shops = await prisma.shop.findMany({
       where: {
-        merchant_id,
+        AND: {
+          merchant_id,
+          is_deleted: 'active',
+        },
       },
     });
     this.success(res, '--shops-isEmpty', 'No Shops Found', 200, shops);
