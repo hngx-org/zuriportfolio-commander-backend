@@ -7,19 +7,53 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8080/api",
-      "description": "Zuriportfolio shop internal / external api."
-    },
-    {
       "url": "https://zuriportfolio-shop-internal-api.onrender.com/api",
       "description": "Production server"
     },
     {
-      "url": "https://auth.akuya.tech/api",
-      "description": "Authentication server"
+      "url": "http://localhost:8080/api",
+      "description": "Zuriportfolio shop internal / external api."
     }
   ],
   "paths": {
+    "/product/categories/{productId}":{
+      "get": {
+        "tags": ["Product"],
+        "summary": "Fetch a product categories with productId",
+        "description": "Retrieve information about a product along with its categories.",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+  
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductWithCategories"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+
+        
+    },
     "/product": {
       "get": {
         "tags": ["Product"],
@@ -102,6 +136,28 @@
         "tags": ["Product"],
         "summary": "Fetch all marketplace products",
         "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number (default is 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "description": "Number of items per page (default is 10)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -268,6 +324,7 @@
           }
         }
       },
+      
       "delete": {
         "tags": ["Product"],
         "summary": "Delete a product",
@@ -849,6 +906,26 @@
                   "$ref": "#/components/schemas/shops"
                 }
               }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/shops/merchant": {
+      "get": {
+        "tags": ["Shops"],
+        "summary": "Fetch all created shops from merchant.",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {}
             }
           }
         },
@@ -1455,12 +1532,8 @@
           "shopId": {
             "type": "string"
           },
-          "parent_category_id": {
+          "category_id": {
             "type": "integer"
-          },
-          "sub_category_id": {
-            "type": "integer",
-            "example": 3
           },
           "name": {
             "type": "string"
@@ -1480,9 +1553,6 @@
           "tax": {
             "type": "number"
           },
-          "ass": {
-            "type": "string"
-          },
           "assets_name": {
             "type": "string"
           },
@@ -1499,7 +1569,6 @@
         "required": [
           "image",
           "shopId",
-          "sub_category_id",
           "name",
           "description",
           "price",
@@ -1507,7 +1576,8 @@
           "assets_name",
           "assets_link",
           "assets_notes",
-          "assets_type"
+          "assets_type",
+          "category_id"
         ],
         "example": {
           "sub_category_id": 1,
@@ -1543,7 +1613,7 @@
                 "type": "integer",
                 "required": true
               },
-              "sub_category_id": {
+              "category_id": {
                 "type": "integer",
                 "required": true
               },
@@ -1929,7 +1999,52 @@
             "type": "string"
           }
         }
-      }
+      },
+      "Subcategory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentCategoryId": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ProductCategoryWithSubcategory": {
+        "type": "object",
+        "properties": {
+          "subCategory": {
+            "$ref": "#/components/schemas/Subcategory"
+          },
+          "productCategory": {
+            "$ref": "#/components/schemas/ProductCategory"
+          }
+        }
+      },
+      "ProductWithCategories": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductCategoryWithSubcategory"
+            }
+          }
+        }
     },
     "securitySchemes": {
       "BearerAuth": {
@@ -1937,6 +2052,6 @@
         "scheme": "bearer",
         "bearerFormat": "JWT"
       }
-    }
+    } 
   }
-}
+}}

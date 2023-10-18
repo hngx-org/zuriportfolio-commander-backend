@@ -140,13 +140,15 @@ export default class DiscountController extends BaseController {
 
   async trackDiscount(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
-    // const userId = 'dcb5b46a-9391-474c-9e69-fe37cfe821e9';
     const validateSchema = createDiscountSchema.validate(req.body);
     if (validateSchema.error) {
       return this.error(res, '--discount/invalid-fields', validateSchema.error.message, 400);
     }
 
-    // check if
+    // check if product exists
+    const productExists = await prisma.product.findFirst({
+      where: { id: validateSchema.value.productId },
+    });
   }
 
   async computePromoUsage(prodId: string, promoId: number, userId: string) {
@@ -279,7 +281,7 @@ export default class DiscountController extends BaseController {
         '--discount/promotions',
         'Products with promotions and tracked promotions fetched successfully',
         200,
-        productsWithPromotionsAndTrackedCounts
+        productsWithPromotionsAndTrackedCounts,
       );
     }
   }

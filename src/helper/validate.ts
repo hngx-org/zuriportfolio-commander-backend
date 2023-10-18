@@ -11,7 +11,8 @@ export const productSchema = Joi.object({
   discountPrice: Joi.number().min(0).optional().default(0),
   tax: Joi.number().optional(),
   currency: Joi.string().required(),
-  sub_category_id: Joi.number().required(),
+  // sub_category_id: Joi.number().optional(),
+  category_id: Joi.number().optional(),
   assets_name: Joi.string().required(),
   assets_link: Joi.string().required(),
   assets_notes: Joi.string().optional(),
@@ -34,7 +35,8 @@ export const updatedProductSchema = Joi.object({
   discountPrice: Joi.number().optional(),
   tax: Joi.number().optional(),
   currency: Joi.string().optional(),
-  sub_category_id: Joi.number().optional(),
+  // sub_category_id: Joi.number().optional(),
+  category_id: Joi.number().optional(),
 });
 
 export const updateProductAssets = Joi.object({
@@ -66,6 +68,11 @@ export const createCategorySchema = Joi.object({
   name: Joi.string().required(),
   // parent_id: Joi.number().integer().allow(null).optional(),
   parent_id: Joi.alternatives(Joi.number().integer(), Joi.allow(null), Joi.allow('')).optional(),
+});
+
+export const createSubCategorySchema = Joi.object({
+  name: Joi.string().required(),
+  parent_id: Joi.number().required(),
 });
 
 export const addProductCategorySchema = Joi.object({
@@ -104,3 +111,9 @@ export const validateUUID = Joi.string()
     'string.pattern.base': 'invalid uuid format.',
   })
   .required();
+
+export const createActivitySchema = Joi.object({
+  action: Joi.string().required(),
+  title: Joi.string().required(),
+  description: Joi.string().required(),
+});

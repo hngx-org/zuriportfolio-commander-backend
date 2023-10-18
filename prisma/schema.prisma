@@ -32,9 +32,10 @@ enum restricted {
     permanent
 }
 
-// enum Promo_type {
-//     Discount
-// }
+enum ACTIVITY_USER_TYPE {
+    admin
+    merchant
+}
 
 enum product_status {
     active
@@ -52,7 +53,7 @@ enum ORDER_STATUS {
     cancelled
 }
 
-enum Product_Asset_Type {
+enum PRODUCT_ASSET_TYPE {
     internal
     external
 }
@@ -148,6 +149,7 @@ model product {
     user           user?                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
     shop           shop                    @relation(fields: [shop_id], references: [id], onDelete: Cascade)
     digital_assets product_digital_assets?
+    category       product_category        @relation(fields: [category_id], references: [id]) //! change this back once it done.
     //   rating
 }
 
@@ -156,9 +158,9 @@ model product_digital_assets {
     name       String
     notes      String
     link       String
-    type       Product_Asset_Type @default(external)
-    createdAt  DateTime           @default(now())
-    updatedAt  DateTime           @default(now())
+    type       PRODUCT_ASSET_TYPE @default(external)
+    created_at DateTime           @default(now())
+    updated_at DateTime           @default(now())
     product_id String             @unique
 
     product product @relation(fields: [product_id], references: [id], onDelete: Cascade)
@@ -179,6 +181,7 @@ model product_category {
     user      user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
     sub_categories product_sub_category[]
+    products       product[] //! Also this.
 }
 
 model product_sub_category {
@@ -280,12 +283,13 @@ model sales_report {
 }
 
 model activity {
-    id          String   @id
+    id          String             @id
     action      String
     user_id     String
     title       String
     description String
-    createdAt   DateTime @default(now())
+    user_type   ACTIVITY_USER_TYPE
+    createdAt   DateTime           @default(now())
 
     user user @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }

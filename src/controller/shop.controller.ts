@@ -6,6 +6,7 @@ import { AddProductPayloadType } from '@types';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/prisma';
 import { TestUserId } from '../config/test';
+import { isUUID } from '../helper';
 
 export default class ShopController extends BaseController {
   constructor() {
@@ -20,14 +21,6 @@ export default class ShopController extends BaseController {
     }
     const { name } = req.body;
     const id = uuidv4();
-
-    const userExists = await prisma.user.findFirst({
-      where: { id: merchant_id },
-    });
-
-    if (!userExists) {
-      return this.error(res, '--shop/merchant-notfound', 'merchant not find', 404);
-    }
 
     const shop = await prisma.shop.create({
       data: {
@@ -69,6 +62,20 @@ export default class ShopController extends BaseController {
   }
 
   // Get all shop controller
+  async getMerchantShops(req: Request, res: Response) {
+    const merchant_id = (req as any).user?.id ?? TestUserId;
+    const shops = await prisma.shop.findMany({
+      where: {
+        AND: {
+          merchant_id,
+          is_deleted: 'active',
+        },
+      },
+    });
+    this.success(res, '--shops-isEmpty', 'No Shops Found', 200, shops);
+  }
+
+  // Get merchant shops
   async getAllShops(req: Request, res: Response) {
     const shops = await prisma.shop.findMany();
     if (shops.length > 0) {
@@ -77,6 +84,7 @@ export default class ShopController extends BaseController {
       this.success(res, '--shops-isEmpty', 'No Shops Found', 200, []);
     }
   }
+
   // Update existing shop controller
   async updateShop(req: Request, res: Response) {
     const shopId = req.params.shop_id;
@@ -118,11 +126,18 @@ export default class ShopController extends BaseController {
   async shopTraffic(req: Request, res: Response) {
     const data = req.body;
     data.ip_addr = req.socket.remoteAddress;
+    logger.info(data.ip_addr);
+  
 
     const { error, value } = createShopTrafficSchema.validate(data);
 
     if (error) {
       return this.error(res, '--shop/store-traffic', error?.message ?? 'missing required field.', 400, null);
+    }
+    const shopExists = await prisma.shop.findFirst({where:{id:data.shop_id}});
+
+    if(!shopExists){
+      return this.error(res, '--shop/store-traffic', 'shop doesnt exits', 401, null)
     }
 
     await prisma.store_traffic.create({ data });
@@ -134,6 +149,10 @@ export default class ShopController extends BaseController {
   async getShopId(req: Request, res: Response) {
     const shopId = req.params.shop_id;
 
+    if (!isUUID(shopId)) {
+      return this.error(res, '--shop/invalid-id', 'Invalid uuid format.', 400);
+    }
+
     // Fetch the shop associated with the merchant, including all its products
     const shop = await prisma.shop.findFirst({
       where: {
@@ -142,12 +161,11 @@ export default class ShopController extends BaseController {
           is_deleted: 'active',
         },
       },
-      // include: {
-      //   products: true,
-
-      // },
       include: {
         products: {
+          where: {
+            is_deleted: 'active',
+          },
           include: {
             image: true,
           },
@@ -155,18 +173,16 @@ export default class ShopController extends BaseController {
       },
     });
 
-    
-
     if (!shop) {
       return this.error(res, '--shop/missing-shop', 'Shop not found.', 404, null);
     }
-
+    logger.info(shop);
     return this.success(
       res,
       `Shop and Products for Merchant ${shopId} Shown`,
       'Shop and its products retrieved successfully',
       200,
-      shop
+      shop,
     );
   }
 }
