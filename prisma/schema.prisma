@@ -237,7 +237,7 @@ model revenue {
 }
 
 model track_promotion {
-    id         String   @id @unique
+    id         Int      @id @default(autoincrement())
     product_id String
     promo_id   Int
     user_id    String

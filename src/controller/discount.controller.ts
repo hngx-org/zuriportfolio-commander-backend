@@ -139,7 +139,6 @@ export default class DiscountController extends BaseController {
   }
 
   async trackDiscount(req: Request, res: Response) {
-    const userId = (req as any).user?.id ?? TestUserId;
     const payload: TrackPromo = req.body;
     const validateSchema = trackPromotionSchema.validate(req.body);
     if (validateSchema.error) {
@@ -148,16 +147,16 @@ export default class DiscountController extends BaseController {
 
     // check if product exists
     const { promo_id, productId, merchant_id } = payload;
-    const promo_product_exists = await prisma.promo_product.findFirst({
+    const promo_product = await prisma.promo_product.findFirst({
       where: {
-        AND: {
-          product_id: productId,
-          id: +promo_id,
-          user_id: merchant_id,
-        },
+        product_id: productId,
       },
-      include: { promo: true, product: true, user: true },
+      include: { promo: true, product: true },
     });
+
+    //! for some reason, where clause with "product_id",
+    //! "user_id" and "promo_id" couldnt work.
+    const promo_product_exists = promo_product?.promo_id === +promo_id && promo_product.user_id === merchant_id;
 
     if (!promo_product_exists) {
       // log error message
@@ -172,9 +171,8 @@ export default class DiscountController extends BaseController {
       );
     }
 
-    await prisma.track_promotion.create({
+    const track_promotion = await prisma.track_promotion.create({
       data: {
-        id: uuidv4(),
         product: {
           connect: {
             id: productId,
@@ -186,22 +184,23 @@ export default class DiscountController extends BaseController {
           },
         },
         promotion: {
-          connect: { id: promo_id },
+          connect: { id: +promo_id },
         },
       },
+      include: { product: true, user: { select: { email: true } } },
     });
 
     logger.info(`
       [Track Promo]: 
-      > Promo tracked for product ${promo_product_exists.product.name}
-      > Merchant: ${promo_product_exists.user.email}  
+      > Promo tracked for product ${track_promotion.product.name}
+      > Merchant: ${track_promotion.user.email}  
     `);
 
     this.success(
       res,
       '--discount/promo-notfound',
-      `> Promo tracked for product ${promo_product_exists.product.name}
-      > Merchant: ${promo_product_exists.user.email}`,
+      `> Promo tracked for product ${track_promotion.product.name}
+      > Merchant: ${track_promotion.user.email}`,
       404
     );
   }
@@ -336,7 +335,7 @@ export default class DiscountController extends BaseController {
         '--discount/promotions',
         'Products with promotions and tracked promotions fetched successfully',
         200,
-        productsWithPromotionsAndTrackedCounts,
+        productsWithPromotionsAndTrackedCounts
       );
     }
   }
