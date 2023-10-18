@@ -145,7 +145,7 @@ export default class ProductController extends BaseController {
       data: {
         id: prodId,
         name,
-        shop_id: shopExists.id,
+        shop_id: shopExists.id as never,
         user_id: userId,
         currency,
         description,
@@ -154,7 +154,7 @@ export default class ProductController extends BaseController {
         price: parseFloat(price),
         tax: parseFloat(tax),
         // category_id: +sub_category_id,
-        category_id: +category_id,
+        category_id: +category_id as never,
         image: {
           create: {
             url: image.url ?? placeHolderImg,
@@ -163,6 +163,11 @@ export default class ProductController extends BaseController {
         shop: {
           connect: {
             id: shopId,
+          },
+        },
+        category: {
+          connect: {
+            id: +category_id,
           },
         },
       },
