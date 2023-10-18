@@ -111,3 +111,9 @@ export const validateUUID = Joi.string()
     'string.pattern.base': 'invalid uuid format.',
   })
   .required();
+
+export const createActivitySchema = Joi.object({
+  action: Joi.string().required(),
+  title: Joi.string().required(),
+  description: Joi.string().required(),
+});

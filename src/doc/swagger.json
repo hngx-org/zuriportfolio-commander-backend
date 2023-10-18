@@ -16,6 +16,44 @@
     }
   ],
   "paths": {
+    "/product/categories/{productId}":{
+      "get": {
+        "tags": ["Product"],
+        "summary": "Fetch a product categories with productId",
+        "description": "Retrieve information about a product along with its categories.",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+  
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductWithCategories"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+
+        
+    },
     "/product": {
       "get": {
         "tags": ["Product"],
@@ -286,6 +324,7 @@
           }
         }
       },
+      
       "delete": {
         "tags": ["Product"],
         "summary": "Delete a product",
@@ -1960,7 +1999,52 @@
             "type": "string"
           }
         }
-      }
+      },
+      "Subcategory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentCategoryId": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ProductCategoryWithSubcategory": {
+        "type": "object",
+        "properties": {
+          "subCategory": {
+            "$ref": "#/components/schemas/Subcategory"
+          },
+          "productCategory": {
+            "$ref": "#/components/schemas/ProductCategory"
+          }
+        }
+      },
+      "ProductWithCategories": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductCategoryWithSubcategory"
+            }
+          }
+        }
     },
     "securitySchemes": {
       "BearerAuth": {
@@ -1968,6 +2052,6 @@
         "scheme": "bearer",
         "bearerFormat": "JWT"
       }
-    }
+    } 
   }
-}
+}}
