@@ -9,7 +9,7 @@ datasource db {
 
 enum STATUS {
     pending
-    complete
+    completed
     failed
 }
 
