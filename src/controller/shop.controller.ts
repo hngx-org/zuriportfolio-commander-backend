@@ -126,14 +126,18 @@ export default class ShopController extends BaseController {
   async shopTraffic(req: Request, res: Response) {
     const data = req.body;
     data.ip_addr = req.socket.remoteAddress;
-    logger.debug('checking');
     logger.info(data.ip_addr);
-    console.log('CHECKING');
+  
 
     const { error, value } = createShopTrafficSchema.validate(data);
 
     if (error) {
       return this.error(res, '--shop/store-traffic', error?.message ?? 'missing required field.', 400, null);
+    }
+    const shopExists = await prisma.shop.findFirst({where:{id:data.shop_id}});
+
+    if(!shopExists){
+      return this.error(res, '--shop/store-traffic', 'shop doesnt exits', 401, null)
     }
 
     await prisma.store_traffic.create({ data });

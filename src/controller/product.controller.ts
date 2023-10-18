@@ -1014,38 +1014,39 @@ export default class ProductController extends BaseController {
     this.success(res, '--categories/all', 'categories fetched successfully', 200, categories);
   }
 
-  async getProductSelectedCategories(req: Request, res: Response) {
-    const productId = req.params.productId;
-    // Fetch the selected categories for the given product_id
-    const selectedCategories = await prisma.selected_categories.findMany({
-      where: { product_id: productId },
-      include: {
-        product: true,
-        sub_category: true,
-        product_category: true,
-      },
-    });
+//   async getProductSelectedCategories(req: Request, res: Response) {
+//     const productId = req.params.productId;
+//     // Fetch the selected categories for the given product_id
+//     const selectedCategories = await prisma.selected_categories.findMany({
+//       where: { product_id: productId },
+//       include: {
+//         product: true,
+//         sub_category: true,
+//         product_category: true,
+//       },
+//     });
 
-    if (selectedCategories.length == 0) {
-      return this.error(res, '--selectedCategories/invalid req', 'Product not found', 404);
-    }
+//     if (selectedCategories.length == 0) {
+//       return this.error(res, '--selectedCategories/invalid req', 'Product not found', 404);
+//     }
 
-    const productName = selectedCategories[0].product.name;
-    const data = {
-      id: productId,
-      name: productName,
-      categories: selectedCategories.map((selectedCategory) => ({
-        subCategory: selectedCategory.sub_category,
-        productCategory: selectedCategory.product_category,
-      })),
-    };
+//     const productName = selectedCategories[0].product.name;
+//     const data = {
+//       id: productId,
+//       name: productName,
+//       categories: selectedCategories.map((selectedCategory) => ({
+//         subCategory: selectedCategory.sub_category,
+//         productCategory: selectedCategory.product_category,
+//       })),
+//     };
 
-    return this.success(
-      res,
-      '--selectedCategories/product selected category retreived',
-      'produt categories successfully retreived',
-      200,
-      [data],
-    );
-  }
+//     return this.success(
+//       res,
+//       '--selectedCategories/product selected category retreived',
+//       'produt categories successfully retreived',
+//       200,
+//       [data],
+//     );
+//   }
+// 
 }

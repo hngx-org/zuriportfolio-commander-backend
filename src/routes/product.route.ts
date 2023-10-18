@@ -134,9 +134,9 @@ export default class ProductRoute {
       useCatchErrors(this.productController.getAllProducts.bind(this.productController)),
     );
     
-    this.router.get(
-      `${this.path}/categories/:productId`,
-      useCatchErrors(this.productController.getProductSelectedCategories.bind(this.productController))
-    )
+    // this.router.get(
+    //   `${this.path}/categories/:productId`,
+    //   useCatchErrors(this.productController.getProductSelectedCategories.bind(this.productController))
+    // )
   }
 }
