@@ -65,7 +65,7 @@ export default class ProductController extends BaseController {
   }
 
   async addProduct(req: Request, res: Response) {
-    const userId = (req as any).user?.id ?? TestUserId;
+    const userId = ((req as any).user?.id as never) ?? (TestUserId as never);
     const file = req.file ?? null;
     const payload: AddProductPayloadType = req.body;
 
@@ -150,7 +150,7 @@ export default class ProductController extends BaseController {
         currency,
         description,
         discount_price: discountPrice ? parseFloat(discountPrice) : 0,
-        quantity: +quantity,
+        quantity: +quantity ?? 1,
         price: parseFloat(price),
         tax: parseFloat(tax),
         // category_id: +sub_category_id,
@@ -158,6 +158,11 @@ export default class ProductController extends BaseController {
         image: {
           create: {
             url: image.url ?? placeHolderImg,
+          },
+        },
+        shop: {
+          connect: {
+            id: shopId,
           },
         },
       },
