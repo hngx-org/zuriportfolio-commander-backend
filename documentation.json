@@ -1,0 +1,237 @@
+{
+  "BASE_URL": "https://zuriportfolio-shop-internal-api.onrender.com/api",
+  "ENPONT_CONFIG": [
+    {
+      "url": "/products",
+      "method": "GET",
+      "path_params": null,
+      "query_params": {
+        "page": 1,
+        "itemsPerPage": 10
+      },
+      "auth_required": true
+    },
+    {
+      "url": "/products/marketplace",
+      "method": "GET",
+      "path_params": null,
+      "query_params": {
+        "page": 1,
+        "itemsPerPage": 10
+      },
+      "auth_required": false
+    },
+    {
+      "url": "/product/add",
+      "method": "POST",
+      "path_params": null,
+      "body_params": {
+        "content": {
+          "multipart/form-data": {
+            "image": {
+              "type": "string",
+              "format": "binary"
+            },
+            "shopId": {
+              "type": "string"
+            },
+            "category_id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "quantity": {
+              "type": "integer"
+            },
+            "price": {
+              "type": "number"
+            },
+            "discountPrice": {
+              "type": "number"
+            },
+            "tax": {
+              "type": "number"
+            },
+            "assets_name": {
+              "type": "string"
+            },
+            "assets_link": {
+              "type": "string"
+            },
+            "assets_notes": {
+              "type": "string"
+            },
+            "assets_type": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "image",
+            "shopId",
+            "name",
+            "description",
+            "price",
+            "currency",
+            "assets_name",
+            "assets_link",
+            "assets_notes",
+            "assets_type",
+            "category_id"
+          ]
+        }
+      },
+
+      
+      "auth_required": true
+    },
+    {
+      "url": "/products/category",
+      "method": "POST",
+      "path_params": null,
+      "body_params": {
+        "content": {
+          "application/json": {
+            "parent_id": {
+              "type": ["integer", "null"]
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": ["name"]
+        }
+      },
+      
+      "auth_required": true
+    },
+    {
+      "url": "/products/categories",
+      "method": "GET",
+      "path_params": null,
+      "query_params": null,
+      "auth_required": true
+    },
+    {
+      "url": "/product/{product_id}",
+      "method": "GET",
+      "path_params": "product_id",
+      "query_params": null,
+      "auth_required": false
+    },
+    {
+      "url": "/product/{product_id}",
+      "method": "DELETE",
+      "path_params": "product_id",
+      "query_params": null,
+      "auth_required": true
+    },
+    {
+      "url": "/product/assets/{product_id}",
+      "method": "PATCH",
+      "path_params": "product_id",
+      "body_params": {
+        "content": {
+          "application/json": {
+            "name": {
+              "type": "string",
+              "required": false
+            },
+            "link": {
+              "type": "string",
+              "required": false
+            },
+            "notes": {
+              "type": "string",
+              "required": false
+            },
+            "type": {
+              "type": "string",
+              "required": false
+            }
+          }
+        }
+      },
+      "auth_required": true
+    },
+    {
+      "url": "/product/{product_id}/image",
+      "method": "POST",
+      "path_params": "product_id",
+      "body_params": {
+        "content":{
+            "multipart/form-data": {
+                "image": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+        }
+         
+            },
+     "auth_required": true
+    },
+    {
+        "url": "/product/{product_id}/image",
+        "method": "GET",
+        "path_params": "product_id",
+        "body_params":null,
+        "auth_required": true
+   },
+   {
+    "url": "/product/{product_id}/image/{image_id}",
+    "method": "PATCH",
+    "path_params": "product_id",
+    "body_params": {
+        "content":{
+            "multipart/form-data": {
+                "image": {
+                  "format": "binary",
+                  "type": "string"
+                }
+        }
+        }  
+    },
+    "auth_required": true
+  },
+  {
+    "url": "/product/{product_id}/image/{image_id}",
+    "method": "DELETE",
+    "path_params": ["product_id", "image_id"],
+    "body_params": {
+        "content":{
+            "multipart/form-data": {
+                "image": {
+                  "format": "binary",
+                  "type": "string"
+                }
+      }
+        }
+  },
+  "auth_required": true
+},
+{
+    "url": "/order/status/{order_id",
+    "method": "PATCH",
+    "path_params": "order_id",
+    "body_params": {
+        "content":{
+            "application/json": {
+                "status": {
+                    "type": "string",
+                    "enum": ["pending", "complete", "failed"],
+                    "example": "complete"
+                  }
+        },
+        "required": ["status"]
+        }
+
+
+  },
+  "auth_required": true
+}
+  ]
+}

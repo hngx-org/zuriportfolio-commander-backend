@@ -29,7 +29,7 @@ export default class ProductRoute {
       `${this.path}/:product_id`,
       upload.single('image'), // dont remove this, this is the only way we can handle formData
       isAuthenticated,
-      useCatchErrors(this.productController.updateProduct.bind(this.productController))
+      useCatchErrors(this.productController.updateProduct.bind(this.productController)),
     );
 
     this.router.post(
@@ -106,13 +106,13 @@ export default class ProductRoute {
     this.router.post(
       `${this.path}/category-v2`,
       isAuthenticated,
-      useCatchErrors(this.productController.createCategoryV2.bind(this.productController))
+      useCatchErrors(this.productController.createCategoryV2.bind(this.productController)),
     );
 
     this.router.post(
       `${this.path}/subcategory-v2`,
       isAuthenticated,
-      useCatchErrors(this.productController.createSubCategoryV2.bind(this.productController))
+      useCatchErrors(this.productController.createSubCategoryV2.bind(this.productController)),
     );
 
     this.router.get(
@@ -133,7 +133,7 @@ export default class ProductRoute {
       isAuthenticated,
       useCatchErrors(this.productController.getAllProducts.bind(this.productController)),
     );
-    
+
     // this.router.get(
     //   `${this.path}/categories/:productId`,
     //   useCatchErrors(this.productController.getProductSelectedCategories.bind(this.productController))
