@@ -26,7 +26,7 @@ export default class RevenueController extends BaseController {
       return this.error(res, '--order/not-found', 'Order not found', 400);
     }
 
-    if (order.status !== 'complete') {
+    if (order.status !== 'completed') {
       return this.error(res, '--order/not-completed', 'Order is not completed', 400);
     }
 
