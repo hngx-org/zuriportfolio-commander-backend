@@ -9,7 +9,7 @@ datasource db {
 
 enum STATUS {
     pending
-    complete
+    completed
     failed
 }
 
@@ -159,9 +159,10 @@ model product_digital_assets {
     notes      String
     link       String
     type       PRODUCT_ASSET_TYPE @default(external)
+    product_id String             @unique
+    // user_id String
     created_at DateTime           @default(now())
     updated_at DateTime           @default(now())
-    product_id String             @unique
 
     product product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
@@ -206,7 +207,7 @@ model promo_product {
 }
 
 model promotion {
-    id                     Int           @id
+    id                     Int           @id @default(autoincrement())
     user_id                String
     promotion_type         String
     code                   String
@@ -236,7 +237,7 @@ model revenue {
 }
 
 model track_promotion {
-    id         String   @id @unique
+    id         Int      @id @default(autoincrement())
     product_id String
     promo_id   Int
     user_id    String
@@ -273,7 +274,7 @@ model store_traffic {
 }
 
 model sales_report {
-    id        String   @id
+    id        String   @id 
     user_id   String
     sales     Int
     order_id  String

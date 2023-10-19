@@ -136,7 +136,6 @@
         ]
       }
     },
-
     "/product/category": {
       "post": {
         "tags": ["Product"],
@@ -318,7 +317,43 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": ["Product"],
+        "summary": "Get product assets",
+        "description": "",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "description": "Product id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {}
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
       }
     },
     "/product/{product_id}/image": {
