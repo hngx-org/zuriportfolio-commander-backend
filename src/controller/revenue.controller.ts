@@ -54,7 +54,7 @@ export default class RevenueController extends BaseController {
     this.success(res, '--revenues', 'Revenue updated successfully', 200, updatedRevenue);
   }
 
-  async getRevenueForToday(req: Request, res: Response) {
+  async getRevenue(req: Request, res: Response) {
     const timeframe = (req.query.timeframe as string)?.toLocaleLowerCase();
     const userId = (req as any).user?.id ?? TestUserId;
 
@@ -63,16 +63,26 @@ export default class RevenueController extends BaseController {
       return;
     }
 
-    if (timeframe !== 'today') {
-      this.error(res, '--revenue', 'Invalid timeframe', 400);
-      return;
-    }
-
     // Calculate the start and end time for today
+    let startTime: Date, endTime: Date;
     const today = new Date();
-    const startTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
-    const endTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
-
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+  
+    switch (timeframe) {
+      case 'today':
+        startTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
+        endTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+        break;
+      case 'yesterday':
+        startTime = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 0, 0, 0);
+        endTime = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 23, 59, 59);
+        break;
+      default:
+        this.error(res, '--revenue', 'Invalid timeframe', 400);
+        return;
+    }
+  
     // fetch revenue data for today
     const todayRevenue = await prisma.revenue.findMany({
       where: {
@@ -84,6 +94,15 @@ export default class RevenueController extends BaseController {
       },
     });
 
-    return this.success(res, '--revenue', 'Revenue fetched successfully', 200, { data: todayRevenue });
+    if (todayRevenue.length === 0) {
+      this.success(res, '--revenue', `No revenue found for ${timeframe}`, 200, {
+        todayRevenue: 0,
+      });
+      return;
+    }
+
+    return this.success(res, '--revenue', `Revenue for ${timeframe} fetched successfully`, 200, { 
+      todayRevenue 
+    });
   }
 }
