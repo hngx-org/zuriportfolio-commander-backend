@@ -20,11 +20,10 @@ export default class RevenueRoute {
       useCatchErrors(this.revenueController.updateRevenue.bind(this.revenueController)),
     );
 
-    // Route for /api/revenues?timeframe=today
     this.router.get(
       `${this.path}s`,
       isAuthenticated,
-      useCatchErrors(this.revenueController.getRevenueForToday.bind(this.revenueController)),
+      useCatchErrors(this.revenueController.getRevenue.bind(this.revenueController)),
     );
   }
 }
