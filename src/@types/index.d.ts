@@ -24,9 +24,15 @@ export interface AddProductPayloadType {
   assets_type: 'external' | 'internal';
 }
 
+export interface TrackPromo {
+  promo_id: number;
+  productId: string;
+  merchant_id: string;
+}
+
 export interface AddSalesReportType {
   user_id: string;
-  sales: any;
+  sales: number;
   order_id: string;
 }
 

@@ -29,7 +29,7 @@ export default class ProductRoute {
       `${this.path}/:product_id`,
       upload.single('image'), // dont remove this, this is the only way we can handle formData
       isAuthenticated,
-      useCatchErrors(this.productController.updateProduct.bind(this.productController))
+      useCatchErrors(this.productController.updateProduct.bind(this.productController)),
     );
 
     this.router.post(
@@ -106,13 +106,13 @@ export default class ProductRoute {
     this.router.post(
       `${this.path}/category-v2`,
       isAuthenticated,
-      useCatchErrors(this.productController.createCategoryV2.bind(this.productController))
+      useCatchErrors(this.productController.createCategoryV2.bind(this.productController)),
     );
 
     this.router.post(
       `${this.path}/subcategory-v2`,
       isAuthenticated,
-      useCatchErrors(this.productController.createSubCategoryV2.bind(this.productController))
+      useCatchErrors(this.productController.createSubCategoryV2.bind(this.productController)),
     );
 
     this.router.get(
@@ -127,13 +127,20 @@ export default class ProductRoute {
       useCatchErrors(this.productController.updateProductAssets.bind(this.productController)),
     );
 
+    // get product assets
+    this.router.get(
+      `${this.path}/assets/:product_id`,
+      isAuthenticated,
+      useCatchErrors(this.productController.getProductAssets.bind(this.productController))
+    );
+
     // get products on merchant account
     this.router.get(
       `${this.path}s`,
       isAuthenticated,
       useCatchErrors(this.productController.getAllProducts.bind(this.productController)),
     );
-    
+
     // this.router.get(
     //   `${this.path}/categories/:productId`,
     //   useCatchErrors(this.productController.getProductSelectedCategories.bind(this.productController))
