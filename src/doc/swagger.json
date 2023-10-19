@@ -1307,16 +1307,16 @@
     "/orders/average": {
       "get": {
         "tags": ["Orders"],
-        "summary": "Fetch the average order value for today",
+        "summary": "Fetch the average order value for today || yesterday",
         "parameters": [
           {
             "name": "timeframe",
             "in": "query",
-            "description": "Timeframe for calculating the average order value. Should be 'today'.",
+            "description": "Timeframe for calculating the average order value. Should be 'today' || 'yesterday'.",
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["today", "week", "month"],
+              "enum": ["today", "yesterday", "week", "month"],
               "example": "today"
             }
           }
@@ -1481,8 +1481,8 @@
     "/revenues": {
       "get": {
         "tags": ["Revenue"],
-        "summary": "Get Revenue for Today",
-        "description": "Get revenue data for today.",
+        "summary": "Get Revenue for Today || yesterday",
+        "description": "Get revenue data for today || yesterday.",
         "parameters": [
           {
             "name": "timeframe",
@@ -1491,7 +1491,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["today"],
+              "enum": ["today", "yesterday", "week"],
               "example": "today"
             }
           }
@@ -1877,7 +1877,7 @@
           "averageOrderValue": {
             "type": "number",
             "format": "double",
-            "description": "The average order value for today."
+            "description": "The average order value for today || yesterday."
           }
         },
         "example": {

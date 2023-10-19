@@ -284,18 +284,26 @@ export default class OrderController extends BaseController {
       return;
     }
 
-    if (timeframe !== 'today') {
-      this.error(res, '--order/average', 'Invalid timeframe parameter', 400);
-      return;
-    }
-
-    // Calculate the start and end timestamps for today
+    // Calculate the start and end timestamps based on the specified timeframe
     const currentDate = new Date();
-
     const startOfDay = new Date(currentDate);
-    startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(currentDate);
-    endOfDay.setHours(23, 59, 59, 999);
+
+    switch (timeframe) {
+      case 'today':
+        startOfDay.setHours(0, 0, 0, 0);
+        endOfDay.setHours(23, 59, 59, 999);
+        break;
+      case 'yesterday':
+        startOfDay.setDate(currentDate.getDate() - 1);
+        startOfDay.setHours(0, 0, 0, 0);
+        endOfDay.setDate(currentDate.getDate() - 1);
+        endOfDay.setHours(23, 59, 59, 999);
+        break;
+      default:
+        this.error(res, '--order/average', 'Invalid timeframe parameter', 400);
+        return;
+    }
 
     const orderItems = await prisma.order_item.findMany({
       where: {
@@ -308,7 +316,7 @@ export default class OrderController extends BaseController {
     });
 
     if (orderItems.length === 0) {
-      this.success(res, '--order/average', 'No order items found for today', 200, {
+      this.success(res, '--order/average', `No order items found for ${timeframe}`, 200, {
         averageOrderValue: 0,
       });
       return;
@@ -317,7 +325,7 @@ export default class OrderController extends BaseController {
     const totalSales = orderItems.reduce((sum, item) => sum + item.order_price, 0);
     const averageOrderValue = parseFloat((totalSales / orderItems.length).toFixed(2));
 
-    this.success(res, '--order/average', 'Average order value for today fetched successfully', 200, {
+    this.success(res, '--order/average', `Average order value for ${timeframe} fetched successfully`, 200, {
       averageOrderValue,
     });
   }
