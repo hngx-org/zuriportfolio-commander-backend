@@ -127,17 +127,16 @@ export default class ShopController extends BaseController {
     const data = req.body;
     data.ip_addr = req.socket.remoteAddress;
     logger.info(data.ip_addr);
-  
 
     const { error, value } = createShopTrafficSchema.validate(data);
 
     if (error) {
       return this.error(res, '--shop/store-traffic', error?.message ?? 'missing required field.', 400, null);
     }
-    const shopExists = await prisma.shop.findFirst({where:{id:data.shop_id}});
+    const shopExists = await prisma.shop.findFirst({ where: { id: data.shop_id } });
 
-    if(!shopExists){
-      return this.error(res, '--shop/store-traffic', 'shop doesnt exits', 401, null)
+    if (!shopExists) {
+      return this.error(res, '--shop/store-traffic', 'shop doesnt exits', 401, null);
     }
 
     await prisma.store_traffic.create({ data });
@@ -184,5 +183,21 @@ export default class ShopController extends BaseController {
       200,
       shop,
     );
+  }
+  //get shop traffic a particular shop-id
+  async getShopTraffic(req:Request, res:Response) {
+    const {shop_id} = req.params;
+    const shopExists = await prisma.shop.findFirst({ where: { id:shop_id } });
+    if(!shopExists){
+      return this.error(res, "--shopTraffic/bad request", "shop not found", 400, null)
+
+    }
+    const shopTraffic = await prisma.store_traffic.findMany({where:{shop_id:shop_id}});
+    if(!shopTraffic){
+      return this.error(res, '--/shopTraffic/not found', 'store traffic not recorded for this shop', 400, null)
+    }
+    const data = shopTraffic.length
+
+    return this.success(res, '--shopTraffic/sucessful', 'store traffic found', 200, data)
   }
 }
