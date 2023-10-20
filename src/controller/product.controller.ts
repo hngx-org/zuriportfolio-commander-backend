@@ -142,7 +142,7 @@ export default class ProductController extends BaseController {
         currency,
         description,
         discount_price: discountPrice ? parseFloat(discountPrice) : 0,
-        quantity: +quantity ?? 1,
+        quantity: 1,
         price: parseFloat(price),
         tax: parseFloat(tax),
         image: {
