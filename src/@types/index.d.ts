@@ -61,3 +61,14 @@ export interface CreateDiscountType {
   valid_from: string;
   valid_to: string;
 }
+
+export interface UpdateDiscountType {
+  discount_type: string;
+  amount: number;
+  code: string;
+  quantity: number;
+  maximum_discount_price: number;
+  product_ids: string[];
+  valid_from: string;
+  valid_to: string;
+}
