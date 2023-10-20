@@ -14,10 +14,7 @@ export interface AddProductPayloadType {
   discountPrice?: string;
   tax: string;
   currency: string;
-  categoryId: string;
-  shopId: string;
-  sub_category_id: number;
-  category_id: number; //!Remove this.
+  sub_category_id: never;
   assets_name: string;
   assets_link: string;
   assets_notes: string;
@@ -55,6 +52,17 @@ export interface AuthenticatedMiddleware {
 export interface CreateDiscountType {
   discount_type: string;
   amount: number;
+  quantity: number;
+  maximum_discount_price: number;
+  product_ids: string[];
+  valid_from: string;
+  valid_to: string;
+}
+
+export interface UpdateDiscountType {
+  discount_type: string;
+  amount: number;
+  code: string;
   quantity: number;
   maximum_discount_price: number;
   product_ids: string[];

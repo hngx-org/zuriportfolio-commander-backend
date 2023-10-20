@@ -20,7 +20,7 @@
       "get": {
         "tags": ["Product"],
         "summary": "Fetch all products",
-        "description": "Retrieve a list of products with pagination",
+        "description": "Fetches a paginated list of products. Allows specifying the page number and items per page for easy navigation.",
         "parameters": [
           {
             "name": "page",
@@ -62,11 +62,35 @@
         ]
       }
     },
+    "/products/nopromo": {
+      "get": {
+        "tags": ["Product"],
+        "summary": "Fetch all products without promo",
+        "description": "Retrieve a list of products without promotion",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProduct"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/products/marketplace": {
       "get": {
         "tags": ["Product"],
         "summary": "Fetch all marketplace products",
-        "description": "",
+        "description": "Fetches a paginated list of products available in the marketplace. Allows specifying the page number and items per page for easy navigation.",
         "parameters": [
           {
             "name": "page",
@@ -107,7 +131,7 @@
       "post": {
         "tags": ["Product"],
         "summary": "Create a new Product",
-        "description": "",
+        "description": "Create a new product to the system. Requires authentication with a valid access token. Accepts product data in multipart/form-data format.",
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -140,7 +164,7 @@
       "post": {
         "tags": ["Product"],
         "summary": "Create a product category",
-        "description": "Create a parent or subcategory.",
+        "description": "Creates a new product category, which can be either a parent or subcategory. Provide the name of the category and an optional parent category ID.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -193,7 +217,7 @@
     "/product/categories": {
       "get": {
         "summary": "Retrieve Product Categories",
-        "description": "Get a list of all product categories along with their subcategories.",
+        "description": "Retrieves a list of all product categories along with their respective subcategories. Each category object includes an ID, name, associated product ID, creation timestamp, and an array of its subcategories with their respective IDs, names, parent category IDs, and creation timestamps.",
         "tags": ["Product"],
         "responses": {
           "200": {
@@ -226,7 +250,7 @@
       "get": {
         "tags": ["Product"],
         "summary": "Fetch product by id",
-        "description": "",
+        "description": "Fetches a specific product from the database based on its unique ID.",
         "parameters": [
           {
             "name": "product_id",
@@ -292,7 +316,7 @@
       "patch": {
         "tags": ["Product"],
         "summary": "Update product assets",
-        "description": "",
+        "description": "Updates the assets associated with a specific product.",
         "parameters": [
           {
             "name": "product_id",
@@ -360,7 +384,7 @@
       "post": {
         "tags": ["Product"],
         "summary": "Upload a new Product Image",
-        "description": "",
+        "description": "Uploads a new image for the specified product.",
         "parameters": [
           {
             "name": "product_id",
@@ -447,7 +471,7 @@
       "patch": {
         "tags": ["Product"],
         "summary": "Update a Product image",
-        "description": "",
+        "description": "Updates the specified image associated with the product.",
         "parameters": [
           {
             "name": "product_id",
@@ -548,11 +572,82 @@
         ]
       }
     },
+    "/products/unpublish/{productId}": {
+      "patch": {
+        "summary": "Unpublish a product",
+        "tags": ["Product"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "productId",
+            "description": "The ID of the product",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "isPublished": {
+                    "type": "boolean",
+                    "example": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product unpublished successfully",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": "product-uuid",
+                    "userId": "merchant-uuid",
+                    "shopId": "merchant-shop-uuid",
+                    "name": "merchant shop",
+                    "description": "This is a merchant's product",
+                    "quantity": 123,
+                    "price": 12.34,
+                    "discountPrice": 1.23,
+                    "tax": 1.2,
+                    "adminStatus": "pending",
+                    "ratingId": 5,
+                    "isPublished": false,
+                    "currency": "NGN",
+                    "createdAt": "2023-10-11T00:00:00.000Z",
+                    "updatedAt": "2023-10-11T00:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Product ID"
+          },
+          "404": {
+            "description": "Product not found"
+          }
+        }
+      }
+    },
     "/order/status/{order_id}": {
       "patch": {
         "tags": ["Order"],
         "summary": "Update Order Status",
-        "description": "Update the status of a specific order.",
+        "description": "Update the status of a specific order identified by its unique order ID.",
         "parameters": [
           {
             "name": "order_id",
@@ -609,7 +704,7 @@
       "get": {
         "tags": ["Order"],
         "summary": "Gets all order count withing a timeframe",
-        "description": "Gets all order count withing a timeframe",
+        "description": "Retrieve the total order count within a specific timeframe.",
         "parameters": [
           {
             "name": "timeframe",
@@ -641,6 +736,7 @@
     "/discount": {
       "post": {
         "summary": "Create a discount",
+        "description": "Create a discount for specified products within a given time frame.",
         "tags": ["Discount"],
         "requestBody": {
           "description": "Discount data",
@@ -718,6 +814,7 @@
     "/discount/{discount_id}": {
       "delete": {
         "summary": "Delete a discount",
+        "description": "Delete a specific discount by providing its unique ID.",
         "tags": ["Discount"],
         "parameters": [
           {
@@ -743,6 +840,7 @@
     "/discount/promotions": {
       "get": {
         "summary": "Retrieve Products with Promotions and number of sales",
+        "description": "Retrieve a list of products with associated promotions and the number of sales for each product. Supports pagination.",
         "tags": ["Discount"],
         "security": [
           {
@@ -818,9 +916,57 @@
         }
       }
     },
+    "/discounts/{discountId}": {
+      "patch": {
+        "summary": "Update a Discount",
+        "description": "Update an existing discount with the specified ID.",
+        "tags": ["Discount"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discount_id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the discount"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/UpdateDiscount"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Discount updated successfully",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Invalid discount ID/fields"
+          },
+          "404": {
+            "description": "Discount not found"
+          }
+        }
+      }
+    },
     "/shop": {
       "post": {
         "summary": "Create a shop",
+        "description": "Create a new shop with the provided details.",
         "tags": ["Shop"],
         "requestBody": {
           "description": "Shop data",
@@ -859,7 +1005,7 @@
       "get": {
         "tags": ["Shops"],
         "summary": "Fetch all shops",
-        "description": "",
+        "description": "Retrieve a list of all shops from the database.",
         "responses": {
           "200": {
             "description": "successful operation",
@@ -883,7 +1029,7 @@
       "get": {
         "tags": ["Shops"],
         "summary": "Fetch all created shops from merchant.",
-        "description": "",
+        "description": "Retrieve a list of all shops created by the authenticated merchant.",
         "responses": {
           "200": {
             "description": "successful operation",
@@ -913,8 +1059,7 @@
             },
             "required": true
           }
-        ]
-        ,
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -1471,6 +1616,7 @@
       "get": {
         "tags": ["Shops"],
         "summary": "Fetch a shop and its products by shopId",
+        "description": "Retrieve detailed information about a shop and its associated products using its unique ID.",
         "parameters": [
           {
             "in": "path",
@@ -1531,6 +1677,7 @@
     "/shop/store-traffic": {
       "post": {
         "summary": "Used to track user visit to a shop",
+        "description": "This endpoint is used to track user visits to a shop.",
         "tags": ["Shop"],
         "requestBody": {
           "description": "Shop data",
@@ -1564,7 +1711,7 @@
       "get": {
         "tags": ["Sales"],
         "summary": "Retrieve Sales Reports",
-        "description": "Get sales reports based on timeframes.",
+        "description": "Get sales reports based on specified timeframes.",
         "parameters": [
           {
             "name": "timeframe",
@@ -1608,7 +1755,7 @@
       "get": {
         "tags": ["Orders"],
         "summary": "get all orders",
-        "description": "To get All orders",
+        "description": "Retrieve All orders",
         "responses": {
           "200": {
             "description": "successful operation",
@@ -1844,6 +1991,7 @@
       "get": {
         "tags": ["Orders"],
         "summary": "Fetch the average order value for today || yesterday",
+        "description": "Retrieve the average order value for a specific timeframe, such as today or yesterday.",
         "parameters": [
           {
             "name": "timeframe",
@@ -1885,11 +2033,11 @@
         ]
       }
     },
-    "/order/search/{name}": {
+    "/orders/search/{name}": {
       "get": {
         "tags": ["Orders"],
         "summary": "Search Order By Product Name",
-        "description": "",
+        "description": "Search for order by product name",
         "parameters": [
           {
             "name": "name",
@@ -2577,12 +2725,67 @@
           }
         }
       },
-      "securitySchemes": {
-        "BearerAuth": {
-          "type": "http",
-          "scheme": "bearer",
-          "bearerFormat": "JWT"
-        }
+      "UpdateDiscount": {
+        "type": "object",
+        "properties": {
+          "discount_type": {
+            "type": "string",
+            "required": false
+          },
+          "amount": {
+            "type": "number",
+            "required": false
+          },
+          "code": {
+            "type": "string",
+            "required": false
+          },
+          "quantity": {
+            "type": "number",
+            "required": false
+          },
+          "maximum_discount_price": {
+            "type": "number",
+            "required": false
+          },
+          "product_ids": {
+            "type": "number",
+            "required": false
+          },
+          "valid_from": {
+            "type": "object",
+            "format": "date-time",
+            "required": false
+          },
+          "valid_to": {
+            "type": "object",
+            "format": "date-time",
+            "required": false
+          }
+        },
+        "example": [
+          {
+            "id": 1,
+            "user_id": "merchant-uuid",
+            "promotion_type": "Discount",
+            "code": "YESSIR123",
+            "discount_type": "Percentage",
+            "quantity": 23,
+            "amount": 22.22,
+            "maximum_discount_price": 200,
+            "valid_from": "2023-10-23T00:00:00.000Z",
+            "valid_to": "2023-10-31T00:00:00.000Z",
+            "createdAt": "2023-10-11T00:00:00.000Z",
+            "updatedAt": "2023-10-11T00:00:00.000Z"
+          }
+        ]
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }
