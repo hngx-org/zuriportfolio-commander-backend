@@ -73,7 +73,7 @@ export default class ShopController extends BaseController {
   // Get all shop controller
   async getMerchantShops(req: Request, res: Response) {
     const merchant_id = (req as any).user?.id ?? TestUserId;
-    const shops = await prisma.shop.findMany({
+    const shop = await prisma.shop.findFirst({
       where: {
         AND: {
           merchant_id,
@@ -81,7 +81,7 @@ export default class ShopController extends BaseController {
         },
       },
     });
-    this.success(res, '--shops-isEmpty', 'No Shops Found', 200, shops);
+    this.success(res, '--shops/success', 'Shop fetched successfully.', 200, shop);
   }
 
   // Get merchant shops

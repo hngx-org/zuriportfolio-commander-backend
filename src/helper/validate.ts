@@ -81,8 +81,7 @@ export const addProductCategorySchema = Joi.object({
 export const createDiscountSchema = Joi.object({
   discount_type: Joi.string().required(),
   amount: Joi.number().required(),
-  quantity: Joi.number().min(1).required(),
-  maximum_discount_price: Joi.number().optional(),
+  maximum_discount_price: Joi.number().default(0).optional(),
   product_ids: Joi.array()
     .items(Joi.string().pattern(customUUIDPattern))
     .messages({

@@ -191,6 +191,8 @@ export default class ProductController extends BaseController {
     });
   }
 
+  async getProductWithoutPromo(req: Request, res: Response) {}
+
   async updateProduct(req: Request, res: Response) {
     const productId = req.params['product_id'];
     const userId = (req as any).user?.id ?? TestUserId;
@@ -612,33 +614,49 @@ export default class ProductController extends BaseController {
     if (products.length > 0) {
       for (const p of products) {
         let categories: object | null = null;
-        // const category = await prisma.product_sub_category.findFirst({
-        //   where: { id: +p.category_id },
-        //   include: { parent_category: true },
-        // });
-        const category = await prisma.product_category.findFirst({
+        const category = await prisma.product_sub_category.findFirst({
           where: { id: +p.category_id },
-          include: { sub_categories: true },
+          include: { parent_category: true },
         });
 
         if (category) {
           categories = {
-            name: category.name,
-            id: category.id,
-            // sub_category: {
-            //   id: category.id,
-            //   name: category.name,
-            // },
-            sub_category: category.sub_categories,
+            name: category.parent_category.name,
+            id: category.parent_category.id,
+            sub_category: {
+              id: category.id,
+              name: category.name,
+            },
           };
         }
 
-        const promoProd = await prisma.promo_product.findFirst({ where: { product_id: p.id } });
+        const promoProd = await prisma.promo_product.findFirst({
+          where: { product_id: p.id },
+          include: {
+            promo: {
+              select: {
+                discount_type: true,
+                amount: true,
+                maximum_discount_price: true,
+                id: true,
+              },
+            },
+          },
+        });
+
+        const promoInfo = promoProd?.promo;
+
         allProd.push({
           ...p,
           categories,
           image: p.image,
-          promo: promoProd,
+          promo: promoInfo
+            ? {
+                amount: promoInfo.amount,
+                maximum_discount_price: promoInfo.maximum_discount_price,
+                inPercentage: `${promoInfo.amount}%`,
+              }
+            : null,
         });
       }
     }
