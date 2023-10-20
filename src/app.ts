@@ -29,7 +29,7 @@ export default class App {
     this.app.use(requestLogger);
     this.app.use(
       cors({
-        origin: ['http://127.0.0.1:3000', 'http://localhost:8080', '*'],
+        origin: '*',
         credentials: true,
       }),
     );
@@ -57,12 +57,12 @@ export default class App {
       this.app.use('/api', route.router);
     });
 
-      this.app.use('/', (req, res) => {
-      res.json({ message: 'api endpoint is working' });
+    this.app.use('/', (req, res) => {
+      res.json({ message: 'Youve reached Zuriportfolio shop internal api' });
     });
 
-     this.app.use('/api', (req, res) => {
-      res.json({ message: 'api endpoint is working' });
+    this.app.use('/api', (req, res) => {
+      res.json({ message: 'Youve reached Zuriportfolio shop internal api' });
     });
 
     this.initSwaggerUI();

@@ -9,15 +9,16 @@ datasource db {
 
 enum STATUS {
     pending
-    complete
+    completed
     failed
 }
 
 enum ADMIN_STATUS {
     pending
-    review
     approved
-    blacklist
+    reviewed
+    blacklisted
+    suspended
 }
 
 enum Discount_type {
@@ -25,8 +26,15 @@ enum Discount_type {
     Fixed
 }
 
-enum Promo_type {
-    Discount
+enum restricted {
+    no
+    temporary
+    permanent
+}
+
+enum ACTIVITY_USER_TYPE {
+    admin
+    merchant
 }
 
 enum product_status {
@@ -37,6 +45,17 @@ enum product_status {
 enum shop_status {
     active
     temporary
+}
+
+enum ORDER_STATUS {
+    pending
+    completed
+    cancelled
+}
+
+enum PRODUCT_ASSET_TYPE {
+    internal
+    external
 }
 
 model user {
@@ -65,10 +84,11 @@ model user {
     promo_product        promo_product[]
     activities           activity[]
     categories           product_category[]
+    products             product[]
 }
 
 model order {
-    id          String   @id @unique
+    id          String   @id @unique @default(uuid())
     customer_id String
     subtotal    Float?
     VAT         Float?
@@ -79,10 +99,11 @@ model order {
 
     customer     user           @relation(name: "customer_orders", fields: [customer_id], references: [id])
     sales_report sales_report[]
+    order_items  order_item[]
 }
 
 model order_item {
-    id             String   @id @unique
+    id             Int          @id @unique
     order_id       String
     product_id     String
     merchant_id    String
@@ -90,101 +111,125 @@ model order_item {
     order_price    Float
     order_VAT      Float
     order_discount Float
-    promo_id       String
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @default(now())
+    status         ORDER_STATUS @default(pending)
+    promo_id       Int?
+    createdAt      DateTime     @default(now())
+    updatedAt      DateTime     @default(now())
 
-    merchant user      @relation(name: "merchant_orders", fields: [merchant_id], references: [id])
-    customer user      @relation(name: "customer_orders", fields: [customer_id], references: [id])
-    promo    promotion @relation(fields: [promo_id], references: [id])
+    merchant user       @relation(name: "merchant_orders", fields: [merchant_id], references: [id])
+    customer user       @relation(name: "customer_orders", fields: [customer_id], references: [id])
+    promo    promotion? @relation(fields: [promo_id], references: [id])
+    product  product    @relation(fields: [product_id], references: [id], onDelete: Cascade)
+    order    order      @relation(fields: [order_id], references: [id], onDelete: Cascade)
 }
 
 model product {
-    id                  String         @id @unique
-    user_id             String
-    shop_id             String
-    product_category_id Int?
-    name                String
-    description         String
-    quantity            Int
-    price               Float
-    discount_price      Float
-    tax                 Float
-    admin_status        ADMIN_STATUS   @default(pending)
-    is_published        Boolean        @default(false)
-    is_deleted          product_status @default(active)
-    currency            String
-    createdAt           DateTime       @default(now())
-    updatedAt           DateTime       @default(now())
+    id             String         @id @unique
+    user_id        String
+    shop_id        String
+    category_id    Int
+    name           String
+    description    String
+    quantity       Int            @default(1)
+    price          Float
+    discount_price Float          @default(0)
+    tax            Float
+    admin_status   ADMIN_STATUS   @default(pending)
+    is_published   Boolean        @default(false)
+    is_deleted     product_status @default(active)
+    currency       String
+    createdAt      DateTime       @default(now())
+    updatedAt      DateTime       @default(now())
 
     image           product_image[]
-    promotion       promotion[]
     track_promotion track_promotion[]
     promo_product   promo_product[]
-    shop            shop              @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+    order_items     order_item[]
+
+    user           user?                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    shop           shop                    @relation(fields: [shop_id], references: [id], onDelete: Cascade)
+    digital_assets product_digital_assets?
+    sub_category   product_sub_category    @relation(fields: [category_id], references: [id])
     //   rating
 }
 
+model product_digital_assets {
+    id         String             @id @unique @default(uuid())
+    name       String
+    notes      String
+    link       String
+    type       PRODUCT_ASSET_TYPE @default(external)
+    product_id String             @unique
+    // user_id String
+    created_at DateTime           @default(now())
+    updated_at DateTime           @default(now())
+
+    product product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+}
+
 model product_image {
-    id        Int     @id @default(autoincrement())
-    productId String
-    url       String
-    product   product @relation(fields: [productId], references: [id], onDelete: Cascade)
+    id         Int     @id @default(autoincrement())
+    product_id String
+    url        String
+    product    product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
 model product_category {
-    id         Int      @id @default(autoincrement())
-    name       String
-    product_id String
-    createdAt  DateTime @default(now())
+    id        Int      @id @default(autoincrement())
+    name      String   @unique
+    createdAt DateTime @default(now())
+    user_id   String
+    user      user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
     sub_categories product_sub_category[]
-    user           user                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model product_sub_category {
     id                 Int      @id @default(autoincrement())
-    name               String
+    name               String   @unique
     parent_category_id Int
     createdAt          DateTime @default(now())
 
     parent_category product_category @relation(fields: [parent_category_id], references: [id], onDelete: Cascade)
+    products        product[]
 }
 
 model promo_product {
-    id         Int      @id @default(autoincrement())
-    promo_id   String
+    id         Int    @id @default(autoincrement())
+    promo_id   Int
     product_id String //  new field
     user_id    String
-    createdAt  DateTime @default(now())
+    // createdAt  DateTime @default(now())
 
-    user    user    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    product product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+    user    user      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    product product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
+    promo   promotion @relation(fields: [promo_id], references: [id], onDelete: Cascade)
 }
 
 model promotion {
-    id                     String        @id
+    id                     Int           @id @default(autoincrement())
     user_id                String
-    promotion_type         Promo_type    @default(Discount)
+    promotion_type         String
+    code                   String
     discount_type          Discount_type @default(Percentage)
     quantity               Int
     amount                 Float
     maximum_discount_price Float?
-    product_id             String
-    valid_from             DateTime
-    valid_to               DateTime
+    valid_from             DateTime      @db.Timestamp()
+    valid_to               DateTime      @db.Timestamp()
     createdAt              DateTime      @default(now())
     updatedAt              DateTime      @default(now())
 
     user          user              @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    product       product?          @relation(fields: [product_id], references: [id], onDelete: Cascade)
     tracked_promo track_promotion[]
     order_items   order_item[]
+    promo_product promo_product[]
 }
 
 model revenue {
     id        Int      @id @unique @default(autoincrement())
     user_id   String
-    app_id    String
+    // app_id    String
     amount    Float
     createdAt DateTime @default(now())
 
@@ -192,9 +237,9 @@ model revenue {
 }
 
 model track_promotion {
-    id         String   @id @unique
+    id         Int      @id @default(autoincrement())
     product_id String
-    promo_id   String
+    promo_id   Int
     user_id    String
     createdAt  DateTime @default(now())
 
@@ -208,7 +253,7 @@ model shop {
     merchant_id         String
     name                String
     policy_confirmation Boolean?
-    restricted          String       @default("no")
+    restricted          restricted   @default(no)
     admin_status        ADMIN_STATUS @default(pending)
     is_deleted          shop_status  @default(active)
     reviewed            Boolean?
@@ -239,12 +284,13 @@ model sales_report {
 }
 
 model activity {
-    id          String   @id
+    id          String             @id
     action      String
     user_id     String
     title       String
     description String
-    createdAt   DateTime @default(now())
+    user_type   ACTIVITY_USER_TYPE
+    createdAt   DateTime           @default(now())
 
     user user @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }

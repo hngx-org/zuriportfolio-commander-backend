@@ -1,3 +1,4 @@
+import { ObjectEnumValue } from '@prisma/client/runtime/library';
 import { Router } from 'express';
 
 export interface Routes {
@@ -6,17 +7,30 @@ export interface Routes {
 }
 
 export interface AddProductPayloadType {
-  product_id?: string;
   name: string;
   description: string;
-  quantity: number;
-  price: number;
-  discountPrice: number;
-  tax: number;
+  quantity?: number;
+  price: string;
+  discountPrice?: string;
+  tax: string;
   currency: string;
-  category: string;
-  shopId: string;
-  userId: string; //! remove this once auth is working
+  sub_category_id: never;
+  assets_name: string;
+  assets_link: string;
+  assets_notes: string;
+  assets_type: 'external' | 'internal';
+}
+
+export interface TrackPromo {
+  promo_id: number;
+  productId: string;
+  merchant_id: string;
+}
+
+export interface AddSalesReportType {
+  user_id: string;
+  sales: number;
+  order_id: string;
 }
 
 export interface AddPromotionPayloadType {
@@ -33,4 +47,25 @@ export interface AuthenticatedMiddleware {
   authorized: boolean;
   message: string;
   user: { id: string };
+}
+
+export interface CreateDiscountType {
+  discount_type: string;
+  amount: number;
+  quantity: number;
+  maximum_discount_price: number;
+  product_ids: string[];
+  valid_from: string;
+  valid_to: string;
+}
+
+export interface UpdateDiscountType {
+  discount_type: string;
+  amount: number;
+  code: string;
+  quantity: number;
+  maximum_discount_price: number;
+  product_ids: string[];
+  valid_from: string;
+  valid_to: string;
 }
