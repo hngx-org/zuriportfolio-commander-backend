@@ -4,15 +4,14 @@ const customUUIDPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-f
 
 export const productSchema = Joi.object({
   name: Joi.string().required(),
-  shopId: Joi.string().required(),
   description: Joi.string().required(),
   quantity: Joi.number().min(1).optional().default(1),
   price: Joi.number().required(),
   discountPrice: Joi.number().min(0).optional().default(0),
   tax: Joi.number().optional(),
   currency: Joi.string().required(),
-  // sub_category_id: Joi.number().optional(),
-  category_id: Joi.number().optional(),
+  sub_category_id: Joi.number().optional(),
+  // category_id: Joi.number().optional(),
   assets_name: Joi.string().required(),
   assets_link: Joi.string().required(),
   assets_notes: Joi.string().optional(),
@@ -35,8 +34,7 @@ export const updatedProductSchema = Joi.object({
   discountPrice: Joi.number().optional(),
   tax: Joi.number().optional(),
   currency: Joi.string().optional(),
-  // sub_category_id: Joi.number().optional(),
-  category_id: Joi.number().optional(),
+  sub_category_id: Joi.number().optional(),
 });
 
 export const updateProductAssets = Joi.object({

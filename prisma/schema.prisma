@@ -149,7 +149,7 @@ model product {
     user           user?                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
     shop           shop                    @relation(fields: [shop_id], references: [id], onDelete: Cascade)
     digital_assets product_digital_assets?
-    category       product_category        @relation(fields: [category_id], references: [id]) //! change this back once it done.
+    sub_category   product_sub_category    @relation(fields: [category_id], references: [id])
     //   rating
 }
 
@@ -182,7 +182,6 @@ model product_category {
     user      user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
     sub_categories product_sub_category[]
-    products       product[] //! Also this.
 }
 
 model product_sub_category {
@@ -192,6 +191,7 @@ model product_sub_category {
     createdAt          DateTime @default(now())
 
     parent_category product_category @relation(fields: [parent_category_id], references: [id], onDelete: Cascade)
+    products        product[]
 }
 
 model promo_product {
@@ -274,7 +274,7 @@ model store_traffic {
 }
 
 model sales_report {
-    id        String   @id 
+    id        String   @id
     user_id   String
     sales     Int
     order_id  String
