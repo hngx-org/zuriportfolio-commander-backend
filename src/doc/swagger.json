@@ -548,6 +548,77 @@
         ]
       }
     },
+    "/products/unpublish/{productId}": {
+      "patch": {
+        "summary": "Unpublish a product",
+        "tags": ["Product"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "productId",
+            "description": "The ID of the product",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "isPublished": {
+                    "type": "boolean",
+                    "example": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product unpublished successfully",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": "product-uuid",
+                    "userId": "merchant-uuid",
+                    "shopId": "merchant-shop-uuid",
+                    "name": "merchant shop",
+                    "description": "This is a merchant's product",
+                    "quantity": 123,
+                    "price": 12.34,
+                    "discountPrice": 1.23,
+                    "tax": 1.2,
+                    "adminStatus": "pending",
+                    "ratingId": 5,
+                    "isPublished": false,
+                    "currency": "NGN",
+                    "createdAt": "2023-10-11T00:00:00.000Z",
+                    "updatedAt": "2023-10-11T00:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Product ID"
+          },
+          "404": {
+            "description": "Product not found"
+          }
+        }
+      }
+    },
     "/order/status/{order_id}": {
       "patch": {
         "tags": ["Order"],
@@ -818,7 +889,7 @@
         }
       }
     },
-    "/discount/{discountId}": {
+    "/discounts/{discountId}": {
       "patch": {
         "summary": "Update a Discount",
         "tags": ["Discount"],
@@ -838,27 +909,22 @@
             "description": "The ID of the discount"
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/UpdateDiscount"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Discount updated successfully",
             "content": {
               "application/json": {
-                "example": [
-                  {
-                    "id": 1,
-                    "user_id": "merchant-uuid",
-                    "promotion_type": "Discount",
-                    "code": "YESSIR123",
-                    "discount_type": "Percentage",
-                    "quantity": 23,
-                    "amount": 22.22,
-                    "maximum_discount_price": 200,
-                    "valid_from": "2023-10-23T00:00:00.000Z",
-                    "valid_to": "2023-10-31T00:00:00.000Z",
-                    "createdAt": "2023-10-11T00:00:00.000Z",
-                    "updatedAt": "2023-10-11T00:00:00.000Z"
-                  }
-                ]
+                
               }
             }
           },
@@ -1402,7 +1468,7 @@
         ]
       }
     },
-    "/order/search/{name}": {
+    "/orders/search/{name}": {
       "get": {
         "tags": ["Orders"],
         "summary": "Search Order By Product Name",
@@ -2093,6 +2159,61 @@
             }
           }
         }
+      },
+      "UpdateDiscount": {
+        "type": "object",
+        "properties": {
+          "discount_type": {
+            "type": "string",
+            "required": false
+          },
+          "amount": {
+            "type": "number",
+            "required": false
+          },
+          "code": {
+            "type": "string",
+            "required": false
+          },
+          "quantity": {
+            "type": "number",
+            "required": false
+          },
+          "maximum_discount_price": {
+            "type": "number",
+            "required": false
+          },
+          "product_ids": {
+            "type": "number",
+            "required": false
+          },
+          "valid_from": {
+            "type": "object",
+            "format": "date-time",
+            "required": false
+          },
+          "valid_to": {
+            "type": "object",
+            "format": "date-time",
+            "required": false
+          }
+        },
+        "example": [
+          {
+            "id": 1,
+            "user_id": "merchant-uuid",
+            "promotion_type": "Discount",
+            "code": "YESSIR123",
+            "discount_type": "Percentage",
+            "quantity": 23,
+            "amount": 22.22,
+            "maximum_discount_price": 200,
+            "valid_from": "2023-10-23T00:00:00.000Z",
+            "valid_to": "2023-10-31T00:00:00.000Z",
+            "createdAt": "2023-10-11T00:00:00.000Z",
+            "updatedAt": "2023-10-11T00:00:00.000Z"
+          }
+        ]
       },
       
       "securitySchemes": {
