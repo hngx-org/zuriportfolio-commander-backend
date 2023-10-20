@@ -146,6 +146,7 @@ export default class DiscountController extends BaseController {
     }
 
     // check if product exists
+    // ! Remember to work on accepting an array of product id's.
     const { promo_id, productId, merchant_id } = payload;
     const promo_product = await prisma.promo_product.findFirst({
       where: {

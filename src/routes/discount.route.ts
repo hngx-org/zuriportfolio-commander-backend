@@ -16,32 +16,31 @@ export default class DiscountRoute {
     this.router.post(
       `${this.path}`,
       isAuthenticated,
-      useCatchErrors(this.discountController.createDiscount.bind(this.discountController)),
+      useCatchErrors(this.discountController.createDiscount.bind(this.discountController))
     );
 
     this.router.get(
       `${this.path}s`,
       isAuthenticated,
-      useCatchErrors(this.discountController.getAllDiscount.bind(this.discountController)),
+      useCatchErrors(this.discountController.getAllDiscount.bind(this.discountController))
     );
 
     // track promotions
     this.router.post(
       `${this.path}/track`,
-      isAuthenticated,
       useCatchErrors(this.discountController.trackDiscount.bind(this.discountController))
     );
 
     this.router.get(
       `${this.path}/promotions`,
       isAuthenticated,
-      useCatchErrors(this.discountController.getAllPromotionsWithTrackedPromotions.bind(this.discountController)),
+      useCatchErrors(this.discountController.getAllPromotionsWithTrackedPromotions.bind(this.discountController))
     );
 
     this.router.delete(
       `${this.path}/:discount_id`,
       isAuthenticated,
-      useCatchErrors(this.discountController.deleteDiscount.bind(this.discountController)),
+      useCatchErrors(this.discountController.deleteDiscount.bind(this.discountController))
     );
   }
 }
