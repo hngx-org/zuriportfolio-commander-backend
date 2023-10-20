@@ -35,7 +35,11 @@ export default class ShopController extends BaseController {
       data: {
         id,
         name,
-        merchant_id,
+        merchant: {
+          connect: {
+            id: merchant_id,
+          },
+        },
       },
     });
 
