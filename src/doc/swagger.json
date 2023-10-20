@@ -62,6 +62,30 @@
         ]
       }
     },
+    "/products/nopromo": {
+      "get": {
+        "tags": ["Product"],
+        "summary": "Fetch all products without promo",
+        "description": "Retrieve a list of products without promotion",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProduct"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/products/marketplace": {
       "get": {
         "tags": ["Product"],
@@ -931,7 +955,7 @@
           "400": {
             "description": "Invalid discount ID/fields"
           },
-          "404" : {
+          "404": {
             "description": "Discount not found"
           }
         }
@@ -1023,7 +1047,7 @@
         "tags": ["Shops"],
         "summary": "Fetch shop traffic for a particular shop.",
         "description": "The id of the shop",
-        "parameters":[
+        "parameters": [
           {
             "in": "path",
             "name": "shop_id",
@@ -1032,8 +1056,7 @@
             },
             "required": true
           }
-        ]
-        ,
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -1043,10 +1066,10 @@
                   "status": "success",
                   "message": "Store traffic found",
                   "data": 5
+                }
+              }
             }
           }
-        }
-        }
         }
       }
     },
@@ -2160,6 +2183,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "UpdateDiscount": {
         "type": "object",
         "properties": {
@@ -2216,6 +2240,9 @@
         ]
       },
       
+=======
+
+>>>>>>> 34c050b9c2029b5322f9002404f8f98463b46325
       "securitySchemes": {
         "BearerAuth": {
           "type": "http",

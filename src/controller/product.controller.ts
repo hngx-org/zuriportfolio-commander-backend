@@ -191,7 +191,39 @@ export default class ProductController extends BaseController {
     });
   }
 
-  async getProductWithoutPromo(req: Request, res: Response) {}
+  async getProductWithoutPromo(req: Request, res: Response) {
+    const userId = (req as any).user?.id ?? TestUserId;
+
+    // Get all products with pagination and include related data
+    const products = await prisma.product.findMany({
+      where: {
+        AND: {
+          is_deleted: 'active',
+          user_id: userId,
+        },
+      },
+      select: { id: true, name: true, description: true },
+    });
+    const allProd = [];
+
+    if (products.length > 0) {
+      for (const p of products) {
+        const promoProd = await prisma.promo_product.findFirst({
+          where: { product_id: p.id },
+        });
+
+        if (!promoProd) {
+          allProd.push({
+            ...p,
+          });
+        }
+      }
+    }
+
+    return this.success(res, '--products-no-promo/success', 'Products without promos fetched successfully.', 200, {
+      products: allProd,
+    });
+  }
 
   async updateProduct(req: Request, res: Response) {
     const productId = req.params['product_id'];
@@ -660,8 +692,6 @@ export default class ProductController extends BaseController {
         });
       }
     }
-
-    console.log(allProd.length);
 
     return this.success(res, 'All Products Shown', 'Products have been listed', 200, {
       itemsPerPage,
