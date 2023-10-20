@@ -195,7 +195,6 @@ export default class OrderController extends BaseController {
 
       if (products) {
         orderMap.get(orderKey).items.push({
-          ...products,
           price: ord.order_price,
           order_item_status: ord.status,
           category: await prisma.product_category.findFirst({
