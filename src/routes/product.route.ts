@@ -141,6 +141,13 @@ export default class ProductRoute {
       useCatchErrors(this.productController.getAllProducts.bind(this.productController))
     );
 
+    // get merchant products without promo
+    this.router.get(
+      `${this.path}s/nopromo`,
+      // isAuthenticated,
+      useCatchErrors(this.productController.getProductWithoutPromo.bind(this.productController))
+    );
+
     // this.router.get(
     //   `${this.path}/categories/:productId`,
     //   useCatchErrors(this.productController.getProductSelectedCategories.bind(this.productController))
