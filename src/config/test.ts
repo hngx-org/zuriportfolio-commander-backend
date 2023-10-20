@@ -5,5 +5,3 @@ export const TestUserId = '2ae314e8-006a-4bc6-a172-bfeca0a78ec1';
 
 // for development purpose
 // export const TestUserId = 'bac3e83f-b796-4e72-b20e-6e43d038d25d';
-
-
