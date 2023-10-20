@@ -1070,57 +1070,57 @@
                   "message": "Store traffic found",
                   "data": [
                     {
-                      "timeframe": "Oct",
+                      "timeframe": "Nov",
+                      "year": "2022",
+                      "traffic": 0
+                  },
+                  {
+                      "timeframe": "Dec",
+                      "year": "2022",
+                      "traffic": 0
+                  },
+                  {
+                      "timeframe": "Jan",
                       "year": "2023",
                       "traffic": 0
                   },
                   {
-                      "timeframe": "Oct",
+                      "timeframe": "Feb",
                       "year": "2023",
                       "traffic": 0
                   },
                   {
-                      "timeframe": "Oct",
+                      "timeframe": "Mar",
                       "year": "2023",
                       "traffic": 0
                   },
                   {
-                      "timeframe": "Oct",
+                      "timeframe": "Apr",
                       "year": "2023",
                       "traffic": 0
                   },
                   {
-                      "timeframe": "Oct",
+                      "timeframe": "May",
                       "year": "2023",
                       "traffic": 0
                   },
                   {
-                      "timeframe": "Oct",
+                      "timeframe": "Jun",
                       "year": "2023",
                       "traffic": 0
                   },
                   {
-                      "timeframe": "Oct",
+                      "timeframe": "Jul",
                       "year": "2023",
                       "traffic": 0
                   },
                   {
-                      "timeframe": "Oct",
+                      "timeframe": "Aug",
                       "year": "2023",
                       "traffic": 0
                   },
                   {
-                      "timeframe": "Oct",
-                      "year": "2023",
-                      "traffic": 0
-                  },
-                  {
-                      "timeframe": "Oct",
-                      "year": "2023",
-                      "traffic": 0
-                  },
-                  {
-                      "timeframe": "Oct",
+                      "timeframe": "Sep",
                       "year": "2023",
                       "traffic": 0
                   },

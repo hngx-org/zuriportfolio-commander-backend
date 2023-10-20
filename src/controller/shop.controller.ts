@@ -226,7 +226,6 @@ export default class ShopController extends BaseController {
   
     let currentMonth = startDate.getMonth();
     let currentYear = startDate.getFullYear();
-    const currentDateIterator = new Date(startDate);
   
     for (let i = 0; i < 12; i++) {
       const monthlyTraffic = shopTraffic.filter((entry) => {
@@ -235,23 +234,26 @@ export default class ShopController extends BaseController {
       });
   
       result.push({
-        timeframe: `${currentDate.toLocaleString('default', { month: 'short' })}`,
-        year: `${currentDate.getFullYear()}`.trim(),
+        timeframe: await this.getMonthName(currentMonth),
+        year: `${currentYear}`.trim(),
         traffic: monthlyTraffic.length,
       });
-  
+   
       currentMonth++;
       if (currentMonth > 11) {
         currentMonth = 0;
         currentYear++;
       }
-      currentDateIterator.setMonth(currentDateIterator.getMonth() + 1);
     }
   
     return this.success(res, '--shopTraffic/successful', 'Store traffic found for the last 12 months', 200, result);
-  
   }
-
+  
+ async getMonthName(monthNumber) {
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return monthNames[monthNumber];
+  }
+  
     async getShopTrafficByThreeMonths(req: Request, res: Response) {
       const { shop_id } = req.params;
     
