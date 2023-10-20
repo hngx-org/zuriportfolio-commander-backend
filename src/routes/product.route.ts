@@ -66,7 +66,7 @@ export default class ProductRoute {
     );
 
     this.router.patch(
-      `${this.path}/unpublish/:productId`,
+      `${this.path}s/unpublish/:productId`,
       isAuthenticated,
       useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
     );

@@ -44,7 +44,7 @@ export default class OrderRoute {
       useCatchErrors(this.OrderController.updateOrderStatus.bind(this.OrderController)),
     );
     this.router.get(
-      `${this.path}/search/:name`,
+      `${this.path}s/search/:name`,
       isAuthenticated,
       useCatchErrors(this.OrderController.getOrderByProductName.bind(this.OrderController)),
     );
