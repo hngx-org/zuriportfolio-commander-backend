@@ -92,6 +92,22 @@ export const createDiscountSchema = Joi.object({
   valid_to: Joi.date().required(),
 });
 
+export const updatedDiscountSchema = Joi.object({
+  discount_type: Joi.string().optional(),
+  amount: Joi.number().optional(),
+  code: Joi.string().optional(),
+  quantity: Joi.number().min(1).optional(),
+  maximum_discount_price: Joi.number().optional(),
+  product_ids: Joi.array()
+    .items(Joi.string().pattern(customUUIDPattern))
+    .messages({
+      'string.pattern.base': 'product_id has an invalid uuid.',
+    })
+    .optional(),
+  valid_from: Joi.date().optional(),
+  valid_to: Joi.date().optional(),
+});
+
 export const trackPromotionSchema = Joi.object({
   promo_id: Joi.string().required(),
   productId: Joi.string().required(),

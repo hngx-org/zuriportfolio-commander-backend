@@ -818,6 +818,59 @@
         }
       }
     },
+    "/discount/{discountId}": {
+      "patch": {
+        "summary": "Update a Discount",
+        "tags": ["Discount"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discount_id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the discount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Discount updated successfully",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 1,
+                    "user_id": "merchant-uuid",
+                    "promotion_type": "Discount",
+                    "code": "YESSIR123",
+                    "discount_type": "Percentage",
+                    "quantity": 23,
+                    "amount": 22.22,
+                    "maximum_discount_price": 200,
+                    "valid_from": "2023-10-23T00:00:00.000Z",
+                    "valid_to": "2023-10-31T00:00:00.000Z",
+                    "createdAt": "2023-10-11T00:00:00.000Z",
+                    "updatedAt": "2023-10-11T00:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid discount ID/fields"
+          },
+          "404" : {
+            "description": "Discount not found"
+          }
+        }
+      }
+    },
     "/shop": {
       "post": {
         "summary": "Create a shop",
@@ -2041,6 +2094,7 @@
           }
         }
       },
+      
       "securitySchemes": {
         "BearerAuth": {
           "type": "http",
