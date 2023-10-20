@@ -43,5 +43,11 @@ export default class DiscountRoute {
       isAuthenticated,
       useCatchErrors(this.discountController.deleteDiscount.bind(this.discountController)),
     );
+
+    this.router.patch(
+      `${this.path}/:discount_id`,
+      isAuthenticated,
+      useCatchErrors(this.discountController.updateDiscount.bind(this.discountController)),
+    );
   }
 }
