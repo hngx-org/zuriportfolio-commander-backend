@@ -44,7 +44,7 @@ export default class DiscountController extends BaseController {
       return this.error(res, '--discount/invalid-fields', validateSchema.error.message, 400);
     }
 
-    const { amount, discount_type, maximum_discount_price, product_ids, valid_from, valid_to } =
+    const { amount, discount_type, quantity, maximum_discount_price, product_ids, valid_from, valid_to } =
       req.body as CreateDiscountType;
     const validDiscountType = ['percentage', 'fixed'];
     const validDiscountEnum = {
@@ -107,7 +107,7 @@ export default class DiscountController extends BaseController {
         id: promo_id,
         user_id: userId,
         discount_type: validDiscountEnum[discount_type.toLowerCase()],
-        quantity: 1,
+        quantity: quantity ?? 1,
         amount,
         maximum_discount_price: maximum_discount_price ? maximum_discount_price : 0,
         valid_from,
@@ -392,8 +392,8 @@ export default class DiscountController extends BaseController {
 
     // Find the discount by ID
     const existingDiscount = await prisma.promotion.findFirst({
-      where:{
-        AND:{
+      where: {
+        AND: {
           id: +discountId,
           user_id: userId,
         },
@@ -406,13 +406,12 @@ export default class DiscountController extends BaseController {
     }
 
     const updatedDiscount = await prisma.promotion.update({
-      where:{ id: +discountId },
+      where: { id: +discountId },
       data: {
         ...value,
-      }
-    })
+      },
+    });
 
     this.success(res, '--discount/updated', 'Discount has been updated successfully', 200, updatedDiscount);
   }
-
 }

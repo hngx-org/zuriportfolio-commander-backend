@@ -52,6 +52,7 @@ export interface AuthenticatedMiddleware {
 export interface CreateDiscountType {
   discount_type: string;
   amount: number;
+  quantity: number;
   maximum_discount_price: number;
   product_ids: string[];
   valid_from: string;

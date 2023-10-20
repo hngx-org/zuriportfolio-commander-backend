@@ -82,6 +82,7 @@ export const createDiscountSchema = Joi.object({
   discount_type: Joi.string().required(),
   amount: Joi.number().required(),
   maximum_discount_price: Joi.number().default(0).optional(),
+  quantity: Joi.number().default(1).optional(),
   product_ids: Joi.array()
     .items(Joi.string().pattern(customUUIDPattern))
     .messages({
