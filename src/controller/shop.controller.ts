@@ -22,6 +22,15 @@ export default class ShopController extends BaseController {
     const { name } = req.body;
     const id = uuidv4();
 
+    // check if user has a shop created already
+    const createdShops = await prisma.shop.findMany({
+      where: { merchant_id },
+    });
+
+    if (createdShops.length > 0) {
+      return this.error(res, '--shop/shops-exists', `Sorry, you can only create one shop per account.`, 400);
+    }
+
     const shop = await prisma.shop.create({
       data: {
         id,
@@ -64,7 +73,7 @@ export default class ShopController extends BaseController {
   // Get all shop controller
   async getMerchantShops(req: Request, res: Response) {
     const merchant_id = (req as any).user?.id ?? TestUserId;
-    const shops = await prisma.shop.findMany({
+    const shop = await prisma.shop.findFirst({
       where: {
         AND: {
           merchant_id,
@@ -72,7 +81,7 @@ export default class ShopController extends BaseController {
         },
       },
     });
-    this.success(res, '--shops-isEmpty', 'No Shops Found', 200, shops);
+    this.success(res, '--shops/success', 'Shop fetched successfully.', 200, shop);
   }
 
   // Get merchant shops
@@ -181,23 +190,22 @@ export default class ShopController extends BaseController {
       `Shop and Products for Merchant ${shopId} Shown`,
       'Shop and its products retrieved successfully',
       200,
-      shop,
+      shop
     );
   }
   //get shop traffic a particular shop-id
-  async getShopTraffic(req:Request, res:Response) {
-    const {shop_id} = req.params;
-    const shopExists = await prisma.shop.findFirst({ where: { id:shop_id } });
-    if(!shopExists){
-      return this.error(res, "--shopTraffic/bad request", "shop not found", 400, null)
-
+  async getShopTraffic(req: Request, res: Response) {
+    const { shop_id } = req.params;
+    const shopExists = await prisma.shop.findFirst({ where: { id: shop_id } });
+    if (!shopExists) {
+      return this.error(res, '--shopTraffic/bad request', 'shop not found', 400, null);
     }
-    const shopTraffic = await prisma.store_traffic.findMany({where:{shop_id:shop_id}});
-    if(!shopTraffic){
-      return this.error(res, '--/shopTraffic/not found', 'store traffic not recorded for this shop', 400, null)
+    const shopTraffic = await prisma.store_traffic.findMany({ where: { shop_id: shop_id } });
+    if (!shopTraffic) {
+      return this.error(res, '--/shopTraffic/not found', 'store traffic not recorded for this shop', 400, null);
     }
-    const data = shopTraffic.length
+    const data = shopTraffic.length;
 
-    return this.success(res, '--shopTraffic/sucessful', 'store traffic found', 200, data)
+    return this.success(res, '--shopTraffic/sucessful', 'store traffic found', 200, data);
   }
 }
