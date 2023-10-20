@@ -14,10 +14,7 @@ export interface AddProductPayloadType {
   discountPrice?: string;
   tax: string;
   currency: string;
-  categoryId: string;
-  shopId: string;
-  sub_category_id: number;
-  category_id: number; //!Remove this.
+  sub_category_id: never;
   assets_name: string;
   assets_link: string;
   assets_notes: string;
