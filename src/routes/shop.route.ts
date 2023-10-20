@@ -51,10 +51,25 @@ export default class ShopRoute {
       `${this.path}/store-traffic`,
       useCatchErrors(this.shopController.shopTraffic.bind(this.shopController))
     );
-
     this.router.get(
-      `${this.path}/store-traffic/count/:shop_id`,
-      useCatchErrors(this.shopController.getShopTraffic.bind(this.shopController))
+      `${this.path}/store-traffic/count/12months/:shop_id`,
+      useCatchErrors(this.shopController.getShopTrafficByFullYear.bind(this.shopController)),
+    );
+    this.router.get(
+      `${this.path}/store-traffic/count/3months/:shop_id`,
+      useCatchErrors(this.shopController.getShopTrafficByThreeMonths.bind(this.shopController)),
+    );
+    this.router.get(
+      `${this.path}/store-traffic/count/30days/:shop_id`,
+      useCatchErrors(this.shopController.getShopTrafficForLast30Days.bind(this.shopController)),
+    );
+    this.router.get(
+      `${this.path}/store-traffic/count/7days/:shop_id`,
+      useCatchErrors(this.shopController.getShopTrafficForLast7Days.bind(this.shopController)),
+    );
+    this.router.get(
+      `${this.path}/store-traffic/count/24hrs/:shop_id`,
+      useCatchErrors(this.shopController.getShopTrafficForLast24Hours.bind(this.shopController)),
     );
   }
 }
