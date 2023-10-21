@@ -6,7 +6,7 @@ import { isAuthenticated } from '../middlewares/auth';
 export default class DiscountRoute {
   router = express.Router();
   discountController = new DiscountController();
-  path = '/discount';
+  path = '/discounts';
 
   constructor() {
     this.initializeRoutes();
@@ -20,7 +20,7 @@ export default class DiscountRoute {
     );
 
     this.router.get(
-      `${this.path}s`,
+      `${this.path}`,
       isAuthenticated,
       useCatchErrors(this.discountController.getAllDiscount.bind(this.discountController))
     );
@@ -38,13 +38,13 @@ export default class DiscountRoute {
     );
 
     this.router.delete(
-      `${this.path}/:discount_id`,
+      `${this.path}/:discountId`,
       isAuthenticated,
       useCatchErrors(this.discountController.deleteDiscount.bind(this.discountController))
     );
 
     this.router.patch(
-      `${this.path}s/:discount_id`,
+      `${this.path}/:discountId`,
       isAuthenticated,
       useCatchErrors(this.discountController.updateDiscount.bind(this.discountController)),
     );

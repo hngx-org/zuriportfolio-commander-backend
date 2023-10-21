@@ -7,7 +7,7 @@ import { isAuthenticated } from '../middlewares/auth';
 export default class RevenueRoute {
   router = express.Router();
   revenueController = new RevenueController();
-  path = '/revenue';
+  path = '/revenues';
 
   constructor() {
     this.initializeRoutes();
@@ -15,13 +15,13 @@ export default class RevenueRoute {
 
   initializeRoutes() {
     this.router.patch(
-      `${this.path}/:order_id`,
+      `${this.path}/:orderId`,
       isAuthenticated,
       useCatchErrors(this.revenueController.updateRevenue.bind(this.revenueController)),
     );
 
     this.router.get(
-      `${this.path}s`,
+      `${this.path}`,
       isAuthenticated,
       useCatchErrors(this.revenueController.getRevenue.bind(this.revenueController)),
     );

@@ -6,7 +6,7 @@ import { isAuthenticated } from '../middlewares/auth';
 export default class ShopRoute {
   router = express.Router();
   shopController = new ShopController();
-  path = '/shop';
+  path = '/shops';
 
   constructor() {
     this.initializeRoutes();
@@ -27,21 +27,21 @@ export default class ShopRoute {
     );
 
     // Get all shops
-    this.router.get(`${this.path}s`, useCatchErrors(this.shopController.getAllShops.bind(this.shopController)));
+    this.router.get(`${this.path}`, useCatchErrors(this.shopController.getAllShops.bind(this.shopController)));
 
     // Get shop by authenticated user
     this.router.get(
-      `${this.path}s/merchant`,
+      `${this.path}/merchant`,
       isAuthenticated,
       useCatchErrors(this.shopController.getMerchantShops.bind(this.shopController))
     );
 
     // get a shop
-    this.router.get(`${this.path}/:shop_id`, useCatchErrors(this.shopController.getShopId.bind(this.shopController)));
+    this.router.get(`${this.path}/:shopId`, useCatchErrors(this.shopController.getShopId.bind(this.shopController)));
 
     // update shop route
     this.router.patch(
-      `${this.path}/:shop_id`,
+      `${this.path}/:shopId`,
       isAuthenticated,
       useCatchErrors(this.shopController.updateShop.bind(this.shopController))
     );
@@ -52,23 +52,23 @@ export default class ShopRoute {
       useCatchErrors(this.shopController.shopTraffic.bind(this.shopController))
     );
     this.router.get(
-      `${this.path}/store-traffic/count/12months/:shop_id`,
+      `${this.path}/store-traffic/count/12months/:shopId`,
       useCatchErrors(this.shopController.getShopTrafficByFullYear.bind(this.shopController)),
     );
     this.router.get(
-      `${this.path}/store-traffic/count/3months/:shop_id`,
+      `${this.path}/store-traffic/count/3months/:shopid`,
       useCatchErrors(this.shopController.getShopTrafficByThreeMonths.bind(this.shopController)),
     );
     this.router.get(
-      `${this.path}/store-traffic/count/30days/:shop_id`,
+      `${this.path}/store-traffic/count/30days/:shopId`,
       useCatchErrors(this.shopController.getShopTrafficForLast30Days.bind(this.shopController)),
     );
     this.router.get(
-      `${this.path}/store-traffic/count/7days/:shop_id`,
+      `${this.path}/store-traffic/count/7days/:shopId`,
       useCatchErrors(this.shopController.getShopTrafficForLast7Days.bind(this.shopController)),
     );
     this.router.get(
-      `${this.path}/store-traffic/count/24hrs/:shop_id`,
+      `${this.path}/store-traffic/count/24hrs/:shopId`,
       useCatchErrors(this.shopController.getShopTrafficForLast24Hours.bind(this.shopController)),
     );
   }
