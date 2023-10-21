@@ -987,16 +987,19 @@
                 "type": "object",
                 "properties": {
                   "promo_id": {
-                    "type": "string",
-                    "required": true
+                    "type": "number",
+                    "required": true,
+                    "example": 3
                   },
                   "productId": {
                     "type": "string",
-                    "required": true
+                    "required": true,
+                    "example": "42e2a46a-e56f-4e4d-be0e-0675b7026f58"
                   },
                   "merchant_id": {
                     "type": "string",
-                    "required": true
+                    "required": true,
+                    "example": "42e2a46a-e56f-4e4d-be0e-0675b7026f58"
                   }
                 }
               }
