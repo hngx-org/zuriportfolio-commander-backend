@@ -119,11 +119,11 @@ export default class ProductController extends BaseController {
     //   },
     //   include: { parent_category: true },
     // });
-    const subCatExists = await prisma.product_category.findFirst({
+    const subCatExists = await prisma.product_sub_category.findFirst({
       where: {
         id: +sub_category_id,
       },
-      include: { sub_categories: true },
+      include: { parent_category: true },
     });
 
     if (!subCatExists) {
@@ -166,10 +166,14 @@ export default class ProductController extends BaseController {
             id: shopExists.id,
           },
         },
-        category_id: +sub_category_id as never,
+        sub_category: {
+          connect: {
+            id: subCatExists.id,
+          },
+        },
         category: {
           connect: {
-            id: +sub_category_id,
+            id: subCatExists.parent_category.id,
           },
         },
       },
@@ -191,9 +195,11 @@ export default class ProductController extends BaseController {
       ...product,
       image: (product as any)?.image,
       category: {
-        id: subCatExists.id,
-        name: subCatExists.name,
-        // parent: subCatExists.parent_category.name,
+        id: subCatExists.parent_category.id,
+        sub_category: {
+          id: subCatExists.id,
+          name: subCatExists.name,
+        },
         parent: subCatExists.name,
       },
     });
