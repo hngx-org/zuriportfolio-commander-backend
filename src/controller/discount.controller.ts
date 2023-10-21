@@ -46,10 +46,9 @@ export default class DiscountController extends BaseController {
 
     const { amount, discount_type, quantity, maximum_discount_price, product_ids, valid_from, valid_to } =
       req.body as CreateDiscountType;
-    const validDiscountType = ['percentage', 'fixed'];
+    const validDiscountType = ['percentage'];
     const validDiscountEnum = {
       percentage: 'Percentage',
-      fixed: 'Fixed',
     };
 
     // verify date range
