@@ -149,7 +149,8 @@ model product {
     user           user?                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
     shop           shop                    @relation(fields: [shop_id], references: [id], onDelete: Cascade)
     digital_assets product_digital_assets?
-    sub_category   product_sub_category    @relation(fields: [category_id], references: [id])
+    category       product_category        @relation(fields: [category_id], references: [id]) //! Remove this later on.
+    // sub_category   product_sub_category    @relation(fields: [category_id], references: [id])
     //   rating
 }
 
@@ -160,7 +161,6 @@ model product_digital_assets {
     link       String
     type       PRODUCT_ASSET_TYPE @default(external)
     product_id String             @unique
-    // user_id String
     created_at DateTime           @default(now())
     updated_at DateTime           @default(now())
 
@@ -181,6 +181,7 @@ model product_category {
     user_id   String
     user      user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
+    product        product[] //! Remove this later on
     sub_categories product_sub_category[]
 }
 
@@ -191,7 +192,7 @@ model product_sub_category {
     createdAt          DateTime @default(now())
 
     parent_category product_category @relation(fields: [parent_category_id], references: [id], onDelete: Cascade)
-    products        product[]
+    // products        product[] //! Add this back later on
 }
 
 model promo_product {
