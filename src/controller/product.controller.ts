@@ -555,6 +555,11 @@ export default class ProductController extends BaseController {
       return this.error(res, '--product/notfound', 'Failed to unpublish, product not found', 404);
     }
 
+    // Ensure that the product is already published before attempting to unpublish
+    if (!prodExists.is_published) {
+      return this.error(res, '--product/notpublished', 'Failed to unpublish, the product is not currently published', 400);
+    }
+
     // Update the is_published field to false
     const updatedProduct = await prisma.product.update({
       where: {

@@ -376,6 +376,10 @@ export default class OrderController extends BaseController {
   async getOrderByProductName(req: Request | any, res: Response | any) {
     const userId = (req as any).user?.id ?? TestUserId;
 
+    if (!userId) {
+      return this.error(res, '--orders/user-not-found', 'User not found', 404);
+    }
+
     const { name } = req.params;
     const { page = 1, pageSize = 10 } = req.query;
 
