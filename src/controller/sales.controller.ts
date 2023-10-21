@@ -5,6 +5,7 @@ import prisma from '../config/prisma';
 import { AddSalesReportType } from '@types';
 import { saleSchema } from './../helper/validate';
 import { v4 as uuidv4 } from 'uuid';
+import { TestUserId } from 'config/test';
 
 export default class SalesController extends BaseController {
   constructor() {
@@ -129,16 +130,9 @@ export default class SalesController extends BaseController {
     }
 
     const id = uuidv4();
-    const { user_id, sales, order_id } = payload;
+    const user_id = ((req as any).user?.id as never) ?? (TestUserId as never);
+    const { sales, order_id } = payload;
 
-    // check if user exist
-    const userExists = await prisma.user.findFirst({
-      where: { id: user_id },
-    });
-
-    if (!userExists) {
-      return this.error(res, '--shop/merchant-not found', 'merchant not find', 404);
-    }
 
     // create sales report
     const created = await prisma.sales_report.create({
