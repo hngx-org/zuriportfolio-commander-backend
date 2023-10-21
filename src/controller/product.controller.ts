@@ -113,11 +113,17 @@ export default class ProductController extends BaseController {
     }
 
     // check if parent or child category exists
-    const subCatExists = await prisma.product_sub_category.findFirst({
+    // const subCatExists = await prisma.product_sub_category.findFirst({
+    //   where: {
+    //     id: +sub_category_id,
+    //   },
+    //   include: { parent_category: true },
+    // });
+    const subCatExists = await prisma.product_category.findFirst({
       where: {
         id: +sub_category_id,
       },
-      include: { parent_category: true },
+      include: { sub_categories: true },
     });
 
     if (!subCatExists) {
@@ -160,6 +166,7 @@ export default class ProductController extends BaseController {
             id: shopExists.id,
           },
         },
+        category_id: +sub_category_id as never,
         category: {
           connect: {
             id: +sub_category_id,
@@ -186,7 +193,8 @@ export default class ProductController extends BaseController {
       category: {
         id: subCatExists.id,
         name: subCatExists.name,
-        parent: subCatExists.parent_category.name,
+        // parent: subCatExists.parent_category.name,
+        parent: subCatExists.name,
       },
     });
   }

@@ -5,7 +5,7 @@ import prisma from '../config/prisma';
 import { AddSalesReportType } from '@types';
 import { saleSchema } from './../helper/validate';
 import { v4 as uuidv4 } from 'uuid';
-import { TestUserId } from 'config/test';
+import { TestUserId } from '../config/test';
 
 export default class SalesController extends BaseController {
   constructor() {
@@ -15,7 +15,7 @@ export default class SalesController extends BaseController {
   async getAllReport(req: Request, res: Response) {
     try {
       // Get the user_id from the request
-      const userId = (req as any).user?.id // Replace with your actual logic to get user_id.
+      const userId = (req as any).user?.id; // Replace with your actual logic to get user_id.
 
       // Parse the "timeframe" query parameter
       const timeframe = req.query.timeframe;
@@ -24,32 +24,32 @@ export default class SalesController extends BaseController {
         logger.error('User not found');
         return this.error(res, '/api/sales/reports', 'User not found', 404);
       }
-      
+
       let salesReports;
       let start_date, end_date;
-      let date = new Date()
+      let date = new Date();
 
       // // Filter the sales reports based on the requested timeframe
       switch (timeframe) {
-        case "24h":
-          start_date = date.toISOString()
-          date.setHours(date.getHours() - 24)
-          end_date = date.toISOString()
+        case '24h':
+          start_date = date.toISOString();
+          date.setHours(date.getHours() - 24);
+          end_date = date.toISOString();
 
-        salesReports = await prisma.$queryRaw`
+          salesReports = await prisma.$queryRaw`
           SELECT
             EXTRACT(HOUR FROM "createdAt") AS hour, SUM(order_price)
           FROM order_item
           WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
           GROUP BY EXTRACT(HOUR FROM "createdAt")
           ORDER BY hour asc;
-        `
-          break
+        `;
+          break;
 
-        case "7d":
-          start_date = date.toISOString()
-          date.setDate(date.getDate() - 7)
-          end_date = date.toISOString()
+        case '7d':
+          start_date = date.toISOString();
+          date.setDate(date.getDate() - 7);
+          end_date = date.toISOString();
 
           salesReports = await prisma.$queryRaw`
           SELECT
@@ -58,13 +58,13 @@ export default class SalesController extends BaseController {
           WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
           GROUP BY EXTRACT(DAY FROM "createdAt")
           ORDER BY day asc;
-        `
-          break
+        `;
+          break;
 
-        case "3m":
-          start_date = date.toISOString()
-          date.setDate(date.getMonth() - 3)
-          end_date = date.toISOString()
+        case '3m':
+          start_date = date.toISOString();
+          date.setDate(date.getMonth() - 3);
+          end_date = date.toISOString();
 
           salesReports = await prisma.$queryRaw`
           SELECT
@@ -73,13 +73,13 @@ export default class SalesController extends BaseController {
           WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
           GROUP BY EXTRACT(QUARTER FROM "createdAt")
           ORDER BY quarter asc;
-        `
-          break
+        `;
+          break;
 
-        case "12m":
-          start_date = date.toISOString()
-          date.setDate(date.getMonth() - 12)
-          end_date = date.toISOString()
+        case '12m':
+          start_date = date.toISOString();
+          date.setDate(date.getMonth() - 12);
+          end_date = date.toISOString();
 
           salesReports = await prisma.$queryRaw`
           SELECT
@@ -88,22 +88,22 @@ export default class SalesController extends BaseController {
           WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
           GROUP BY EXTRACT(MONTH FROM "createdAt")
           ORDER BY month asc;
-        `
-          break
+        `;
+          break;
 
-        case "1y":
+        case '1y':
           salesReports = await prisma.$queryRaw`
           SELECT
             EXTRACT(YEAR FROM "createdAt") AS year, SUM(order_price)
           FROM order_item
           GROUP BY EXTRACT(YEAR FROM "createdAt")
           ORDER BY year asc;
-        `
-          break
+        `;
+          break;
         default:
-          start_date = date.toISOString()
-          date.setHours(date.getHours() - 24)
-          end_date = date.toISOString()
+          start_date = date.toISOString();
+          date.setHours(date.getHours() - 24);
+          end_date = date.toISOString();
 
           salesReports = await prisma.$queryRaw`
             SELECT
@@ -112,7 +112,7 @@ export default class SalesController extends BaseController {
             WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
             GROUP BY EXTRACT(HOUR FROM "createdAt")
             ORDER BY hour asc;
-          `
+          `;
       }
       this.success(res, '/api/sales/reports', 'Sales reports fetched successfully', 200, salesReports);
     } catch (error) {
@@ -132,7 +132,6 @@ export default class SalesController extends BaseController {
     const id = uuidv4();
     const user_id = ((req as any).user?.id as never) ?? (TestUserId as never);
     const { sales, order_id } = payload;
-
 
     // create sales report
     const created = await prisma.sales_report.create({
