@@ -93,7 +93,7 @@ export default class ProductRoute {
     );
 
     this.router.get(
-      `${this.path}s/categories`,
+      `${this.path}/categories`,
       useCatchErrors(this.productController.getAllCategories.bind(this.productController))
     );
 
