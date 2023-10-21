@@ -975,6 +975,50 @@
         }
       }
     },
+    "/discount/track": {
+      "patch": {
+        "summary": "Track a Discount",
+        "description": "Track a product that contains a discount.",
+        "tags": ["Discount"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "promo_id": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "productId": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "merchant_id": {
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Discount updated successfully",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Invalid discount ID/fields"
+          },
+          "404": {
+            "description": "Discount not found"
+          }
+        }
+      }
+    },
     "/shop": {
       "post": {
         "summary": "Create a shop",
