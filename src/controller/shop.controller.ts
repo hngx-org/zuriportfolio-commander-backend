@@ -36,6 +36,9 @@ export default class ShopController extends BaseController {
         id,
         name,
         admin_status: 'approved',
+        policy_confirmation: true,
+        restricted: 'no',
+        reviewed: true,
         merchant: {
           connect: {
             id: merchant_id,
