@@ -5,7 +5,7 @@ import prisma from '../config/prisma';
 import { v4 as uuidv4 } from 'uuid';
 import { createDiscountSchema, trackPromotionSchema, updatedDiscountSchema, validateUUID } from '../helper/validate';
 import { CreateDiscountType, UpdateDiscountType } from '../@types';
-import { genRandNum, validateDateRange } from '../helper';
+import { genRandNum, isUUID, validateDateRange } from '../helper';
 import logger from '../config/logger';
 import { TestUserId } from '../config/test';
 
@@ -147,6 +147,12 @@ export default class DiscountController extends BaseController {
     // check if product exists
     // ! Remember to work on accepting an array of product id's.
     const { promo_id, productId, merchant_id } = payload;
+
+    // check if product and userId id is a valid uuid
+    if (!isUUID(productId) || !isUUID(merchant_id)) {
+      return this.error(res, '--discount/invalid-uuid', `One of more of the ids passed are invalid.`, 400);
+    }
+
     const promo_product = await prisma.promo_product.findFirst({
       where: {
         product_id: productId,
