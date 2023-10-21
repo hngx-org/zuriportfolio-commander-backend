@@ -975,6 +975,50 @@
         }
       }
     },
+    "/discount/track": {
+      "patch": {
+        "summary": "Track a Discount",
+        "description": "Track a product that contains a discount.",
+        "tags": ["Discount"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "promo_id": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "productId": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "merchant_id": {
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Discount updated successfully",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Invalid discount ID/fields"
+          },
+          "404": {
+            "description": "Discount not found"
+          }
+        }
+      }
+    },
     "/shop": {
       "post": {
         "summary": "Create a shop",
@@ -1062,7 +1106,7 @@
         "tags": ["Shops"],
         "summary": "Fetch shop traffic for a particular shop  within a year.",
         "description": "The id of the shop",
-        "parameters":[
+        "parameters": [
           {
             "in": "path",
             "name": "shop_id",
@@ -1085,62 +1129,62 @@
                       "timeframe": "Nov",
                       "year": "2022",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Dec",
                       "year": "2022",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Jan",
                       "year": "2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Feb",
                       "year": "2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Mar",
                       "year": "2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Apr",
                       "year": "2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "May",
                       "year": "2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Jun",
                       "year": "2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Jul",
                       "year": "2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Aug",
                       "year": "2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Sep",
                       "year": "2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Oct",
                       "year": "2023",
                       "traffic": 12
-                  }
+                    }
                   ]
                 }
               }
@@ -1154,7 +1198,7 @@
         "tags": ["Shops"],
         "summary": "Fetch shop traffic for a particular shop  within a 30days.",
         "description": "The id of the shop",
-        "parameters":[
+        "parameters": [
           {
             "in": "path",
             "name": "shop_id",
@@ -1163,8 +1207,7 @@
             },
             "required": true
           }
-        ]
-        ,
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -1178,152 +1221,152 @@
                       "timeframe": "21st",
                       "date": "Thu Sep 21 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "22nd",
                       "date": "Fri Sep 22 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "23rd",
                       "date": "Sat Sep 23 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "24th",
                       "date": "Sun Sep 24 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "25th",
                       "date": "Mon Sep 25 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "26th",
                       "date": "Tue Sep 26 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "27th",
                       "date": "Wed Sep 27 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "28th",
                       "date": "Thu Sep 28 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "29th",
                       "date": "Fri Sep 29 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "30th",
                       "date": "Sat Sep 30 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "1st",
                       "date": "Sun Oct 01 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "2nd",
                       "date": "Mon Oct 02 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "3rd",
                       "date": "Tue Oct 03 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "4th",
                       "date": "Wed Oct 04 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "5th",
                       "date": "Thu Oct 05 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "6th",
                       "date": "Fri Oct 06 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "7th",
                       "date": "Sat Oct 07 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "8th",
                       "date": "Sun Oct 08 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "9th",
                       "date": "Mon Oct 09 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "10th",
                       "date": "Tue Oct 10 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "11th",
                       "date": "Wed Oct 11 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "12th",
                       "date": "Thu Oct 12 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "13th",
                       "date": "Fri Oct 13 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "14th",
                       "date": "Sat Oct 14 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "15th",
                       "date": "Sun Oct 15 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "16th",
                       "date": "Mon Oct 16 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "17th",
                       "date": "Tue Oct 17 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "18th",
                       "date": "Wed Oct 18 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "19th",
                       "date": "Thu Oct 19 2023",
                       "traffic": 3
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "20th",
                       "date": "Fri Oct 20 2023",
                       "traffic": 9
-                  }
+                    }
                   ]
                 }
               }
@@ -1337,7 +1380,7 @@
         "tags": ["Shops"],
         "summary": "Fetch shop traffic for a particular shop  within 24hrs.",
         "description": "The id of the shop",
-        "parameters":[
+        "parameters": [
           {
             "in": "path",
             "name": "shop_id",
@@ -1346,8 +1389,7 @@
             },
             "required": true
           }
-        ]
-        ,
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -1362,145 +1404,145 @@
                       "date": "Thu Oct 19 2023",
                       "time": "5:59:20 PM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "6pm",
                       "date": "Thu Oct 19 2023",
                       "time": "6:59:20 PM",
                       "traffic": 1
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "7pm",
                       "date": "Thu Oct 19 2023",
                       "time": "7:59:20 PM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "8pm",
                       "date": "Thu Oct 19 2023",
                       "time": "8:59:20 PM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "9pm",
                       "date": "Thu Oct 19 2023",
                       "time": "9:59:20 PM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "10pm",
                       "date": "Thu Oct 19 2023",
                       "time": "10:59:20 PM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "11pm",
                       "date": "Thu Oct 19 2023",
                       "time": "11:59:20 PM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "12am",
                       "date": "Fri Oct 20 2023",
                       "time": "12:59:20 AM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "1am",
                       "date": "Fri Oct 20 2023",
                       "time": "1:59:20 AM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "2am",
                       "date": "Fri Oct 20 2023",
                       "time": "2:59:20 AM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "3am",
                       "date": "Fri Oct 20 2023",
                       "time": "3:59:20 AM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "4am",
                       "date": "Fri Oct 20 2023",
                       "time": "4:59:20 AM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "5am",
                       "date": "Fri Oct 20 2023",
                       "time": "5:59:20 AM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "6am",
                       "date": "Fri Oct 20 2023",
                       "time": "6:59:20 AM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "7am",
                       "date": "Fri Oct 20 2023",
                       "time": "7:59:20 AM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "8am",
                       "date": "Fri Oct 20 2023",
                       "time": "8:59:20 AM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "9am",
                       "date": "Fri Oct 20 2023",
                       "time": "9:59:20 AM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "10am",
                       "date": "Fri Oct 20 2023",
                       "time": "10:59:20 AM",
                       "traffic": 5
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "11am",
                       "date": "Fri Oct 20 2023",
                       "time": "11:59:20 AM",
                       "traffic": 1
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "12pm",
                       "date": "Fri Oct 20 2023",
                       "time": "12:59:20 PM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "1pm",
                       "date": "Fri Oct 20 2023",
                       "time": "1:59:20 PM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "2pm",
                       "date": "Fri Oct 20 2023",
                       "time": "2:59:20 PM",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "3pm",
                       "date": "Fri Oct 20 2023",
                       "time": "3:59:20 PM",
                       "traffic": 3
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "4pm",
                       "date": "Fri Oct 20 2023",
                       "time": "4:59:20 PM",
                       "traffic": 0
-                  }
+                    }
                   ]
                 }
               }
@@ -1514,7 +1556,7 @@
         "tags": ["Shops"],
         "summary": "Fetch shop traffic for a particular shop  within 3 months.",
         "description": "The id of the shop",
-        "parameters":[
+        "parameters": [
           {
             "in": "path",
             "name": "shop_id",
@@ -1523,8 +1565,7 @@
             },
             "required": true
           }
-        ]
-        ,
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -1538,17 +1579,17 @@
                       "timeframe": "Aug",
                       "year": "2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Sep",
                       "year": "2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Oct",
                       "year": "2023",
                       "traffic": 12
-                  }
+                    }
                   ]
                 }
               }
@@ -1585,37 +1626,37 @@
                       "timeframe": "Saturday",
                       "date": "Sat Oct 14 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Sunday",
                       "date": "Sun Oct 15 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Monday",
                       "date": "Mon Oct 16 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Tuesday",
                       "date": "Tue Oct 17 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Wednesday",
                       "date": "Wed Oct 18 2023",
                       "traffic": 0
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Thursday",
                       "date": "Thu Oct 19 2023",
                       "traffic": 3
-                  },
-                  {
+                    },
+                    {
                       "timeframe": "Friday",
                       "date": "Fri Oct 20 2023",
                       "traffic": 9
-                  }
+                    }
                   ]
                 }
               }
@@ -1743,10 +1784,10 @@
                 "schema": {
                   "$ref": "#/components/schemas/SalesReport"
                 },
-                "example" : [
+                "example": [
                   {
-                    "hour" : "1",
-                    "sum" : "123456"
+                    "hour": "1",
+                    "sum": "123456"
                   }
                 ]
               }
@@ -1795,43 +1836,43 @@
                       },
                       "items": [
                         {
-                          "price" : 1.23,
-                          "order_item_status" : "pending",
-                          "category" : {
-                            "id": 1 ,
-                            "name" : "books",
-                            "createdAt" : "2023-10-11T00:00:00.000Z",
-                            "user_id" : "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
-                            "sub_categories" : [
+                          "price": 1.23,
+                          "order_item_status": "pending",
+                          "category": {
+                            "id": 1,
+                            "name": "books",
+                            "createdAt": "2023-10-11T00:00:00.000Z",
+                            "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
+                            "sub_categories": [
                               {
-                                "id" : 1,
+                                "id": 1,
                                 "name": "sub-book",
-                                "parent_category_id" : 1,
-                                "createdAt" : "2023-10-11T00:00:00.000Z"
+                                "parent_category_id": 1,
+                                "createdAt": "2023-10-11T00:00:00.000Z"
                               }
                             ]
                           }
                         },
                         {
-                         "price" : 12.34,
-                          "order_item_status" : "pending",
-                          "category" : {
-                            "id": 2 ,
-                            "name" : "furniture",
-                            "createdAt" : "2023-10-11T00:00:00.000Z",
-                            "user_id" : "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
-                            "sub_categories" : [
+                          "price": 12.34,
+                          "order_item_status": "pending",
+                          "category": {
+                            "id": 2,
+                            "name": "furniture",
+                            "createdAt": "2023-10-11T00:00:00.000Z",
+                            "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
+                            "sub_categories": [
                               {
-                                "id" : 2,
+                                "id": 2,
                                 "name": "sub-furniture",
-                                "parent_category_id" : 2,
-                                "createdAt" : "2023-10-11T00:00:00.000Z"
+                                "parent_category_id": 2,
+                                "createdAt": "2023-10-11T00:00:00.000Z"
                               }
                             ]
                           }
                         }
                       ]
-                    } 
+                    }
                   ],
                   "pagination": {
                     "page": 1,
