@@ -99,6 +99,19 @@ export default class SalesController extends BaseController {
           ORDER BY year asc;
         `
           break
+        default:
+          start_date = date.toISOString()
+          date.setHours(date.getHours() - 24)
+          end_date = date.toISOString()
+
+          salesReports = await prisma.$queryRaw`
+            SELECT
+              EXTRACT(HOUR FROM "createdAt") AS hour, SUM(order_price)
+            FROM order_item
+            WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
+            GROUP BY EXTRACT(HOUR FROM "createdAt")
+            ORDER BY hour asc;
+          `
       }
       this.success(res, '/api/sales/reports', 'Sales reports fetched successfully', 200, salesReports);
     } catch (error) {
