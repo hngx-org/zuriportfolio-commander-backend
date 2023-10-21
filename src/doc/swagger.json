@@ -976,7 +976,7 @@
       }
     },
     "/discount/track": {
-      "patch": {
+      "post": {
         "summary": "Track a Discount",
         "description": "Track a product that contains a discount.",
         "tags": ["Discount"],
