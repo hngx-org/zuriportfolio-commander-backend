@@ -11,11 +11,66 @@
       "description": "Production server"
     },
     {
+      "url": "https://staging.zuri.team/api/auth/api",
+      "description": "Zuriportfolio shop internal / Auth api."
+    },
+    {
       "url": "http://localhost:8080/api",
       "description": "Zuriportfolio shop internal / external api."
     }
   ],
   "paths": {
+    "/auth/signup": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Sign up a new user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "example": "John"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "Doe"
+                  },
+
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "sicoj92691@elixirsd.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "myPassword2021"
+                  }
+                },
+                "required": ["firstName", "firstName", "email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification code sent successfully."
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Refresh token is invalid or has expired."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
     "/auth/send-verification": {
       "post": {
         "tags": ["Authentication"],
