@@ -161,7 +161,7 @@ export default class DiscountController extends BaseController {
     });
 
     if (!userExists) {
-      logger.error(`[Track Promo]: Merchant not found.`);
+      logger.error(`[Track Promo]: Merchant not found. ${merchant_id}`);
 
       return this.error(res, '--discount/user-notfound', 'Merchant not found', 404);
     }
