@@ -12,7 +12,6 @@ export default class ShopController extends BaseController {
   constructor() {
     super();
   }
- 
 
   async createShop(req: Request, res: Response) {
     const merchant_id = (req as any).user?.id ?? TestUserId;
@@ -36,6 +35,7 @@ export default class ShopController extends BaseController {
       data: {
         id,
         name,
+        admin_status: 'approved',
         merchant: {
           connect: {
             id: merchant_id,
@@ -201,14 +201,14 @@ export default class ShopController extends BaseController {
 
   async getShopTrafficByFullYear(req: Request, res: Response) {
     const { shop_id } = req.params;
-  
+
     const currentDate = new Date();
     const endDate = new Date(currentDate);
     endDate.setHours(23, 59, 59, 999);
-  
+
     const startDate = new Date(endDate);
     startDate.setMonth(endDate.getMonth() - 11);
-  
+
     const shopTraffic = await prisma.store_traffic.findMany({
       where: {
         shop_id: shop_id,
@@ -221,232 +221,224 @@ export default class ShopController extends BaseController {
         createdAt: 'asc',
       },
     });
-  
+
     const result = [];
-  
+
     let currentMonth = startDate.getMonth();
     let currentYear = startDate.getFullYear();
-  
+
     for (let i = 0; i < 12; i++) {
       const monthlyTraffic = shopTraffic.filter((entry) => {
         const entryDate = new Date(entry.createdAt);
         return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
       });
-  
+
       result.push({
         timeframe: await this.getMonthName(currentMonth),
         year: `${currentYear}`.trim(),
         traffic: monthlyTraffic.length,
       });
-   
+
       currentMonth++;
       if (currentMonth > 11) {
         currentMonth = 0;
         currentYear++;
       }
     }
-  
+
     return this.success(res, '--shopTraffic/successful', 'Store traffic found for the last 12 months', 200, result);
   }
-  
- async getMonthName(monthNumber) {
+
+  async getMonthName(monthNumber) {
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return monthNames[monthNumber];
   }
-  
-    async getShopTrafficByThreeMonths(req: Request, res: Response) {
-      const { shop_id } = req.params;
-    
-      const endDate = new Date(); // Set end date to the current date
-      endDate.setHours(23, 59, 59, 999); // Set end date to the end of the day
-    
-      const startDate = new Date(endDate);
-      startDate.setMonth(endDate.getMonth() - 2); // Set start date to 2 months ago
-    
-      const shopTraffic = await prisma.store_traffic.findMany({
-        where: {
-          shop_id: shop_id,
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
+
+  async getShopTrafficByThreeMonths(req: Request, res: Response) {
+    const { shop_id } = req.params;
+
+    const endDate = new Date(); // Set end date to the current date
+    endDate.setHours(23, 59, 59, 999); // Set end date to the end of the day
+
+    const startDate = new Date(endDate);
+    startDate.setMonth(endDate.getMonth() - 2); // Set start date to 2 months ago
+
+    const shopTraffic = await prisma.store_traffic.findMany({
+      where: {
+        shop_id: shop_id,
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
         },
-        orderBy: {
-          createdAt: 'asc', // Ensure results are ordered by creation date
-        },
+      },
+      orderBy: {
+        createdAt: 'asc', // Ensure results are ordered by creation date
+      },
+    });
+
+    const result = [];
+
+    let currentMonth = startDate.getMonth();
+    const currentDate = new Date(startDate);
+
+    for (let i = 0; i < 3; i++) {
+      const monthlyTraffic = shopTraffic.filter((entry) => {
+        const entryDate = new Date(entry.createdAt);
+        return entryDate.getMonth() === currentMonth;
       });
-    
-      const result = [];
-    
-      let currentMonth = startDate.getMonth();
-      const currentDate = new Date(startDate);
-    
-      for (let i = 0; i < 3; i++) {
-        const monthlyTraffic = shopTraffic.filter((entry) => {
-          const entryDate = new Date(entry.createdAt);
-          return entryDate.getMonth() === currentMonth;
-        });
-    
-        result.push({
-          timeframe: `${currentDate.toLocaleString('default', { month: 'short' })}`,
-          year: `${currentDate.getFullYear()}`.trim(),
-          traffic: monthlyTraffic.length,
-        });
-    
-        currentMonth++;
-        currentDate.setMonth(currentDate.getMonth() + 1);
-      }
-    
-      return this.success(res, '--shopTraffic/successful', 'Store traffic found for the last 3 months', 200, result);
-    }
-    
 
-    
-    async  getOrdinalSuffix(n) {
-      const suffixes = ['th', 'st', 'nd', 'rd'];
-      const v = n % 100;
-      return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
-    }
-   
-    async getShopTrafficForLast30Days(req: Request, res: Response) {
-      const { shop_id } = req.params;
-    
-      const endDate = new Date(); // Set end date to the current date
-      endDate.setHours(23, 59, 59, 999); // Set end date to the end of the day
-    
-      const startDate = new Date(endDate);
-      startDate.setDate(endDate.getDate() - 29); // Set start date to 29 days ago
-    
-      const shopTraffic = await prisma.store_traffic.findMany({
-        where: {
-          shop_id: shop_id,
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
-        },
-        orderBy: {
-          createdAt: 'asc',
-        },
+      result.push({
+        timeframe: `${currentDate.toLocaleString('default', { month: 'short' })}`,
+        year: `${currentDate.getFullYear()}`.trim(),
+        traffic: monthlyTraffic.length,
       });
-    
-      const result = [];
-    
-      const currentDate = new Date(startDate);
-      for (let i = 0; i < 30; i++) {
-        const dailyTraffic = shopTraffic.filter((entry) => {
-          const entryDate = new Date(entry.createdAt);
-          return (
-            entryDate.getDate() === currentDate.getDate() &&
-            entryDate.getMonth() === currentDate.getMonth() &&
-            entryDate.getFullYear() === currentDate.getFullYear()
-          );
-        });
-    
-        result.push({
-          timeframe: `${ await this.getOrdinalSuffix(currentDate.getDate())}`,
-          date: currentDate.toDateString(),
-          traffic: dailyTraffic.length,
-        });
-    
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-    
-      return this.success(res, '--shopTraffic/successful', 'Store traffic found for the last 30 days', 200, result);
-    }
-    
 
-    async getShopTrafficForLast7Days(req: Request, res: Response) {
-      const { shop_id } = req.params;
-    
-      const endDate = new Date(); // Set end date to the current date
-      endDate.setHours(23, 59, 59, 999); // Set end date to the end of the day
-    
-      const startDate = new Date(endDate);
-      startDate.setDate(endDate.getDate() - 6); // Set start date to 6 days ago
-    
-      const shopTraffic = await prisma.store_traffic.findMany({
-        where: {
-          shop_id: shop_id,
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
-        },
-        orderBy: {
-          createdAt: 'asc',
-        },
-      });
-    
-      const result = [];
-    
-      const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    
-      const currentDate = new Date(startDate);
-      for (let i = 0; i < 7; i++) {
-        const dailyTraffic = shopTraffic.filter((entry) => {
-          const entryDate = new Date(entry.createdAt);
-          return (
-            entryDate.getDate() === currentDate.getDate() &&
-            entryDate.getMonth() === currentDate.getMonth() &&
-            entryDate.getFullYear() === currentDate.getFullYear()
-          );
-        });
-    
-        result.push({
-          timeframe: daysOfWeek[currentDate.getDay()],
-          date: currentDate.toDateString(),
-          traffic: dailyTraffic.length,
-        });
-    
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-    
-      return this.success(res, '--shopTraffic/successful', 'Store traffic found for the last 7 days', 200, result);
+      currentMonth++;
+      currentDate.setMonth(currentDate.getMonth() + 1);
     }
-    
-    
-    async getShopTrafficForLast24Hours(req: Request, res: Response) {
-      const { shop_id } = req.params;
-    
-      const currentDate = new Date();
-      const result = [];
-    
-      for (let i = 0; i < 24; i++) {
-        const startDate = new Date(currentDate);
-        startDate.setHours(currentDate.getHours() - (i + 1)); // Subtracting i+1 hours to get data for each past hour
-        const endDate = new Date(startDate);
-        endDate.setHours(startDate.getHours() + 1); // Setting endDate to the next hour
-    
-        const shopTraffic = await prisma.store_traffic.findMany({
-          where: {
-            shop_id: shop_id,
-            createdAt: {
-              gte: startDate,
-              lt: endDate,
-            },
-          },
-        });
-        // Format the hour in am/pm format
-    const hour = (startDate.getHours() % 12 || 12) + (startDate.getHours() >= 12 ? 'pm' : 'am');
 
-    
-        result.push({
-          // timeframe: startDate.toLocaleString(),
-          // storeTraffic: shopTraffic.length,
-
-          timeframe: hour,
-          date: startDate.toDateString(),
-          time: startDate.toLocaleTimeString(),
-          traffic: shopTraffic.length,
-        });
-      }
-    
-      result.reverse(); // Reverse the array to get results from oldest to newest
-    
-      return this.success(res, '--shopTraffic/successful', 'Store traffic found for the last 24 hours', 200, result);
-    }
-    
-    
+    return this.success(res, '--shopTraffic/successful', 'Store traffic found for the last 3 months', 200, result);
   }
-  
+
+  async getOrdinalSuffix(n) {
+    const suffixes = ['th', 'st', 'nd', 'rd'];
+    const v = n % 100;
+    return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
+  }
+
+  async getShopTrafficForLast30Days(req: Request, res: Response) {
+    const { shop_id } = req.params;
+
+    const endDate = new Date(); // Set end date to the current date
+    endDate.setHours(23, 59, 59, 999); // Set end date to the end of the day
+
+    const startDate = new Date(endDate);
+    startDate.setDate(endDate.getDate() - 29); // Set start date to 29 days ago
+
+    const shopTraffic = await prisma.store_traffic.findMany({
+      where: {
+        shop_id: shop_id,
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    const result = [];
+
+    const currentDate = new Date(startDate);
+    for (let i = 0; i < 30; i++) {
+      const dailyTraffic = shopTraffic.filter((entry) => {
+        const entryDate = new Date(entry.createdAt);
+        return (
+          entryDate.getDate() === currentDate.getDate() &&
+          entryDate.getMonth() === currentDate.getMonth() &&
+          entryDate.getFullYear() === currentDate.getFullYear()
+        );
+      });
+
+      result.push({
+        timeframe: `${await this.getOrdinalSuffix(currentDate.getDate())}`,
+        date: currentDate.toDateString(),
+        traffic: dailyTraffic.length,
+      });
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return this.success(res, '--shopTraffic/successful', 'Store traffic found for the last 30 days', 200, result);
+  }
+
+  async getShopTrafficForLast7Days(req: Request, res: Response) {
+    const { shop_id } = req.params;
+
+    const endDate = new Date(); // Set end date to the current date
+    endDate.setHours(23, 59, 59, 999); // Set end date to the end of the day
+
+    const startDate = new Date(endDate);
+    startDate.setDate(endDate.getDate() - 6); // Set start date to 6 days ago
+
+    const shopTraffic = await prisma.store_traffic.findMany({
+      where: {
+        shop_id: shop_id,
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    const result = [];
+
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    const currentDate = new Date(startDate);
+    for (let i = 0; i < 7; i++) {
+      const dailyTraffic = shopTraffic.filter((entry) => {
+        const entryDate = new Date(entry.createdAt);
+        return (
+          entryDate.getDate() === currentDate.getDate() &&
+          entryDate.getMonth() === currentDate.getMonth() &&
+          entryDate.getFullYear() === currentDate.getFullYear()
+        );
+      });
+
+      result.push({
+        timeframe: daysOfWeek[currentDate.getDay()],
+        date: currentDate.toDateString(),
+        traffic: dailyTraffic.length,
+      });
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return this.success(res, '--shopTraffic/successful', 'Store traffic found for the last 7 days', 200, result);
+  }
+
+  async getShopTrafficForLast24Hours(req: Request, res: Response) {
+    const { shop_id } = req.params;
+
+    const currentDate = new Date();
+    const result = [];
+
+    for (let i = 0; i < 24; i++) {
+      const startDate = new Date(currentDate);
+      startDate.setHours(currentDate.getHours() - (i + 1)); // Subtracting i+1 hours to get data for each past hour
+      const endDate = new Date(startDate);
+      endDate.setHours(startDate.getHours() + 1); // Setting endDate to the next hour
+
+      const shopTraffic = await prisma.store_traffic.findMany({
+        where: {
+          shop_id: shop_id,
+          createdAt: {
+            gte: startDate,
+            lt: endDate,
+          },
+        },
+      });
+      // Format the hour in am/pm format
+      const hour = (startDate.getHours() % 12 || 12) + (startDate.getHours() >= 12 ? 'pm' : 'am');
+
+      result.push({
+        // timeframe: startDate.toLocaleString(),
+        // storeTraffic: shopTraffic.length,
+
+        timeframe: hour,
+        date: startDate.toDateString(),
+        time: startDate.toLocaleTimeString(),
+        traffic: shopTraffic.length,
+      });
+    }
+
+    result.reverse(); // Reverse the array to get results from oldest to newest
+
+    return this.success(res, '--shopTraffic/successful', 'Store traffic found for the last 24 hours', 200, result);
+  }
+}
