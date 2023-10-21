@@ -150,7 +150,20 @@ export default class DiscountController extends BaseController {
 
     // check if product and userId id is a valid uuid
     if (!isUUID(productId) || !isUUID(merchant_id)) {
+      logger.error(`[Track Promo]: One of more of the ids passed are invalid.`);
+
       return this.error(res, '--discount/invalid-uuid', `One of more of the ids passed are invalid.`, 400);
+    }
+
+    // check if user exists
+    const userExists = await prisma.user.findFirst({
+      where: { id: merchant_id },
+    });
+
+    if (!userExists) {
+      logger.error(`[Track Promo]: Merchant not found.`);
+
+      return this.error(res, '--discount/user-notfound', 'Merchant not found', 404);
     }
 
     const promo_product = await prisma.promo_product.findFirst({
