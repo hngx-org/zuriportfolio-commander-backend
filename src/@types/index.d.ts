@@ -28,7 +28,6 @@ export interface TrackPromo {
 }
 
 export interface AddSalesReportType {
-  user_id: string;
   sales: number;
   order_id: string;
 }
