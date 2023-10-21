@@ -14,7 +14,7 @@ export default class SalesController extends BaseController {
   async getAllReport(req: Request, res: Response) {
     try {
       // Get the user_id from the request
-      const userId = (req as any).user?.id; // Replace with your actual logic to get user_id.
+      const userId = (req as any).user?.id // Replace with your actual logic to get user_id.
 
       // Parse the "timeframe" query parameter
       const timeframe = req.query.timeframe;
@@ -23,43 +23,97 @@ export default class SalesController extends BaseController {
         logger.error('User not found');
         return this.error(res, '/api/sales/reports', 'User not found', 404);
       }
+      
+      let salesReports;
+      let start_date, end_date;
+      let date = new Date()
 
-      // Fetch the sales reports from the database using Prisma
-      const salesReports = await prisma.sales_report.findMany({
-        where: {
-          user_id: userId,
-        },
-      });
+      // // Filter the sales reports based on the requested timeframe
+      switch (timeframe) {
+        case "24h":
+          start_date = date.toISOString()
+          date.setHours(date.getHours() - 24)
+          end_date = date.toISOString()
 
-      // Filter the sales reports based on the requested timeframe
-      const filteredReports = salesReports.filter((report) => {
-        const createdAt = new Date(report.createdAt);
-        const now = new Date();
+        salesReports = await prisma.$queryRaw`
+          SELECT
+            EXTRACT(HOUR FROM "createdAt") AS hour, SUM(order_price)
+          FROM order_item
+          WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
+          GROUP BY EXTRACT(HOUR FROM "createdAt")
+          ORDER BY hour asc;
+        `
+          break
 
-        if (timeframe === '24hr') {
-          const twentyFourHoursAgo = new Date(now);
-          twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
-          return createdAt >= twentyFourHoursAgo;
-        } else if (timeframe === '7d') {
-          const sevenDaysAgo = new Date(now);
-          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-          return createdAt >= sevenDaysAgo;
-        } else if (timeframe === '3m') {
-          const threeMonthsAgo = new Date(now);
-          threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-          return createdAt >= threeMonthsAgo;
-        } else if (timeframe === '12m') {
-          const twelveMonthsAgo = new Date(now);
-          twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
-          return createdAt >= twelveMonthsAgo;
-        } else if (timeframe === '1yr') {
-          const oneYearAgo = new Date(now);
-          oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-          return createdAt >= oneYearAgo;
-        }
-      });
+        case "7d":
+          start_date = date.toISOString()
+          date.setDate(date.getDate() - 7)
+          end_date = date.toISOString()
 
-      this.success(res, '/api/sales/reports', 'Sales reports fetched successfully', 200, filteredReports);
+          salesReports = await prisma.$queryRaw`
+          SELECT
+            EXTRACT(DAY FROM "createdAt") AS day, SUM(order_price)
+          FROM order_item
+          WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
+          GROUP BY EXTRACT(DAY FROM "createdAt")
+          ORDER BY day asc;
+        `
+          break
+
+        case "3m":
+          start_date = date.toISOString()
+          date.setDate(date.getMonth() - 3)
+          end_date = date.toISOString()
+
+          salesReports = await prisma.$queryRaw`
+          SELECT
+            EXTRACT(QUARTER FROM "createdAt") AS quarter, SUM(order_price)
+          FROM order_item
+          WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
+          GROUP BY EXTRACT(QUARTER FROM "createdAt")
+          ORDER BY quarter asc;
+        `
+          break
+
+        case "12m":
+          start_date = date.toISOString()
+          date.setDate(date.getMonth() - 12)
+          end_date = date.toISOString()
+
+          salesReports = await prisma.$queryRaw`
+          SELECT
+            EXTRACT(MONTH FROM "createdAt") AS month, SUM(order_price)
+          FROM order_item
+          WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
+          GROUP BY EXTRACT(MONTH FROM "createdAt")
+          ORDER BY month asc;
+        `
+          break
+
+        case "1y":
+          salesReports = await prisma.$queryRaw`
+          SELECT
+            EXTRACT(YEAR FROM "createdAt") AS year, SUM(order_price)
+          FROM order_item
+          GROUP BY EXTRACT(YEAR FROM "createdAt")
+          ORDER BY year asc;
+        `
+          break
+        default:
+          start_date = date.toISOString()
+          date.setHours(date.getHours() - 24)
+          end_date = date.toISOString()
+
+          salesReports = await prisma.$queryRaw`
+            SELECT
+              EXTRACT(HOUR FROM "createdAt") AS hour, SUM(order_price)
+            FROM order_item
+            WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
+            GROUP BY EXTRACT(HOUR FROM "createdAt")
+            ORDER BY hour asc;
+          `
+      }
+      this.success(res, '/api/sales/reports', 'Sales reports fetched successfully', 200, salesReports);
     } catch (error) {
       logger.error('Error fetching sales reports: ' + error);
       this.error(res, '/api/sales/reports', 'Error fetching sales reports', 500, error);
