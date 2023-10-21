@@ -3,8 +3,8 @@ import BaseController from './base.controller';
 import { AddPromotionPayloadType, TrackPromo } from '@types';
 import prisma from '../config/prisma';
 import { v4 as uuidv4 } from 'uuid';
-import { createDiscountSchema, trackPromotionSchema, validateUUID } from '../helper/validate';
-import { CreateDiscountType } from '../@types';
+import { createDiscountSchema, trackPromotionSchema, updatedDiscountSchema, validateUUID } from '../helper/validate';
+import { CreateDiscountType, UpdateDiscountType } from '../@types';
 import { genRandNum, validateDateRange } from '../helper';
 import logger from '../config/logger';
 import { TestUserId } from '../config/test';
@@ -44,7 +44,7 @@ export default class DiscountController extends BaseController {
       return this.error(res, '--discount/invalid-fields', validateSchema.error.message, 400);
     }
 
-    const { amount, discount_type, maximum_discount_price, product_ids, quantity, valid_from, valid_to } =
+    const { amount, discount_type, quantity, maximum_discount_price, product_ids, valid_from, valid_to } =
       req.body as CreateDiscountType;
     const validDiscountType = ['percentage', 'fixed'];
     const validDiscountEnum = {
@@ -107,9 +107,9 @@ export default class DiscountController extends BaseController {
         id: promo_id,
         user_id: userId,
         discount_type: validDiscountEnum[discount_type.toLowerCase()],
-        quantity,
+        quantity: quantity ?? 1,
         amount,
-        maximum_discount_price,
+        maximum_discount_price: maximum_discount_price ? maximum_discount_price : 0,
         valid_from,
         valid_to,
         promotion_type: 'Discount',
@@ -146,6 +146,7 @@ export default class DiscountController extends BaseController {
     }
 
     // check if product exists
+    // ! Remember to work on accepting an array of product id's.
     const { promo_id, productId, merchant_id } = payload;
     const promo_product = await prisma.promo_product.findFirst({
       where: {
@@ -362,5 +363,55 @@ export default class DiscountController extends BaseController {
     });
 
     this.success(res, '--discount/success', 'discount deleted successfully', 200);
+  }
+
+  async updateDiscount(req: Request, res: Response) {
+    const userId = (req as any).user?.id ?? TestUserId;
+    const discountId = req.params['discount_id'] as string;
+
+    if (!discountId || isNaN(+discountId)) {
+      return this.error(res, '--discount/invalid-id', 'Invalid discount id', 400);
+    }
+
+    // check if discount exists
+    const discountExists = await prisma.promotion.findFirst({
+      where: { AND: { id: +discountId, user_id: userId } },
+    });
+
+    if (!discountExists) {
+      return this.error(res, '--discount/notfound', `Discount not found.`, 404);
+    }
+
+    const payload: UpdateDiscountType = req.body;
+
+    const { error, value } = updatedDiscountSchema.validate(payload);
+
+    if (error) {
+      return this.error(res, '--discount/invalid-fields', error?.message, 400, null);
+    }
+
+    // Find the discount by ID
+    const existingDiscount = await prisma.promotion.findFirst({
+      where: {
+        AND: {
+          id: +discountId,
+          user_id: userId,
+        },
+      },
+    });
+
+    // Check if the discount exists
+    if (!existingDiscount) {
+      return this.error(res, '--discount/not-found', 'Discount not found', 404);
+    }
+
+    const updatedDiscount = await prisma.promotion.update({
+      where: { id: +discountId },
+      data: {
+        ...value,
+      },
+    });
+
+    this.success(res, '--discount/updated', 'Discount has been updated successfully', 200, updatedDiscount);
   }
 }
