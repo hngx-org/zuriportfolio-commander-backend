@@ -16,8 +16,6 @@ export default class OrderController extends BaseController {
     const userId = (req as any).user?.id ?? TestUserId;
     const orderId = req.params['order_id'];
 
-    console.log({ userId });
-
     if (!userId) {
       return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
     }
@@ -100,9 +98,9 @@ export default class OrderController extends BaseController {
           ...products,
           price: ord.order_price,
           order_item_status: ord.status,
-          category: await prisma.product_category.findFirst({
+          category: await prisma.product_sub_category.findFirst({
             where: { id: products.category_id },
-            include: { sub_categories: true },
+            include: { parent_category: true },
           }),
         });
       }
