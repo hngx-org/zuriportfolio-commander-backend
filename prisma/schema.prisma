@@ -85,11 +85,13 @@ model user {
     activities           activity[]
     categories           product_category[]
     products             product[]
+    merchant_order       order[]
 }
 
 model order {
     id          String   @id @unique @default(uuid())
     customer_id String
+    merchant_id String
     subtotal    Float?
     VAT         Float?
     discount    Float    @default(0)
@@ -98,6 +100,7 @@ model order {
     updatedAt   DateTime @default(now())
 
     customer     user           @relation(name: "customer_orders", fields: [customer_id], references: [id])
+    merchant     user           @relation(fields: [merchant_id], references: [id], onDelete: Cascade)
     sales_report sales_report[]
     order_items  order_item[]
 }
@@ -274,7 +277,7 @@ model store_traffic {
 }
 
 model sales_report {
-    id        String   @id 
+    id        String   @id
     user_id   String
     sales     Int
     order_id  String
