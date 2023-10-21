@@ -110,7 +110,7 @@ export const updatedDiscountSchema = Joi.object({
 });
 
 export const trackPromotionSchema = Joi.object({
-  promo_id: Joi.string().required(),
+  promo_id: Joi.number().required(),
   productId: Joi.string().required(),
   merchant_id: Joi.string().required(),
 });
