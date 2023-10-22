@@ -20,6 +20,10 @@ export default class OrderController extends BaseController {
       return this.error(res, '--order/all', 'This user id does not exist', 400, 'user not found');
     }
 
+    if (!orderId) {
+      return this.error(res, '--order/all', 'This order id does not exist', 400);
+    }
+
     const page = parseInt(req.query.page?.toString()) || 1;
     const pageSize = parseInt(req.query.pageSize?.toString()) || 10;
     const skip = (page - 1) * pageSize;
@@ -219,6 +223,14 @@ export default class OrderController extends BaseController {
     const { timeframe } = req.query;
     const userId = (req as any).user?.id || TestUserId;
 
+    if (!userId) {
+      return this.error(res, '--order/all', 'User ID is required', 400);
+    }
+
+    if (!timeframe) {
+      return this.error(res, '--order/all', 'Timeframe is required', 400);
+    }
+
     let startDate: Date;
     let endDate: Date = new Date(); // default to cuo the current date
     endDate.setHours(23, 59, 59, 999);
@@ -276,6 +288,10 @@ export default class OrderController extends BaseController {
     const timeframe = (req.query.timeframe as string)?.toLocaleLowerCase();
     const merchantUserId = (req as any).user?.id ?? TestUserId;
 
+    if (!merchantUserId) {
+      return this.error(res, '--order/all', 'Merchant ID required', 400);
+    }
+
     if (!timeframe) {
       this.error(res, '--order/average', 'Missing timeframe parameter', 400);
       return;
@@ -329,7 +345,16 @@ export default class OrderController extends BaseController {
 
   async updateOrderStatus(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--order/all', 'User ID is required', 400);
+    }
+
     const orderId = req.params['order_id'];
+    if (!orderId) {
+      return this.error(res, '--order/all', 'Order ID is required', 400);
+    }
+
     const newStatus = req.body.status;
 
     // Check if the order exists
@@ -381,6 +406,9 @@ export default class OrderController extends BaseController {
     }
 
     const { name } = req.params;
+    if (!name) {
+      return this.error(res, '--orders/search', 'Product name is required', 400);
+    }
     const { page = 1, pageSize = 10 } = req.query;
 
     const orderItems = await prisma.order_item.findMany({
