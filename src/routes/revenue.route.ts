@@ -17,7 +17,7 @@ export default class RevenueRoute {
     this.router.get(
       `${this.path}s`,
       isAuthenticated,
-      useCatchErrors(this.revenueController.getRevenue.bind(this.revenueController)),
+      useCatchErrors(this.revenueController.getRevenue.bind(this.revenueController))
     );
   }
 }

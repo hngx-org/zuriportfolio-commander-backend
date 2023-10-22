@@ -729,7 +729,7 @@
         ]
       }
     },
-    "/products/unpublish/{productId}": {
+    "/products/{productId}/unpublish": {
       "patch": {
         "summary": "Unpublish a product",
         "tags": ["Product"],
