@@ -16,7 +16,7 @@ export default class ActivitiesRoute {
     this.router.get(
       `${this.path}`,
       //   isAuthenticated,
-      useCatchErrors(this.activitiesController.getActivities.bind(this.activitiesController))
+      useCatchErrors(this.activitiesController.getActivities.bind(this.activitiesController)),
     );
   }
 }
