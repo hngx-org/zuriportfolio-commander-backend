@@ -186,7 +186,7 @@ export default class DiscountController extends BaseController {
         res,
         '--discount/promo-notfound',
         `product promo with this id ${promo_id} doesn't exist. `,
-        404
+        404,
       );
     }
 
@@ -220,7 +220,7 @@ export default class DiscountController extends BaseController {
       '--discount/promo-notfound',
       `> Promo tracked for product ${track_promotion.product.name}
       > Merchant: ${track_promotion.user.email}`,
-      404
+      404,
     );
   }
 
@@ -354,7 +354,7 @@ export default class DiscountController extends BaseController {
         '--discount/promotions',
         'Products with promotions and tracked promotions fetched successfully',
         200,
-        productsWithPromotionsAndTrackedCounts
+        productsWithPromotionsAndTrackedCounts,
       );
     }
   }
