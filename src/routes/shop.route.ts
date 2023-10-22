@@ -53,23 +53,23 @@ export default class ShopRoute {
     );
     this.router.get(
       `${this.path}/store-traffic/count/12months/:shop_id`,
-      useCatchErrors(this.shopController.getShopTrafficByFullYear.bind(this.shopController)),
+      useCatchErrors(this.shopController.getShopTrafficByFullYear.bind(this.shopController))
     );
     this.router.get(
       `${this.path}/store-traffic/count/3months/:shop_id`,
-      useCatchErrors(this.shopController.getShopTrafficByThreeMonths.bind(this.shopController)),
+      useCatchErrors(this.shopController.getShopTrafficByThreeMonths.bind(this.shopController))
     );
     this.router.get(
       `${this.path}/store-traffic/count/30days/:shop_id`,
-      useCatchErrors(this.shopController.getShopTrafficForLast30Days.bind(this.shopController)),
+      useCatchErrors(this.shopController.getShopTrafficForLast30Days.bind(this.shopController))
     );
     this.router.get(
       `${this.path}/store-traffic/count/7days/:shop_id`,
-      useCatchErrors(this.shopController.getShopTrafficForLast7Days.bind(this.shopController)),
+      useCatchErrors(this.shopController.getShopTrafficForLast7Days.bind(this.shopController))
     );
     this.router.get(
       `${this.path}/store-traffic/count/24hrs/:shop_id`,
-      useCatchErrors(this.shopController.getShopTrafficForLast24Hours.bind(this.shopController)),
+      useCatchErrors(this.shopController.getShopTrafficForLast24Hours.bind(this.shopController))
     );
   }
 }

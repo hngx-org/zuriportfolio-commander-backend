@@ -2,10 +2,9 @@ import { Request, Response } from 'express';
 import BaseController from './base.controller';
 import logger from '../config/logger';
 import prisma from '../config/prisma';
-import { AddSalesReportType } from '@types';
-import { saleSchema } from './../helper/validate';
-import { v4 as uuidv4 } from 'uuid';
 import { TestUserId } from '../config/test';
+
+type ValidTimeFrame = '1d' | '7d' | '30d' | '3m' | '12m' | '1yr' | '24hr';
 
 export default class SalesController extends BaseController {
   constructor() {
@@ -15,7 +14,7 @@ export default class SalesController extends BaseController {
   async getAllReport(req: Request, res: Response) {
     try {
       // Get the user_id from the request
-      const userId = (req as any).user?.id; // Replace with your actual logic to get user_id.
+      const userId = (req as any).user?.id ?? TestUserId; // Replace with your actual logic to get user_id.
 
       // Parse the "timeframe" query parameter
       const timeframe = req.query.timeframe;
@@ -121,30 +120,152 @@ export default class SalesController extends BaseController {
     }
   }
 
-  async addReport(req: Request, res: Response) {
-    const payload: AddSalesReportType = req.body;
-    const { error } = saleSchema.validate(payload);
+  getFrameLabel(date: Date, timeframe: ValidTimeFrame) {
+    const validDays = ['7d', '30d'];
+    const validHr = ['24hr', '1d'];
+    const validMonths = ['3m', '12m', '1yr'];
+    let label = '';
+    if (validHr.includes(timeframe)) {
+      label = date.toLocaleString('en-US', { hour: '2-digit' });
+    }
+    if (validDays.includes(timeframe)) {
+      label = date.toLocaleString('en-US', { weekday: 'short' });
+    }
+    if (validMonths.includes(timeframe)) {
+      label = date.toLocaleString('en-US', { month: 'long' });
+    }
+    return label;
+  }
 
-    if (error) {
-      return this.error(res, '--sales/invalid-fields', error?.message ?? 'missing order details', 400);
+  async groupOrderItemsByTimeframe(timeframe, userId) {
+    // Calculate the start date based on the selected timeframe
+    const currentDate = new Date();
+    let startDate = new Date();
+
+    switch (timeframe) {
+      case '1d':
+        startDate.setDate(currentDate.getDate() - 1);
+        break;
+      case '24hr':
+        startDate.setDate(currentDate.getDate() - 1);
+        break;
+      case '7d':
+        startDate.setDate(currentDate.getDate() - 7);
+        break;
+      case '30d':
+        startDate.setDate(currentDate.getDate() - 30);
+        break;
+      case '3m':
+        startDate.setMonth(currentDate.getMonth() - 3);
+        break;
+      case '12m':
+        startDate.setMonth(currentDate.getMonth() - 12);
+        break;
+      case '1yr':
+        startDate.setFullYear(currentDate.getFullYear() - 1);
+        break;
+      default:
+        break;
     }
 
-    const id = uuidv4();
-    const user_id = ((req as any).user?.id as never) ?? (TestUserId as never);
-    const { sales, order_id } = payload;
-
-    // create sales report
-    const created = await prisma.sales_report.create({
-      data: {
-        id,
-        user_id,
-        sales,
-        order_id,
+    // Query order_items data within the specified timeframe
+    const orderItems = await prisma.order_item.findMany({
+      where: {
+        merchant_id: userId,
+        createdAt: {
+          gte: startDate,
+          lte: currentDate,
+        },
+      },
+      include: {
+        product: true,
       },
     });
 
-    this.success(res, 'Sales report added', 'Sales report has been added successfully', 201, {
-      ...created,
-    });
+    // Create a report object with default values
+    const report = {
+      timeframe: timeframe,
+      reports: [],
+    };
+
+    // Create a map to store sales data for each month
+    const timeframeSales = new Map();
+
+    while (startDate <= currentDate) {
+      const frameLabel = this.getFrameLabel(startDate, timeframe);
+      timeframeSales.set(frameLabel, 0);
+
+      if (timeframe === '12m' || timeframe === '1yr') {
+        startDate.setMonth(startDate.getMonth() + 1);
+      } else if (timeframe === '3m') {
+        startDate.setMonth(startDate.getMonth() + 1);
+      } else if (timeframe === '30d') {
+        startDate.setDate(startDate.getDate() + 1);
+      } else if (timeframe === '1m') {
+        startDate.setMonth(startDate.getMonth() + 1);
+      } else {
+        startDate.setDate(startDate.getDate() + 1);
+      }
+    }
+
+    if (timeframe === '24hr' || timeframe === '1d') {
+      // Create an array to store the frames
+      const frames = [];
+
+      for (let i = 0; i < 24; i++) {
+        const date = new Date();
+        date.setHours(i);
+        const frameLabel = this.getFrameLabel(date, timeframe);
+
+        // Create an object for each frame and add it to the frames array
+        frames.push({ frame: frameLabel, sales: 0 });
+      }
+
+      // Set the frames array as the report.reports
+      report.reports = frames;
+    }
+
+    if (orderItems.length > 0) {
+      for (const item of orderItems) {
+        const createdAt = new Date(item.createdAt);
+        const promo = item.promo_id;
+        let sales = 0;
+        let currentSales;
+        console.log({ timeframe }, timeframe === '24hr');
+        if (promo) {
+          sales = item.order_price + item.order_VAT - item.order_discount;
+        } else {
+          sales = item.order_price + item.order_VAT;
+        }
+        if (timeframe === '24hr') {
+          const hour = createdAt.getHours();
+          currentSales = timeframeSales.get(hour) || 0;
+          timeframeSales.set(hour, currentSales + sales);
+
+          const frameLabel = this.getFrameLabel(createdAt, timeframe);
+          timeframeSales.set(frameLabel, currentSales + sales);
+        } else {
+          const frameLabel = this.getFrameLabel(createdAt, timeframe);
+          currentSales = timeframeSales.get(frameLabel) || 0;
+          timeframeSales.set(frameLabel, currentSales + sales);
+        }
+      }
+
+      // Convert the timeframeSales map to the salesReport format
+      timeframeSales.forEach((sales, frameLabel) => {
+        report.reports.push({ frame: frameLabel, sales, currency: orderItems[0].product.currency });
+      });
+    }
+
+    return report;
+  }
+
+  async getSalesReports(req: Request, res: Response) {
+    const userId = (req as any).user?.id ?? TestUserId;
+    const timeframe = req.query.timeframe ?? '7d';
+
+    const result = await this.groupOrderItemsByTimeframe(timeframe, userId);
+
+    this.success(res, '--sales-report/success', 'sales report fetched', 200, result);
   }
 }
