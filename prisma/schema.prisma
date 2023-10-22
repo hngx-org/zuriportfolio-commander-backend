@@ -286,13 +286,13 @@ model sales_report {
 }
 
 model activity {
-    id          String             @id
+    id          String   @id @default(uuid())
     action      String
     user_id     String
     title       String
     description String
-    user_type   ACTIVITY_USER_TYPE
-    createdAt   DateTime           @default(now())
+    // user_type   ACTIVITY_USER_TYPE
+    createdAt   DateTime @default(now())
 
     user user @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
