@@ -103,7 +103,7 @@ model order {
 }
 
 model order_item {
-    id             Int          @id @unique
+    id             Int         @id @default(autoincrement())
     order_id       String
     product_id     String
     merchant_id    String
@@ -124,7 +124,7 @@ model order_item {
 }
 
 model product {
-    id              String         @id @unique
+    id              String         @id @default(uuid())
     user_id         String
     shop_id         String
     category_id     Int

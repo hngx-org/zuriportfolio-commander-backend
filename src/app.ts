@@ -39,7 +39,7 @@ export default class App {
 
   initSwaggerUI() {
     // handle swagger-doc
-    this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swagggerJson));
+    this.app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swagggerJson));
   }
 
   listen() {
@@ -61,7 +61,7 @@ export default class App {
       res.json({ message: 'Youve reached Zuriportfolio shop internal api' });
     });
 
-    this.app.use('/api', (req, res) => {
+    this.app.use('/api/v1', (req, res) => {
       res.json({ message: 'Youve reached Zuriportfolio shop internal api' });
     });
 
