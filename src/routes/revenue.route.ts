@@ -6,7 +6,7 @@ import { isAuthenticated } from '../middlewares/auth';
 export default class RevenueRoute {
   router = express.Router();
   revenueController = new RevenueController();
-  path = '/revenue';
+  path = '/v1/revenue';
 
   constructor() {
     this.initializeRoutes();

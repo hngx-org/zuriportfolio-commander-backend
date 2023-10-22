@@ -6,7 +6,7 @@ import { isAuthenticated } from '../middlewares/auth';
 export default class OrderRoute {
   router = express.Router();
   OrderController = new OrderController();
-  path = '/order';
+  path = '/v1/order';
 
   constructor() {
     this.initializeRoutes();

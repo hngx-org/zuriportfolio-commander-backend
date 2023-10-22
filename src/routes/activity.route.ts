@@ -6,7 +6,7 @@ import ActivityController from '../controller/activity.controller';
 export default class ActivitiesRoute {
   router = express.Router();
   activitiesController = new ActivityController();
-  path = '/activities';
+  path = '/v1/activities';
 
   constructor() {
     this.initializeRoutes();

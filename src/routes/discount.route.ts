@@ -6,7 +6,7 @@ import { isAuthenticated } from '../middlewares/auth';
 export default class DiscountRoute {
   router = express.Router();
   discountController = new DiscountController();
-  path = '/discount';
+  path = '/v1/discount';
 
   constructor() {
     this.initializeRoutes();
