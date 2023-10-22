@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://zuriportfolio-shop-internal-api.onrender.com/api",
+      "url": "https://zuriportfolio-shop-internal-api.onrender.com/api/v1",
       "description": "Production server"
     },
     {
@@ -15,7 +15,7 @@
       "description": "Zuriportfolio shop internal / Auth api."
     },
     {
-      "url": "http://localhost:8080/api",
+      "url": "http://localhost:8080/api/v1",
       "description": "Zuriportfolio shop internal / external api."
     }
   ],
@@ -1737,6 +1737,24 @@
             },
             "required": true,
             "description": "The ID of the shop"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "The page number for pagination"
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "type": "integer",
+              "default": 12
+            },
+            "description": "The number of items per page"
           }
         ],
         "responses": {
@@ -1766,6 +1784,27 @@
                           "name": {
                             "type": "string"
                           }
+                        }
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "totalItems": {
+                          "type": "integer",
+                          "description": "Total number of items"
+                        },
+                        "totalPages": {
+                          "type": "integer",
+                          "description": "Total number of pages"
+                        },
+                        "currentPage": {
+                          "type": "integer",
+                          "description": "Current page number"
+                        },
+                        "pageSize": {
+                          "type": "integer",
+                          "description": "Number of items per page"
                         }
                       }
                     }

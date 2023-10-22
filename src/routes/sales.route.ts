@@ -16,7 +16,7 @@ export default class SalesRoute {
     this.router.get(
       `${this.path}/reports`,
       isAuthenticated,
-      useCatchErrors(this.salesController.getSalesReports.bind(this.salesController))
+      useCatchErrors(this.salesController.getSalesReports.bind(this.salesController)),
     );
   }
 }

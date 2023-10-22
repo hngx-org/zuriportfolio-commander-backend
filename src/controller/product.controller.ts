@@ -864,7 +864,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_delete/invalid-field',
         'product id is invalid, expected product_id in uuid format.',
-        400
+        400,
       );
     }
 
@@ -913,7 +913,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_category/category-exists',
         `Category with name '${newName}' already exists. Please choose a different name.`,
-        409
+        409,
       );
     }
 
@@ -946,7 +946,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_sub_category/category-exists',
         `Sub-category with name '${newName}' already exists. Please choose a different name.`,
-        409
+        409,
       );
     }
 
@@ -1004,7 +1004,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_category/category-exists',
         `Category with id ${value.parent_id} does not exists.`,
-        409
+        409,
       );
     }
 
@@ -1022,7 +1022,7 @@ export default class ProductController extends BaseController {
       201,
       {
         category,
-      }
+      },
     );
   }
 

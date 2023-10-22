@@ -39,7 +39,7 @@ export default class App {
 
   initSwaggerUI() {
     // handle swagger-doc
-    this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swagggerJson));
+    this.app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swagggerJson));
   }
 
   listen() {
@@ -54,14 +54,14 @@ export default class App {
   initializedRoutes(routes: Routes[]) {
     // initialize all routes middleware
     routes.forEach((route) => {
-      this.app.use('/api', route.router);
+      this.app.use('/api/v1', route.router);
     });
 
     this.app.use('/', (req, res) => {
       res.json({ message: 'Youve reached Zuriportfolio shop internal api' });
     });
 
-    this.app.use('/api', (req, res) => {
+    this.app.use('/api/v1', (req, res) => {
       res.json({ message: 'Youve reached Zuriportfolio shop internal api' });
     });
 
