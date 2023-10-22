@@ -228,6 +228,19 @@
         }
       },
       "auth_required": true
+    },
+    {
+      "url": "/revenues",
+      "method": "GET",
+      "query_params": [{
+          "name": "timeframe",
+            "type": "string",
+            "enum": ["today", "yesterday", "all"]
+           
+      }],
+      "body_params": {
+      },
+      "auth_required": true
     }
   ]
 }
