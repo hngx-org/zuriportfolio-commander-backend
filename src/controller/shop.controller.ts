@@ -15,6 +15,10 @@ export default class ShopController extends BaseController {
 
   async createShop(req: Request, res: Response) {
     const merchant_id = (req as any).user?.id ?? TestUserId;
+
+    if (!merchant_id) {
+      return this.error(res, '--product/error', 'Merchant ID required', 400);
+    }
     const { error } = createShopSchema.validate(req.body);
     if (error) {
       return this.error(res, '--shop/invalid-fields', error?.message ?? 'missing shop details.', 400, null);
@@ -53,6 +57,10 @@ export default class ShopController extends BaseController {
   async deleteShop(req: Request, res: Response) {
     const { id } = req.params;
     const merchant_id = (req as any).user?.id ?? TestUserId;
+
+    if (!merchant_id) {
+      return this.error(res, '--product/error', 'Merchant ID required', 400);
+    }
     const shop = await prisma.shop.findFirst({
       where: {
         AND: {
@@ -81,6 +89,11 @@ export default class ShopController extends BaseController {
   // Get all shop controller
   async getMerchantShops(req: Request, res: Response) {
     const merchant_id = (req as any).user?.id ?? TestUserId;
+
+    if (!merchant_id) {
+      return this.error(res, '--product/error', 'Merchant ID required', 400);
+    }
+
     const shop = await prisma.shop.findFirst({
       where: {
         AND: {
@@ -106,6 +119,10 @@ export default class ShopController extends BaseController {
   async updateShop(req: Request, res: Response) {
     const shopId = req.params.shop_id;
     const userId = (req as any).user['id'];
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
 
     if (shopId === undefined) {
       return this.error(res, '--shop/ShortId empty', 'Short ID cannot be empty', 400);
@@ -164,6 +181,10 @@ export default class ShopController extends BaseController {
   // Fetch the shop by its ID
   async getProductsByShopId(req: Request, res: Response) {
     const shopId = req.params.shop_id;
+
+    if (!shopId) {
+      return this.error(res, '--product/error', 'Shop ID required', 400);
+    }
 
     if (!isUUID(shopId)) {
       return this.error(res, '--shop/invalid-id', 'Invalid uuid format.', 400);

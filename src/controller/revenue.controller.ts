@@ -14,6 +14,10 @@ export default class RevenueController extends BaseController {
     const timeframe = (req.query.timeframe as string)?.toLocaleLowerCase();
     const userId = (req as any).user?.id ?? TestUserId;
 
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
+
     const validTimeframe = ['today', 'yesterday', 'all'];
     if (!validTimeframe.includes(timeframe)) {
       return this.error(res, '--revenue/invalid-timeframe', `Expected a valid timeframe, got ${timeframe}`, 400);

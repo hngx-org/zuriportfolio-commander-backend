@@ -16,6 +16,7 @@ export default class SalesController extends BaseController {
       // Get the user_id from the request
       const userId = (req as any).user?.id ?? TestUserId; // Replace with your actual logic to get user_id.
 
+
       // Parse the "timeframe" query parameter
       const timeframe = req.query.timeframe;
 
@@ -269,6 +270,10 @@ export default class SalesController extends BaseController {
 
   async getSalesReports(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
     const timeframe = req.query.timeframe ?? '7d';
 
     const result = await this.groupOrderItemsByTimeframe(timeframe, userId);
