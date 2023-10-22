@@ -13,16 +13,10 @@ export default class SalesRoute {
   }
 
   initializeRoutes() {
-    this.router.post(
-      `${this.path}/report/create`,
-      isAuthenticated,
-      useCatchErrors(this.salesController.addReport.bind(this.salesController))
-    );
-
     this.router.get(
       `${this.path}/reports`,
-      isAuthenticated,
-      useCatchErrors(this.salesController.getAllReport.bind(this.salesController)),
+      // isAuthenticated,
+      useCatchErrors(this.salesController.getSalesReports.bind(this.salesController))
     );
   }
 }
