@@ -10,65 +10,23 @@ export default class RevenueController extends BaseController {
     super();
   }
 
-  async updateRevenue(req: Request, res: Response) {
-    const merchantUserId = (req as any).user?.id ?? TestUserId;
-    const { order_id } = req.params;
-
-    if (!order_id) {
-      return this.error(res, '--order/missing order_id', 'Please provide a valid order ID', 400);
-    }
-
-    const order = await prisma.order.findUnique({
-      where: { id: order_id },
-    });
-
-    if (!order) {
-      return this.error(res, '--order/not-found', 'Order not found', 400);
-    }
-
-    if (order.status !== 'completed') {
-      return this.error(res, '--order/not-completed', 'Order is not completed', 400);
-    }
-
-    const revenueAmount = order.subtotal;
-
-    const existingRevenue = await prisma.revenue.findFirst({
-      where: {
-        user_id: merchantUserId,
-      },
-    });
-
-    let updatedRevenue;
-
-    if (existingRevenue) {
-      updatedRevenue = await prisma.revenue.update({
-        where: {
-          id: existingRevenue.id,
-        },
-        data: {
-          amount: existingRevenue.amount + revenueAmount,
-        },
-      });
-    }
-
-    this.success(res, '--revenues', 'Revenue updated successfully', 200, updatedRevenue);
-  }
-
   async getRevenue(req: Request, res: Response) {
     const timeframe = (req.query.timeframe as string)?.toLocaleLowerCase();
     const userId = (req as any).user?.id ?? TestUserId;
 
-    if (!timeframe) {
-      this.error(res, '--revenue', 'Missing parameter timeframe', 400);
-      return;
+    const validTimeframe = ['today', 'yesterday', 'all'];
+    if (!validTimeframe.includes(timeframe)) {
+      return this.error(res, '--revenue/invalid-timeframe', `Expected a valid timeframe, got ${timeframe}`, 400);
     }
 
-    // Calculate the start and end time for today
-    let startTime: Date, endTime: Date;
+    let response = { timeframe: timeframe, revenue: 0, currency: 'NGN' };
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
-  
+
+    let startTime: Date, endTime: Date;
+    yesterday.setDate(today.getDate() - 1);
+
     switch (timeframe) {
       case 'today':
         startTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
@@ -79,30 +37,46 @@ export default class RevenueController extends BaseController {
         endTime = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 23, 59, 59);
         break;
       default:
-        this.error(res, '--revenue', 'Invalid timeframe', 400);
-        return;
+        break;
     }
-  
-    // fetch revenue data for today
-    const todayRevenue = await prisma.revenue.findMany({
-      where: {
-        user_id: userId,
-        createdAt: {
-          gte: startTime,
-          lte: endTime,
+
+    let orders = null;
+
+    if ((timeframe as string) === 'all') {
+      orders = await prisma.order_item.findMany({
+        where: {
+          merchant_id: userId,
+          status: 'completed',
         },
-      },
-    });
-
-    if (todayRevenue.length === 0) {
-      this.success(res, '--revenue', `No revenue found for ${timeframe}`, 200, {
-        todayRevenue: 0,
+        include: { product: true },
       });
-      return;
+    } else {
+      orders = await prisma.order_item.findMany({
+        where: {
+          merchant_id: userId,
+          createdAt: {
+            gte: startTime,
+            lt: endTime,
+          },
+          status: 'completed',
+        },
+        include: { product: true },
+      });
     }
 
-    return this.success(res, '--revenue', `Revenue for ${timeframe} fetched successfully`, 200, { 
-      todayRevenue 
-    });
+    if (orders.length > 0) {
+      orders.forEach((ord) => {
+        const promo = ord.promo_id;
+        if (promo) {
+          response['revenue'] += ord.order_price + ord.order_VAT - ord.order_discount;
+          response['currency'] = ord.product.currency;
+        } else {
+          response['revenue'] += ord.order_price + ord.order_VAT;
+          response['currency'] = ord.product.currency;
+        }
+      });
+    }
+
+    return this.success(res, '--revenue/success', 'revenue fetched successfully', 200, response);
   }
 }

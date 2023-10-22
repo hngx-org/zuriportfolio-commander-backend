@@ -231,7 +231,7 @@ export default class SalesController extends BaseController {
         const promo = item.promo_id;
         let sales = 0;
         let currentSales;
-        console.log({ timeframe }, timeframe === '24hr');
+
         if (promo) {
           sales = item.order_price + item.order_VAT - item.order_discount;
         } else {
