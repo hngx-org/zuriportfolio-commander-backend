@@ -126,7 +126,15 @@ export default class SalesController extends BaseController {
     const validMonths = ['3m', '12m', '1yr'];
     let label = '';
     if (validHr.includes(timeframe)) {
-      label = date.toLocaleString('en-US', { hour: '2-digit' });
+      // Format the date as "YYYY-MM-DD"
+      const formattedDate = date.toISOString().split('T')[0];
+
+      // Convert hours to AM/PM format
+      const hours = date.getHours();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
+
+      label = `${formattedDate} ${formattedHours} ${ampm}`;
     }
     if (validDays.includes(timeframe)) {
       label = date.toLocaleString('en-US', { weekday: 'short' });
@@ -145,9 +153,11 @@ export default class SalesController extends BaseController {
     switch (timeframe) {
       case '1d':
         startDate.setDate(currentDate.getDate() - 1);
+        startDate.setHours(0, 0, 0, 0);
         break;
       case '24hr':
         startDate.setDate(currentDate.getDate() - 1);
+        startDate.setHours(0, 0, 0, 0);
         break;
       case '7d':
         startDate.setDate(currentDate.getDate() - 7);
@@ -157,6 +167,8 @@ export default class SalesController extends BaseController {
         break;
       case '3m':
         startDate.setMonth(currentDate.getMonth() - 3);
+        // startDate.setDate(1);
+        // startDate.setHours(0, 0, 0, 0);
         break;
       case '12m':
         startDate.setMonth(currentDate.getMonth() - 12);
@@ -209,18 +221,13 @@ export default class SalesController extends BaseController {
     }
 
     if (timeframe === '24hr' || timeframe === '1d') {
-      // Create an array to store the frames
       const frames = [];
-
-      for (let i = 0; i < 24; i++) {
+      for (let i = 1; i < 24; i++) {
         const date = new Date();
         date.setHours(i);
         const frameLabel = this.getFrameLabel(date, timeframe);
-
-        // Create an object for each frame and add it to the frames array
         frames.push({ frame: frameLabel, sales: 0 });
       }
-
       // Set the frames array as the report.reports
       report.reports = frames;
     }
