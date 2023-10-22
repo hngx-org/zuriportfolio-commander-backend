@@ -138,11 +138,9 @@ export default class ProductController extends BaseController {
     // check if user exists
     const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
 
-    const prodId = uuidv4();
-
     const product = await prisma.product.create({
       data: {
-        id: prodId,
+        //id: prodId,
         name,
         currency,
         description,
@@ -185,7 +183,7 @@ export default class ProductController extends BaseController {
         name: assets_name,
         notes: assets_notes ?? '',
         link: assets_link,
-        product_id: prodId,
+        product_id: product.id,
         type: assets_type,
       },
     });
@@ -863,7 +861,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_delete/invalid-field',
         'product id is invalid, expected product_id in uuid format.',
-        400,
+        400
       );
     }
 
@@ -912,7 +910,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_category/category-exists',
         `Category with name '${newName}' already exists. Please choose a different name.`,
-        409,
+        409
       );
     }
 
@@ -945,7 +943,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_sub_category/category-exists',
         `Sub-category with name '${newName}' already exists. Please choose a different name.`,
-        409,
+        409
       );
     }
 
@@ -1003,7 +1001,7 @@ export default class ProductController extends BaseController {
         res,
         '--product_category/category-exists',
         `Category with id ${value.parent_id} does not exists.`,
-        409,
+        409
       );
     }
 
@@ -1021,7 +1019,7 @@ export default class ProductController extends BaseController {
       201,
       {
         category,
-      },
+      }
     );
   }
 
