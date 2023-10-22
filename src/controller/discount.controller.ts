@@ -7,7 +7,7 @@ import { createDiscountSchema, trackPromotionSchema, updatedDiscountSchema, vali
 import { CreateDiscountType, UpdateDiscountType } from '../@types';
 import { genRandNum, isUUID, validateDateRange } from '../helper';
 import logger from '../config/logger';
-import { TestUserId } from '../config/test';
+
 
 export default class DiscountController extends BaseController {
   constructor() {
@@ -38,7 +38,7 @@ export default class DiscountController extends BaseController {
   }
 
   async createDiscount(req: Request, res: Response) {
-    const userId = (req as any).user?.id ?? TestUserId;
+    const userId = (req as any).user?.id;
     const validateSchema = createDiscountSchema.validate(req.body);
     if (validateSchema.error) {
       return this.error(res, '--discount/invalid-fields', validateSchema.error.message, 400);
@@ -262,7 +262,7 @@ export default class DiscountController extends BaseController {
   }
 
   async getAllDiscount(req: Request, res: Response) {
-    const userId = (req as any).user?.id ?? TestUserId;
+    const userId = (req as any).user?.id;
     const allPromotions = [];
 
     const promos = await prisma.promotion.findMany({
@@ -297,7 +297,7 @@ export default class DiscountController extends BaseController {
   }
 
   async getAllPromotionsWithTrackedPromotions(req: Request, res: Response) {
-    const userId = (req as any).user?.id ?? TestUserId;
+    const userId = (req as any).user?.id;
 
     if (!userId) {
       return this.error(res, '--discount/promotions', 'User not found', 404, 'User not found');
@@ -360,7 +360,7 @@ export default class DiscountController extends BaseController {
   }
 
   async deleteDiscount(req: Request, res: Response) {
-    const userId = (req as any).user?.id ?? TestUserId;
+    const userId = (req as any).user?.id;
     const discountId = req.params['discount_id'] as string;
 
     if (!discountId || isNaN(+discountId)) {
@@ -384,7 +384,7 @@ export default class DiscountController extends BaseController {
   }
 
   async updateDiscount(req: Request, res: Response) {
-    const userId = (req as any).user?.id ?? TestUserId;
+    const userId = (req as any).user?.id;
     const discountId = req.params['discount_id'] as string;
 
     if (!discountId || isNaN(+discountId)) {

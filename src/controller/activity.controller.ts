@@ -9,7 +9,7 @@ export default class ActivityController extends BaseController {
   }
 
   async getActivities(req: Request, res: Response) {
-    const userId = (req as any).user?.id ?? TestUserId;
+    const userId = (req as any).user?.id;
     const allActivities = await prisma.activity.findMany({
       where: {
         user_id: userId,
