@@ -54,7 +54,7 @@ export default class App {
   initializedRoutes(routes: Routes[]) {
     // initialize all routes middleware
     routes.forEach((route) => {
-      this.app.use('/api', route.router);
+      this.app.use('/api/v1', route.router);
     });
 
     this.app.use('/', (req, res) => {
