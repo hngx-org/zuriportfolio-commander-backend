@@ -354,7 +354,37 @@ Processing Steps:
 
 ### Product
 
-**DELETE** `/api/product/:product_id`
+**GET** `/api/products`
+
+Fetch all products.
+
+Authentication: Bearer
+
+**Body**: None
+
+**Response**:
+
+```json
+{}
+```
+
+**GET** `/api/products/{product_id}`
+
+fetches a specific product from the database based on its unique ID.
+
+**Body**: None
+
+**Response**:
+
+**POST** `/api/products/add`
+
+Create a new product to the system. Requires authentication with a valid access token. Accepts product data in multipart/form-data format.
+
+**Body**: None
+
+**Response**:
+
+**GET** `/api/product/:product_id`
 
 Mark a product as deleted.
 
@@ -395,6 +425,22 @@ image="@/Users/benrobo/Pictures/leaf.png"
 
 Ensure appropriate error handling in case of failed updates or missing data. The "affected_fields" array should only include the names of the fields that have changed. If the image was updated, call the function for uploading the image to Cloudinary similar to that of creating a product.
 
+**GET** `/api/products/nopromo`
+
+Fetch all products without promo.
+
+**Body**: None
+
+**Response**:
+
+**GET** `/api/products/marketplace`
+
+Fetches a paginated list of products available in the marketplace. Allows specifying the page number and items per page for easy navigation.
+
+**Body**: None
+
+**Response**:
+
 **POST** `/api/product/categories`
 
 Create a product category.
@@ -405,6 +451,24 @@ Create a product category.
 {
   "parent_id": "",
   "name": ""
+}
+```
+
+**Response**:
+
+```json
+{
+  "parentCategory": {
+    "id": "integer",
+    "name": "string",
+    "user": {}
+  },
+  "subCategory": {
+    "id": "integer",
+    "name": "string",
+    "parentCategoryId": "integer",
+    "createdAt": "s"
+  }
 }
 ```
 
@@ -433,11 +497,28 @@ Fetch all categories created.
 }
 ```
 
-**GET** `/api/products`
+**POST** `/api/product/category`
 
-Fetch all products.
+Fetch all categories created.
 
 **Body**: None
+
+**Response**:
+
+```json
+{
+  "categories": [
+    {
+      "name": "Engineering",
+      "sub_catgory": null
+    },
+    {
+      "name": "Software engineering",
+      "sub_catgory": [{ "name": "Frontend" }, { "name": "Backend" }]
+    }
+  ]
+}
+```
 
 ### Promotion (Discount)
 
