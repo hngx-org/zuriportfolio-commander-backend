@@ -20,33 +20,33 @@ export default class ProductRoute {
 
   initializeRoutes() {
     this.router.patch(
-      `${this.path}s/publish/:productId`,
+      `${this.path}/publish/:productId`,
       isAuthenticated,
       useCatchErrors(this.productController.publishProduct.bind(this.productController))
     );
 
     this.router.patch(
-      `${this.path}s/:product_id`,
+      `${this.path}/:product_id`,
       upload.single('image'), // dont remove this, this is the only way we can handle formData
       isAuthenticated,
       useCatchErrors(this.productController.updateProduct.bind(this.productController))
     );
 
     this.router.post(
-      `${this.path}s/add`,
+      `${this.path}/add`,
       upload.single('image'),
       isAuthenticated,
       useCatchErrors(this.productController.addProduct.bind(this.productController))
     );
 
     this.router.get(
-      `${this.path}s/:product_id/image`,
+      `${this.path}/:product_id/image`,
       isAuthenticated,
       useCatchErrors(this.productController.getProductImages.bind(this.productController))
     );
 
     this.router.post(
-      `${this.path}s/:product_id/image`,
+      `${this.path}/:product_id/image`,
       upload.single('image'),
       isAuthenticated,
       useCatchErrors(this.productController.addImage.bind(this.productController))
@@ -60,90 +60,90 @@ export default class ProductRoute {
     );
 
     this.router.delete(
-      `${this.path}s/:product_id/image/:image_id`,
+      `${this.path}/:product_id/image/:image_id`,
       isAuthenticated,
       useCatchErrors(this.productController.deleteImage.bind(this.productController))
     );
 
     this.router.patch(
-      `${this.path}s/unpublish/:productId`,
+      `${this.path}/unpublish/:productId`,
       isAuthenticated,
       useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
     );
     this.router.get(
-      `${this.path}s`,
+      `${this.path}`,
       isAuthenticated,
       useCatchErrors(this.productController.SearchProductsByName.bind(this.productController))
     );
     // get product on marketplace
     this.router.get(
-      `${this.path}s/marketplace`,
+      `${this.path}/marketplace`,
       useCatchErrors(this.productController.getMarketplaceProducts.bind(this.productController))
     );
     this.router.delete(
-      `${this.path}s/:product_id`,
+      `${this.path}/:product_id`,
       isAuthenticated,
       useCatchErrors(this.productController.deleteProduct.bind(this.productController))
     );
     // delete category
     this.router.delete(
-      `${this.path}s/category/:cat_id/:type`,
+      `${this.path}/category/:cat_id/:type`,
       isAuthenticated,
       useCatchErrors(this.productController.deleteCategory.bind(this.productController))
     );
 
     this.router.get(
-      `${this.path}s/categories`,
+      `${this.path}/categories`,
       useCatchErrors(this.productController.getAllCategories.bind(this.productController))
     );
 
     this.router.post(
-      `${this.path}s/category`,
+      `${this.path}/category`,
       isAuthenticated,
       useCatchErrors(this.productController.createCategory.bind(this.productController))
     );
 
     this.router.post(
-      `${this.path}s/category-v2`,
+      `${this.path}/category-v2`,
       isAuthenticated,
       useCatchErrors(this.productController.createCategoryV2.bind(this.productController))
     );
 
     this.router.post(
-      `${this.path}s/subcategory-v2`,
+      `${this.path}/subcategory-v2`,
       isAuthenticated,
       useCatchErrors(this.productController.createSubCategoryV2.bind(this.productController))
     );
 
     this.router.get(
-      `${this.path}s/:product_id`,
+      `${this.path}/:product_id`,
       useCatchErrors(this.productController.getProductById.bind(this.productController))
     );
 
     // update product assets
     this.router.patch(
-      `${this.path}s/assets/:product_id`,
+      `${this.path}/assets/:product_id`,
       isAuthenticated,
       useCatchErrors(this.productController.updateProductAssets.bind(this.productController))
     );
 
     // get product assets
     this.router.get(
-      `${this.path}s/assets/:product_id`,
+      `${this.path}/assets/:product_id`,
       isAuthenticated,
       useCatchErrors(this.productController.getProductAssets.bind(this.productController))
     );
 
     // get products on merchant account
     this.router.get(
-      `${this.path}s`,
+      `${this.path}`,
       isAuthenticated,
       useCatchErrors(this.productController.getAllProducts.bind(this.productController))
     );
 
     // get merchant products without promo
     this.router.get(
-      `${this.path}s/nopromo`,
+      `${this.path}/nopromo`,
       isAuthenticated,
       useCatchErrors(this.productController.getProductWithoutPromo.bind(this.productController))
     );
