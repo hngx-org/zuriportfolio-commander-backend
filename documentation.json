@@ -85,7 +85,6 @@
         }
       },
 
-      
       "auth_required": true
     },
     {
@@ -105,7 +104,7 @@
           "required": ["name"]
         }
       },
-      
+
       "auth_required": true
     },
     {
@@ -162,76 +161,86 @@
       "method": "POST",
       "path_params": "product_id",
       "body_params": {
-        "content":{
-            "multipart/form-data": {
-                "image": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              }
+        "content": {
+          "multipart/form-data": {
+            "image": {
+              "format": "binary",
+              "type": "string"
+            }
+          }
         }
-         
-            },
-     "auth_required": true
+      },
+      "auth_required": true
     },
     {
-        "url": "/product/{product_id}/image",
-        "method": "GET",
-        "path_params": "product_id",
-        "body_params":null,
-        "auth_required": true
-   },
-   {
-    "url": "/product/{product_id}/image/{image_id}",
-    "method": "PATCH",
-    "path_params": "product_id",
-    "body_params": {
-        "content":{
-            "multipart/form-data": {
-                "image": {
-                  "format": "binary",
-                  "type": "string"
-                }
-        }
-        }  
+      "url": "/product/{product_id}/image",
+      "method": "GET",
+      "path_params": "product_id",
+      "body_params": null,
+      "auth_required": true
     },
-    "auth_required": true
-  },
-  {
-    "url": "/product/{product_id}/image/{image_id}",
-    "method": "DELETE",
-    "path_params": ["product_id", "image_id"],
-    "body_params": {
-        "content":{
-            "multipart/form-data": {
-                "image": {
-                  "format": "binary",
-                  "type": "string"
-                }
-      }
+    {
+      "url": "/product/{product_id}/image/{image_id}",
+      "method": "PATCH",
+      "path_params": "product_id",
+      "body_params": {
+        "content": {
+          "multipart/form-data": {
+            "image": {
+              "format": "binary",
+              "type": "string"
+            }
+          }
         }
-  },
-  "auth_required": true
-},
-{
-    "url": "/order/status/{order_id",
-    "method": "PATCH",
-    "path_params": "order_id",
-    "body_params": {
-        "content":{
-            "application/json": {
-                "status": {
-                    "type": "string",
-                    "enum": ["pending", "complete", "failed"],
-                    "example": "complete"
-                  }
-        },
-        "required": ["status"]
+      },
+      "auth_required": true
+    },
+    {
+      "url": "/product/{product_id}/image/{image_id}",
+      "method": "DELETE",
+      "path_params": ["product_id", "image_id"],
+      "body_params": {
+        "content": {
+          "multipart/form-data": {
+            "image": {
+              "format": "binary",
+              "type": "string"
+            }
+          }
         }
-
-
-  },
-  "auth_required": true
-}
+      },
+      "auth_required": true
+    },
+    {
+      "url": "/order/status/{order_id",
+      "method": "PATCH",
+      "path_params": "order_id",
+      "body_params": {
+        "content": {
+          "application/json": {
+            "status": {
+              "type": "string",
+              "enum": ["pending", "complete", "failed"],
+              "example": "complete"
+            }
+          },
+          "required": ["status"]
+        }
+      },
+      "auth_required": true
+    },
+    {
+      "url": "/revenues",
+      "method": "GET",
+      "query_params": [{
+          "name": "timeframe",
+            "type": "string",
+            "enum": ["today", "yesterday", "all"]
+           
+      }],
+      "body_params": {
+      },
+      "auth_required": true
+    }
   ]
 }

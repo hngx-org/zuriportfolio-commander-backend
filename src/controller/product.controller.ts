@@ -138,11 +138,9 @@ export default class ProductController extends BaseController {
     // check if user exists
     const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
 
-    const prodId = uuidv4();
-
     const product = await prisma.product.create({
       data: {
-        id: prodId,
+        //id: prodId,
         name,
         currency,
         description,
@@ -185,7 +183,7 @@ export default class ProductController extends BaseController {
         name: assets_name,
         notes: assets_notes ?? '',
         link: assets_link,
-        product_id: prodId,
+        product_id: product.id,
         type: assets_type,
       },
     });
