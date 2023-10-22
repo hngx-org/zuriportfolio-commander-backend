@@ -1868,6 +1868,51 @@
         ]
       }
     },
+    "/activities": {
+      "get": {
+        "tags": ["Activities"],
+        "summary": "Retrieve Activities",
+        "description": "Get all activities tied to a merchant.",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "example": {
+                  "errorStatus": false,
+                  "code": "--activities/success",
+                  "message": "activities fetched successfully",
+                  "data": [
+                    {
+                      "id": "57f0925e-86c1-4af9-826a-54f0f43e4f65",
+                      "action": "ORDER PLACED",
+                      "user_id": "a87be40d-8632-4c45-9b44-c893560d58c9",
+                      "title": "order placed by user A",
+                      "description": "A user from your store placed an order",
+                      "createdAt": "2023-10-22T03:26:01.583Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/Orders/all": {
       "get": {
         "tags": ["Orders"],
