@@ -30,7 +30,6 @@ export default class ShopController extends BaseController {
     if (createdShops.length > 0) {
       return this.error(res, '--shop/shops-exists', `Sorry, you can only create one shop per account.`, 400);
     }
-
     const shop = await prisma.shop.create({
       data: {
         id,
