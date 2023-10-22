@@ -40,6 +40,10 @@ export default class ProductController extends BaseController {
   async publishProduct(req: Request, res: Response) {
     const productId = req.params.productId;
 
+    if (!productId) {
+      return this.error(res, '--product/error', 'Product ID required', 400);
+    }
+
     // Find the product by ID
     const existingProduct = await prisma.product.findUnique({
       where: {
@@ -67,6 +71,11 @@ export default class ProductController extends BaseController {
 
   async addProduct(req: Request, res: Response) {
     const userId = ((req as any).user?.id as never) ?? (TestUserId as never);
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
+
     const file = req.file ?? null;
     const payload: AddProductPayloadType = req.body;
 
@@ -207,6 +216,10 @@ export default class ProductController extends BaseController {
   async getProductWithoutPromo(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
 
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
+
     // Get all products with pagination and include related data
     const products = await prisma.product.findMany({
       where: {
@@ -240,7 +253,16 @@ export default class ProductController extends BaseController {
 
   async updateProduct(req: Request, res: Response) {
     const productId = req.params['product_id'];
+
+    if (!productId) {
+      return this.error(res, '--product/error', 'Product ID required', 400);
+    }
+
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
 
     const payload: AddProductPayloadType = req.body;
 
@@ -307,7 +329,16 @@ export default class ProductController extends BaseController {
 
   async updateProductAssets(req: Request, res: Response) {
     const productId = req.params['product_id'];
+
+    if (!productId) {
+      return this.error(res, '--product/error', 'Product ID required', 400);
+    }
+
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
 
     const payload = req.body;
     const { error, value } = updateProductAssets.validate(payload);
@@ -354,7 +385,16 @@ export default class ProductController extends BaseController {
 
   async getProductAssets(req: Request, res: Response) {
     const userId = ((req as any).user?.id as never) ?? (TestUserId as never);
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
+
     const productId = req.params['product_id'];
+
+    if (!productId) {
+      return this.error(res, '--product/error', 'Product ID required', 400);
+    }
 
     // check if it a valid uuid
     if (!isUUID(productId)) {
@@ -386,7 +426,16 @@ export default class ProductController extends BaseController {
   async addImage(req: Request, res: Response) {
     const file = req.file ?? null;
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
+
     const productId = req.params['product_id'];
+
+    if (!productId) {
+      return this.error(res, '--product/error', 'Product ID required', 400);
+    }
 
     if (!file) {
       return this.error(res, '--product/invalid-fields', 'product image is missing.', 400, null);
@@ -429,7 +478,16 @@ export default class ProductController extends BaseController {
   async getProductImages(req: Request, res: Response) {
     const file = req.file ?? null;
     const productId = req.params['product_id'];
+
+    if (!productId) {
+      return this.error(res, '--product/error', 'Product ID required', 400);
+    }
+
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
 
     // Find the product by ID and ensure is owned by auth user
     const existingProduct = await prisma.product.findFirst({
@@ -460,8 +518,22 @@ export default class ProductController extends BaseController {
   async updateImage(req: Request, res: Response) {
     const file = req.file ?? null;
     const productId = req.params['product_id'];
+
+    if (!productId) {
+      return this.error(res, '--product/error', 'Product ID required', 400);
+    }
+
     const imageId = req.params['image_id'];
+
+    if (!imageId) {
+      return this.error(res, '--product/error', 'Image ID required', 400);
+    }
+
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
 
     // Find the product by ID and ensure is owned by auth user
     const existingProduct = await prisma.product.findFirst({
@@ -515,8 +587,22 @@ export default class ProductController extends BaseController {
 
   async deleteImage(req: Request, res: Response) {
     const productId = req.params['product_id'];
+
+    if (!productId) {
+      return this.error(res, '--product/error', 'Product ID required', 400);
+    }
+
     const imageId = req.params['image_id'];
+
+    if (!imageId) {
+      return this.error(res, '--product/error', 'Image ID required', 400);
+    }
+
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
 
     // Find the product by ID and ensure is owned by auth user
     const existingProduct = await prisma.product.findFirst({
@@ -561,6 +647,10 @@ export default class ProductController extends BaseController {
   async unpublishProduct(req: Request, res: Response) {
     const productId = req.params.productId;
 
+    if (!productId) {
+      return this.error(res, '--product/error', 'Product ID required', 400);
+    }
+
     //check if product exists
     const prodExists = await prisma.product.findFirst({ where: { id: productId } });
 
@@ -583,7 +673,15 @@ export default class ProductController extends BaseController {
 
   async SearchProductsByName(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
     const productname = req.query.productname as string;
+
+    if (!productname) {
+      return this.error(res, '--product/error', 'Product Name is required', 400);
+    }
 
     let products;
     if (productname) {
@@ -636,6 +734,11 @@ export default class ProductController extends BaseController {
 
   async getAllProducts(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
+
     const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
     const itemsPerPage = req.query.itemsPerPage ? parseInt(req.query.itemsPerPage as string, 10) : 12;
 
@@ -717,6 +820,10 @@ export default class ProductController extends BaseController {
 
   async getProductById(req: Request, res: Response) {
     const productId = req.params.product_id;
+
+    if (!productId) {
+      return this.error(res, '--product/error', 'Product ID required', 400);
+    }
 
     const product = await prisma.product.findFirst({
       where: {
@@ -851,7 +958,16 @@ export default class ProductController extends BaseController {
 
   async deleteProduct(req: Request, res: Response) {
     const productId = req.params['product_id'];
+
+    if (!productId) {
+      return this.error(res, '--product/error', 'Product ID required', 400);
+    }
+
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
 
     if (typeof productId === 'undefined') {
       return this.error(res, '--product_delete/invalid-fields', 'Invalid field provided.', 400);
@@ -894,6 +1010,11 @@ export default class ProductController extends BaseController {
 
   async createCategory(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
+
     const { error, value } = createCategorySchema.validate(req.body);
 
     if (error) {
@@ -967,6 +1088,11 @@ export default class ProductController extends BaseController {
   async createCategoryV2(req: Request, res: Response) {
     const { error, value } = createCategorySchema.validate(req.body);
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
+
     if (error) {
       return this.error(res, '--product_category/invalid-category data', 'Please provide a valid category name.', 400);
     }
@@ -986,7 +1112,11 @@ export default class ProductController extends BaseController {
     const { error, value } = createSubCategorySchema.validate(req.body);
     const userId = (req as any).user?.id ?? TestUserId;
 
-    console.log(value);
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
+
+    
 
     if (error) {
       return this.error(res, '--product_category/invalid-category data', 'Please provide a valid category name.', 400);
@@ -1027,8 +1157,22 @@ export default class ProductController extends BaseController {
 
   async deleteCategory(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--product/error', 'User ID required', 400);
+    }
+
     const category_id = req.params['cat_id'];
+
+    if (!category_id) {
+      return this.error(res, '--product/error', 'Category ID required', 400);
+    }
+
     const catType = req.params['type'];
+
+    if (!catType) {
+      return this.error(res, '--product/error', 'Category Type required', 400);
+    }
 
     if (isNaN(+category_id)) {
       return this.error(res, '--delete_category/invalid_id', 'Invalid category id type.', 400);
