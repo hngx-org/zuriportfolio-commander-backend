@@ -15,7 +15,7 @@ export default class SalesRoute {
   initializeRoutes() {
     this.router.get(
       `${this.path}/reports`,
-      // isAuthenticated,
+      isAuthenticated,
       useCatchErrors(this.salesController.getSalesReports.bind(this.salesController))
     );
   }

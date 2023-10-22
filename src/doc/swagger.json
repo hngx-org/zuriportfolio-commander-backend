@@ -2217,53 +2217,6 @@
         ]
       }
     },
-    "/revenue/{order_id}": {
-      "patch": {
-        "tags": ["Revenue"],
-        "summary": "Update Revenue",
-        "description": "Update the revenue based on the order's status",
-        "parameters": [
-          {
-            "name": "order_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            },
-            "description": "ID of the order to update revenue for"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Revenue updated successfully",
-                  "data": {
-                    "id": 1,
-                    "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
-                    "amount": 1500.0
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "example": {
-                  "error": "--order/not-found",
-                  "message": "Order not found"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/revenues": {
       "get": {
         "tags": ["Revenue"],
@@ -2277,14 +2230,21 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["today", "yesterday", "week"],
+              "enum": ["today", "yesterday", "all"],
               "example": "today"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Revenue fetched successfully"
+            "description": "Revenue fetched successfully",
+            "examples": {
+              "data": {
+                "timeframe": "today",
+                "revenue": 10000.4,
+                "currency": "NGN"
+              }
+            }
           },
           "400": {
             "description": "Missing parameter timeframe"
