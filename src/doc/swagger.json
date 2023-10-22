@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://zuriportfolio-shop-internal-api.onrender.com/api",
+      "url": "https://zuriportfolio-shop-internal-api.onrender.com/api/v1",
       "description": "Production server"
     },
     {
@@ -15,8 +15,8 @@
       "description": "Zuriportfolio shop internal / Auth api."
     },
     {
-      "url": "http://localhost:8080/api",
-      "description": "Zuriportfolio shop internal / external api."
+      "url": "http://localhost:8080/api/v1",
+      "description": "Local Server."
     }
   ],
   "paths": {
