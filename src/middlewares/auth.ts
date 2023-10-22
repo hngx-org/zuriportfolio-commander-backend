@@ -23,18 +23,6 @@ export async function isAuthenticated(req: Request, res: Response, next: NextFun
     if (!(req as any).user) (req as any).user = {};
     (req as any).user.id = resp.user?.id;
 
-    // check if user exists or not
-    const user = await prisma.user.findFirst({
-      where: { id: resp.user?.id },
-      select: { id: true },
-    });
-
-    if (!user) {
-      return res.status(404).json({
-        message: `user not found for this action`,
-      });
-    }
-
     next();
   } catch (err) {
     // console.log(err);
