@@ -1,5 +1,5 @@
 {
-  "BASE_URL": "https://zuriportfolio-shop-internal-api.onrender.com/api",
+  "BASE_URL": "https://zuriportfolio-shop-internal-api.onrender.com/api/v1",
   "ENPONT_CONFIG": [
     {
       "url": "/products",
@@ -468,7 +468,77 @@
         
       },
 
+      "auth_required": false
+    },
+    {
+      "url": "/sales/reports",
+      "method": "GET",
+      "path_params": null,
+      "query_params": [{"name":"timeframe","type":"string"}],
+      "body_params":null,
       "auth_required": true
+    },{
+      "url": "/activities",
+      "method": "GET",
+      "path_params": null,
+      "query_params":null,
+      "body_params": {
+        
+      },
+      "auth_required": true
+    },{
+      "url": "/orders/all",
+      "method": "GET",
+      "path_params": null,
+      "query_params":null,
+      "body_params": {
+        
+      },
+      "auth_required": true
+    },{
+      "url": "/orders",
+      "method": "GET",
+      "path_params": null,
+      "query_params": [{"name":"timeframe","type":"string"}],
+      "body_params": {
+        
+      },
+      "auth_required": true
+    },
+    {
+      "url": "/order/status/{order_id}",
+      "method": "PATCH",
+      "path_params":  ["order_id"],
+      "body_params": {
+        "content": {
+          "application/json": {
+            "status": {
+              "type": "string",
+              "enum": ["pending", "complete", "failed"]
+            }
+          },
+          "required": ["status"]
+        }
+      },
+      "auth_required": true
+    },{
+      "url": "/orders/average",
+      "method": "GET",
+      "path_params": null,
+      "query_params": [{"name":"timeframe","type":"string", "enum": ["today", "yesterday", "week", "month"]}],
+      "body_params": {
+        
+      },
+      "auth_required": true
+    },{
+      "url": "/orders/search/{name}",
+      "method": "GET",
+      "path_params": ["name"],
+      "query_params": null,
+      "body_params": {
+        
+      },
+      "auth_required": false
     }
   ]
 }
