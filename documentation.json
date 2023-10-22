@@ -1,5 +1,5 @@
 {
-  "BASE_URL": "https://zuriportfolio-shop-internal-api.onrender.com/api",
+  "BASE_URL": "https://zuriportfolio-shop-internal-api.onrender.com/api/v1",
   "ENPONT_CONFIG": [
     {
       "url": "/products",
@@ -228,6 +228,317 @@
         }
       },
       "auth_required": true
+    },
+    {
+      "url": "/revenues",
+      "method": "GET",
+      "query_params": [{
+          "name": "timeframe",
+            "type": "string",
+            "enum": ["today", "yesterday", "all"]
+           
+      }],
+      "body_params": {
+      },
+      "auth_required": true
+    },
+    {
+      "url": "/discount",
+      "method": "POST",
+      "path_params": "order_id",
+      "body_params": {
+        "content": {
+          "application/json": {
+          
+              
+                "discount_type": {
+                  "type": "string"
+                },
+                "amount": {
+                  "type": "number"
+                },
+                "quantity": {
+                  "type": "number",
+                  "minimum": 1,
+                  "required": true
+                },
+                "maximum_discount_price": {
+                  "type": "number"
+                },
+                "product_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                   
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                    "example": "valid-uuid"
+                   
+                  }
+                 
+                
+                },
+                "valid_from": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Start date and time of discount",
+                  "required": true
+                },
+                "valid_to": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "End date and time of discount",
+                  "required": true
+                }
+              
+            
+          },
+          "required": [
+            "discount_type",
+            "amount",
+            "quantity",
+            "product_ids",
+            "valid_from",
+            "valid_to"
+          ]
+        }
+        
+      },
+      "auth_required": true
+    },
+    {
+      "url": "/discount/{discount_id}",
+      "method": "DELETE",
+      "path_params": "discount_id",
+      "query_params": null,
+      "auth_required": true
+    },
+    {
+      "url": "/discount/promotions",
+      "method": "GET",
+      "path_params": null,
+      "query_params": {
+        "page": 1,
+        "itemsPerPage": 10
+      },
+      "auth_required": false
+    },
+    {
+      "url": "/discounts/{discountId}",
+      "method": "PATCH",
+      "path_params": "discountId",
+      "body_params": {
+        "content": {
+          "application/json": {
+            "id": {
+              "type": ["integer", "null"]
+            },
+            "user_id": {
+              "type": "string"
+            },
+            "promotion_type": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            },
+            "discount_type": {
+              "type": "string"
+            },
+            "quantity": {
+              "type": "integer"
+            },
+            "amount": {
+              "type": "number"
+            },
+            "maximum_discount_price": {
+              "type": "number"
+            },
+            "valid_from": {
+              "type": "string"
+            },
+            "valid_to": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string"
+            },
+            "updatedAt": {
+              "type": "string"
+            }
+          },
+          "required": ["user_id", "promotion_type", "code", "discount_type", "quantity", "amount", "maximum_discount_price", "valid_from", "valid_to", "createdAt", "updatedAt"]
+        }
+      }
+      ,
+      "auth_required": true
+    },
+    {
+      "url": "/discount/track",
+      "method": "POST",
+      "path_params": null,
+      "body_params": {
+        "content": {
+          "application/json": {
+            "promo_id": {
+              "type": ["number", "null"]
+            },
+            "productId": {
+              "type": "string"
+            },
+            "merchant_id": {
+              "type": "string"
+            }
+          },
+          "required": ["productId", "merchant_id"]
+        }
+      },
+
+      "auth_required": true
+    },
+    {
+      "url": "/shop",
+      "method": "POST",
+      "path_params": null,
+      "body_params": {
+        "content": {
+          "application/json": {
+           
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": ["name"]
+        }
+        
+      },
+
+      "auth_required": true
+    },
+    {
+      "url": "/shops",
+      "method": "GET",
+      "path_params": null,
+      "body_params": {
+        
+      },
+      "auth_required": true
+    },
+    {
+      "url": "/shops/merchant",
+      "method": "GET",
+      "path_params": null,
+      "body_params": {
+        
+      },
+      "auth_required": true
+    },
+    {
+      "url": "/shop/store-traffic/count/{period}/{shop_id}",
+      "method": "GET",
+      "path_params": ["shop_id",{"name":"period","type": "string",
+      "enum": ["3months", "12months", "30days","7days","24hrs"]}],
+      "body_params": {
+        
+      },
+      "auth_required": true
+    },
+    {
+      "url": "/shop/{shop_id}",
+      "method": "GET",
+      "path_params": ["shop_id"],
+      "body_params": {
+        
+      },
+      "auth_required": true
+    },
+    {
+      "url": "/shop/store-traffic",
+      "method": "POST",
+      "path_params": null,
+      "body_params": {
+        "content": {
+          "application/json": {
+           
+            "shop_id": {
+              "type": "string"
+            }
+          },
+          "required": ["shop_id"]
+        }
+        
+      },
+
+      "auth_required": false
+    },
+    {
+      "url": "/sales/reports",
+      "method": "GET",
+      "path_params": null,
+      "query_params": [{"name":"timeframe","type":"string"}],
+      "body_params":null,
+      "auth_required": true
+    },{
+      "url": "/activities",
+      "method": "GET",
+      "path_params": null,
+      "query_params":null,
+      "body_params": {
+        
+      },
+      "auth_required": true
+    },{
+      "url": "/orders/all",
+      "method": "GET",
+      "path_params": null,
+      "query_params":null,
+      "body_params": {
+        
+      },
+      "auth_required": true
+    },{
+      "url": "/orders",
+      "method": "GET",
+      "path_params": null,
+      "query_params": [{"name":"timeframe","type":"string"}],
+      "body_params": {
+        
+      },
+      "auth_required": true
+    },
+    {
+      "url": "/order/status/{order_id}",
+      "method": "PATCH",
+      "path_params":  ["order_id"],
+      "body_params": {
+        "content": {
+          "application/json": {
+            "status": {
+              "type": "string",
+              "enum": ["pending", "complete", "failed"]
+            }
+          },
+          "required": ["status"]
+        }
+      },
+      "auth_required": true
+    },{
+      "url": "/orders/average",
+      "method": "GET",
+      "path_params": null,
+      "query_params": [{"name":"timeframe","type":"string", "enum": ["today", "yesterday", "week", "month"]}],
+      "body_params": {
+        
+      },
+      "auth_required": true
+    },{
+      "url": "/orders/search/{name}",
+      "method": "GET",
+      "path_params": ["name"],
+      "query_params": null,
+      "body_params": {
+        
+      },
+      "auth_required": false
     }
   ]
 }

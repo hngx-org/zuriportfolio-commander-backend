@@ -151,11 +151,14 @@ export default class SalesController extends BaseController {
     let startDate = new Date();
 
     switch (timeframe) {
-      case '1d':
-        startDate.setDate(currentDate.getDate() - 1);
-        startDate.setHours(0, 0, 0, 0);
+      case '3m':
+        startDate.setMonth(currentDate.getMonth() - 3);
+        break;
+      case '12m':
+        startDate.setMonth(currentDate.getMonth() - 12);
         break;
       case '24hr':
+      case '1d':
         startDate.setDate(currentDate.getDate() - 1);
         startDate.setHours(0, 0, 0, 0);
         break;
@@ -164,14 +167,6 @@ export default class SalesController extends BaseController {
         break;
       case '30d':
         startDate.setDate(currentDate.getDate() - 30);
-        break;
-      case '3m':
-        startDate.setMonth(currentDate.getMonth() - 3);
-        // startDate.setDate(1);
-        // startDate.setHours(0, 0, 0, 0);
-        break;
-      case '12m':
-        startDate.setMonth(currentDate.getMonth() - 12);
         break;
       case '1yr':
         startDate.setFullYear(currentDate.getFullYear() - 1);
@@ -207,16 +202,23 @@ export default class SalesController extends BaseController {
       const frameLabel = this.getFrameLabel(startDate, timeframe);
       timeframeSales.set(frameLabel, 0);
 
-      if (timeframe === '12m' || timeframe === '1yr') {
-        startDate.setMonth(startDate.getMonth() + 1);
-      } else if (timeframe === '3m') {
-        startDate.setMonth(startDate.getMonth() + 1);
-      } else if (timeframe === '30d') {
-        startDate.setDate(startDate.getDate() + 1);
-      } else if (timeframe === '1m') {
-        startDate.setMonth(startDate.getMonth() + 1);
-      } else {
-        startDate.setDate(startDate.getDate() + 1);
+      incrementDate(startDate, timeframe);
+    }
+
+    function incrementDate(date, timeframe) {
+      switch (timeframe) {
+        case '1m':
+        case '3m':
+        case '12m':
+        case '1yr':
+          date.setMonth(date.getMonth() + 1);
+          break;
+        case '1d':
+        case '30d':
+          date.setDate(date.getDate() + 1);
+          break;
+        default:
+          break;
       }
     }
 
