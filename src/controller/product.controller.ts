@@ -82,7 +82,6 @@ export default class ProductController extends BaseController {
       description,
       discountPrice,
       price,
-      quantity,
       tax,
       sub_category_id,
       assets_link,
