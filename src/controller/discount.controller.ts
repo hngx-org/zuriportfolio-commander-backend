@@ -5,7 +5,7 @@ import prisma from '../config/prisma';
 import { v4 as uuidv4 } from 'uuid';
 import { createDiscountSchema, trackPromotionSchema, updatedDiscountSchema, validateUUID } from '../helper/validate';
 import { CreateDiscountType, UpdateDiscountType } from '../@types';
-import { genRandNum, validateDateRange } from '../helper';
+import { genRandNum, isUUID, validateDateRange } from '../helper';
 import logger from '../config/logger';
 import { TestUserId } from '../config/test';
 
@@ -46,10 +46,9 @@ export default class DiscountController extends BaseController {
 
     const { amount, discount_type, quantity, maximum_discount_price, product_ids, valid_from, valid_to } =
       req.body as CreateDiscountType;
-    const validDiscountType = ['percentage', 'fixed'];
+    const validDiscountType = ['percentage'];
     const validDiscountEnum = {
       percentage: 'Percentage',
-      fixed: 'Fixed',
     };
 
     // verify date range
@@ -148,6 +147,25 @@ export default class DiscountController extends BaseController {
     // check if product exists
     // ! Remember to work on accepting an array of product id's.
     const { promo_id, productId, merchant_id } = payload;
+
+    // check if product and userId id is a valid uuid
+    if (!isUUID(productId) || !isUUID(merchant_id)) {
+      logger.error(`[Track Promo]: One of more of the ids passed are invalid.`);
+
+      return this.error(res, '--discount/invalid-uuid', `One of more of the ids passed are invalid.`, 400);
+    }
+
+    // check if user exists
+    const userExists = await prisma.user.findFirst({
+      where: { id: merchant_id },
+    });
+
+    if (!userExists) {
+      logger.error(`[Track Promo]: Merchant not found. ${merchant_id}`);
+
+      return this.error(res, '--discount/user-notfound', 'Merchant not found', 404);
+    }
+
     const promo_product = await prisma.promo_product.findFirst({
       where: {
         product_id: productId,

@@ -11,11 +11,168 @@
       "description": "Production server"
     },
     {
+      "url": "https://staging.zuri.team/api/auth/api",
+      "description": "Zuriportfolio shop internal / Auth api."
+    },
+    {
       "url": "http://localhost:8080/api",
       "description": "Zuriportfolio shop internal / external api."
     }
   ],
   "paths": {
+    "/auth/signup": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Sign up a new user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "example": "John"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "Doe"
+                  },
+
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "sicoj92691@elixirsd.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "myPassword2021"
+                  }
+                },
+                "required": ["firstName", "firstName", "email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification code sent successfully."
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Refresh token is invalid or has expired."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/auth/send-verification": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Send Verification Code",
+        "description": "Sends a verification code to the user's email for account activation.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "first_name": {
+                    "type": "string",
+                    "example": "John"
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "example": "Doe"
+                  },
+                  "username": {
+                    "type": "string",
+                    "example": "johndoe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "sicoj92691@elixirsd.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "myPassword2021"
+                  },
+                  "refresh_token": {
+                    "type": "string",
+                    "format": "uuid",
+                    "example": "42e2a46a-e56f-4e4d-be0e-0675b7026f58"
+                  }
+                },
+                "required": ["first_name", "last_name", "username", "email", "password", "refresh_token"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification code sent successfully."
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Refresh token is invalid or has expired."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/auth/confirm-verification": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Confirm Verification Code",
+        "description": "Verifies the verification code against the stored code for the user in the database.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "sicoj92691@elixirsd.com"
+                  },
+                  "verificationCode": {
+                    "type": "string",
+                    "example": "3903"
+                  }
+                },
+                "required": ["email", "verificationCode"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification code confirmed successfully."
+          },
+          "400": {
+            "description": "Bad request. Please check the request parameters."
+          },
+          "401": {
+            "description": "Unauthorized. Verification code is invalid or has expired."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
     "/products": {
       "get": {
         "tags": ["Product"],
@@ -572,16 +729,20 @@
         ]
       }
     },
-    "/order/status/{order_id}": {
+    "/products/unpublish/{productId}": {
       "patch": {
-        "tags": ["Order"],
-        "summary": "Update Order Status",
-        "description": "Update the status of a specific order identified by its unique order ID.",
+        "summary": "Unpublish a product",
+        "tags": ["Product"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "order_id",
             "in": "path",
-            "description": "Order ID",
+            "name": "productId",
+            "description": "The ID of the product",
             "required": true,
             "schema": {
               "type": "string"
@@ -594,72 +755,49 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "status": {
-                    "type": "string",
-                    "enum": ["pending", "complete", "failed"],
-                    "example": "complete"
+                  "isPublished": {
+                    "type": "boolean",
+                    "example": false
                   }
-                },
-                "required": ["status"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Order status updated successfully."
-          },
-          "400": {
-            "description": "Bad request. Please check the request parameters or status value."
-          },
-          "401": {
-            "description": "Unauthorized. Token is invalid or action is not permitted."
-          },
-          "404": {
-            "description": "Order not found."
-          },
-          "500": {
-            "description": "Internal server error."
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
-    "/orders": {
-      "get": {
-        "tags": ["Order"],
-        "summary": "Gets all order count withing a timeframe",
-        "description": "Retrieve the total order count within a specific timeframe.",
-        "parameters": [
-          {
-            "name": "timeframe",
-            "in": "query",
-            "description": " values: today, yesterday,one-week-ago and two-weeks-ago ",
-            "required": "true",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ordersCount"
                 }
               }
             }
           }
         },
-        "security": [
-          {
-            "BearerAuth": []
+        "responses": {
+          "200": {
+            "description": "Product unpublished successfully",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": "product-uuid",
+                    "userId": "merchant-uuid",
+                    "shopId": "merchant-shop-uuid",
+                    "name": "merchant shop",
+                    "description": "This is a merchant's product",
+                    "quantity": 123,
+                    "price": 12.34,
+                    "discountPrice": 1.23,
+                    "tax": 1.2,
+                    "adminStatus": "pending",
+                    "ratingId": 5,
+                    "isPublished": false,
+                    "currency": "NGN",
+                    "createdAt": "2023-10-11T00:00:00.000Z",
+                    "updatedAt": "2023-10-11T00:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Product ID"
+          },
+          "404": {
+            "description": "Product not found"
           }
-        ]
+        }
       }
     },
     "/discount": {
@@ -845,7 +983,7 @@
         }
       }
     },
-    "/discount/{discountId}": {
+    "/discounts/{discountId}": {
       "patch": {
         "summary": "Update a Discount",
         "description": "Update an existing discount with the specified ID.",
@@ -866,28 +1004,68 @@
             "description": "The ID of the discount"
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/UpdateDiscount"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Discount updated successfully",
             "content": {
-              "application/json": {
-                "example": [
-                  {
-                    "id": 1,
-                    "user_id": "merchant-uuid",
-                    "promotion_type": "Discount",
-                    "code": "YESSIR123",
-                    "discount_type": "Percentage",
-                    "quantity": 23,
-                    "amount": 22.22,
-                    "maximum_discount_price": 200,
-                    "valid_from": "2023-10-23T00:00:00.000Z",
-                    "valid_to": "2023-10-31T00:00:00.000Z",
-                    "createdAt": "2023-10-11T00:00:00.000Z",
-                    "updatedAt": "2023-10-11T00:00:00.000Z"
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Invalid discount ID/fields"
+          },
+          "404": {
+            "description": "Discount not found"
+          }
+        }
+      }
+    },
+    "/discount/track": {
+      "post": {
+        "summary": "Track a Discount",
+        "description": "Track a product that contains a discount.",
+        "tags": ["Discount"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "promo_id": {
+                    "type": "number",
+                    "required": true,
+                    "example": 3
+                  },
+                  "productId": {
+                    "type": "string",
+                    "required": true,
+                    "example": "42e2a46a-e56f-4e4d-be0e-0675b7026f58"
+                  },
+                  "merchant_id": {
+                    "type": "string",
+                    "required": true,
+                    "example": "42e2a46a-e56f-4e4d-be0e-0675b7026f58"
                   }
-                ]
+                }
               }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Discount updated successfully",
+            "content": {
+              "application/json": {}
             }
           },
           "400": {
@@ -981,11 +1159,11 @@
         ]
       }
     },
-    "/shop/store-traffic/count/{shop_id}": {
+    "/shop/store-traffic/count/12months/{shop_id}": {
       "get": {
         "tags": ["Shops"],
-        "summary": "Fetch shop traffic for a particular shop.",
-        "description": "Retrieve traffic data for a specific shop using its unique ID.",
+        "summary": "Fetch shop traffic for a particular shop  within a year.",
+        "description": "The id of the shop",
         "parameters": [
           {
             "in": "path",
@@ -1004,7 +1182,540 @@
                 "example": {
                   "status": "success",
                   "message": "Store traffic found",
-                  "data": 5
+                  "data": [
+                    {
+                      "timeframe": "Nov",
+                      "year": "2022",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Dec",
+                      "year": "2022",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Jan",
+                      "year": "2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Feb",
+                      "year": "2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Mar",
+                      "year": "2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Apr",
+                      "year": "2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "May",
+                      "year": "2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Jun",
+                      "year": "2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Jul",
+                      "year": "2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Aug",
+                      "year": "2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Sep",
+                      "year": "2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Oct",
+                      "year": "2023",
+                      "traffic": 12
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/shop/store-traffic/count/30days/{shop_id}": {
+      "get": {
+        "tags": ["Shops"],
+        "summary": "Fetch shop traffic for a particular shop  within a 30days.",
+        "description": "The id of the shop",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shop_id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Store traffic found",
+                  "data": [
+                    {
+                      "timeframe": "21st",
+                      "date": "Thu Sep 21 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "22nd",
+                      "date": "Fri Sep 22 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "23rd",
+                      "date": "Sat Sep 23 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "24th",
+                      "date": "Sun Sep 24 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "25th",
+                      "date": "Mon Sep 25 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "26th",
+                      "date": "Tue Sep 26 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "27th",
+                      "date": "Wed Sep 27 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "28th",
+                      "date": "Thu Sep 28 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "29th",
+                      "date": "Fri Sep 29 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "30th",
+                      "date": "Sat Sep 30 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "1st",
+                      "date": "Sun Oct 01 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "2nd",
+                      "date": "Mon Oct 02 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "3rd",
+                      "date": "Tue Oct 03 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "4th",
+                      "date": "Wed Oct 04 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "5th",
+                      "date": "Thu Oct 05 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "6th",
+                      "date": "Fri Oct 06 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "7th",
+                      "date": "Sat Oct 07 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "8th",
+                      "date": "Sun Oct 08 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "9th",
+                      "date": "Mon Oct 09 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "10th",
+                      "date": "Tue Oct 10 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "11th",
+                      "date": "Wed Oct 11 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "12th",
+                      "date": "Thu Oct 12 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "13th",
+                      "date": "Fri Oct 13 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "14th",
+                      "date": "Sat Oct 14 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "15th",
+                      "date": "Sun Oct 15 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "16th",
+                      "date": "Mon Oct 16 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "17th",
+                      "date": "Tue Oct 17 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "18th",
+                      "date": "Wed Oct 18 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "19th",
+                      "date": "Thu Oct 19 2023",
+                      "traffic": 3
+                    },
+                    {
+                      "timeframe": "20th",
+                      "date": "Fri Oct 20 2023",
+                      "traffic": 9
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/shop/store-traffic/count/24hrs/{shop_id}": {
+      "get": {
+        "tags": ["Shops"],
+        "summary": "Fetch shop traffic for a particular shop  within 24hrs.",
+        "description": "The id of the shop",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shop_id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Store traffic found",
+                  "data": [
+                    {
+                      "timeframe": "5pm",
+                      "date": "Thu Oct 19 2023",
+                      "time": "5:59:20 PM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "6pm",
+                      "date": "Thu Oct 19 2023",
+                      "time": "6:59:20 PM",
+                      "traffic": 1
+                    },
+                    {
+                      "timeframe": "7pm",
+                      "date": "Thu Oct 19 2023",
+                      "time": "7:59:20 PM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "8pm",
+                      "date": "Thu Oct 19 2023",
+                      "time": "8:59:20 PM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "9pm",
+                      "date": "Thu Oct 19 2023",
+                      "time": "9:59:20 PM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "10pm",
+                      "date": "Thu Oct 19 2023",
+                      "time": "10:59:20 PM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "11pm",
+                      "date": "Thu Oct 19 2023",
+                      "time": "11:59:20 PM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "12am",
+                      "date": "Fri Oct 20 2023",
+                      "time": "12:59:20 AM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "1am",
+                      "date": "Fri Oct 20 2023",
+                      "time": "1:59:20 AM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "2am",
+                      "date": "Fri Oct 20 2023",
+                      "time": "2:59:20 AM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "3am",
+                      "date": "Fri Oct 20 2023",
+                      "time": "3:59:20 AM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "4am",
+                      "date": "Fri Oct 20 2023",
+                      "time": "4:59:20 AM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "5am",
+                      "date": "Fri Oct 20 2023",
+                      "time": "5:59:20 AM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "6am",
+                      "date": "Fri Oct 20 2023",
+                      "time": "6:59:20 AM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "7am",
+                      "date": "Fri Oct 20 2023",
+                      "time": "7:59:20 AM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "8am",
+                      "date": "Fri Oct 20 2023",
+                      "time": "8:59:20 AM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "9am",
+                      "date": "Fri Oct 20 2023",
+                      "time": "9:59:20 AM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "10am",
+                      "date": "Fri Oct 20 2023",
+                      "time": "10:59:20 AM",
+                      "traffic": 5
+                    },
+                    {
+                      "timeframe": "11am",
+                      "date": "Fri Oct 20 2023",
+                      "time": "11:59:20 AM",
+                      "traffic": 1
+                    },
+                    {
+                      "timeframe": "12pm",
+                      "date": "Fri Oct 20 2023",
+                      "time": "12:59:20 PM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "1pm",
+                      "date": "Fri Oct 20 2023",
+                      "time": "1:59:20 PM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "2pm",
+                      "date": "Fri Oct 20 2023",
+                      "time": "2:59:20 PM",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "3pm",
+                      "date": "Fri Oct 20 2023",
+                      "time": "3:59:20 PM",
+                      "traffic": 3
+                    },
+                    {
+                      "timeframe": "4pm",
+                      "date": "Fri Oct 20 2023",
+                      "time": "4:59:20 PM",
+                      "traffic": 0
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/shop/store-traffic/count/3months/{shop_id}": {
+      "get": {
+        "tags": ["Shops"],
+        "summary": "Fetch shop traffic for a particular shop  within 3 months.",
+        "description": "The id of the shop",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shop_id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Store traffic found",
+                  "data": [
+                    {
+                      "timeframe": "Aug",
+                      "year": "2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Sep",
+                      "year": "2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Oct",
+                      "year": "2023",
+                      "traffic": 12
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/shop/store-traffic/count/7days/{shop_id}": {
+      "get": {
+        "tags": ["Shops"],
+        "summary": "Fetch shop traffic for a particular shop within 7 days.",
+        "description": "The id of the shop",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shop_id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Store traffic found",
+                  "data": [
+                    {
+                      "timeframe": "Saturday",
+                      "date": "Sat Oct 14 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Sunday",
+                      "date": "Sun Oct 15 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Monday",
+                      "date": "Mon Oct 16 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Tuesday",
+                      "date": "Tue Oct 17 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Wednesday",
+                      "date": "Wed Oct 18 2023",
+                      "traffic": 0
+                    },
+                    {
+                      "timeframe": "Thursday",
+                      "date": "Thu Oct 19 2023",
+                      "traffic": 3
+                    },
+                    {
+                      "timeframe": "Friday",
+                      "date": "Fri Oct 20 2023",
+                      "traffic": 9
+                    }
+                  ]
                 }
               }
             }
@@ -1116,7 +1827,7 @@
           {
             "name": "timeframe",
             "in": "query",
-            "description": "Comma-separated list of timeframes (e.g., 12m,3m,1yr,7d,24hr)",
+            "description": "list of timeframes (e.g., 12m,3m,1yr,7d,24hr,1d)",
             "required": true,
             "schema": {
               "type": "string"
@@ -1130,6 +1841,57 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SalesReport"
+                },
+                "example": [
+                  {
+                    "hour": "1",
+                    "sum": "123456"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/activities": {
+      "get": {
+        "tags": ["Activities"],
+        "summary": "Retrieve Activities",
+        "description": "Get all activities tied to a merchant.",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "example": {
+                  "errorStatus": false,
+                  "code": "--activities/success",
+                  "message": "activities fetched successfully",
+                  "data": [
+                    {
+                      "id": "57f0925e-86c1-4af9-826a-54f0f43e4f65",
+                      "action": "ORDER PLACED",
+                      "user_id": "a87be40d-8632-4c45-9b44-c893560d58c9",
+                      "title": "order placed by user A",
+                      "description": "A user from your store placed an order",
+                      "createdAt": "2023-10-22T03:26:01.583Z"
+                    }
+                  ]
                 }
               }
             }
@@ -1165,45 +1927,54 @@
                   "$ref": "#/components/schemas/getOrderData"
                 },
                 "example": {
-                  "totalResults": 1,
                   "orders": [
                     {
-                      "order_id": "1122",
-                      "order_price": 12.22,
-                      "createdAt": "2023-10-11T18:00:52.000Z",
-                      "merchant": {
-                        "revenue": [
-                          {
-                            "amount": 3000.5
-                          }
-                        ],
-                        "categories": [
-                          {
-                            "name": "nike"
-                          }
-                        ],
-                        "customer_orders": [
-                          {
-                            "status": "complete",
-                            "sales_report": [
+                      "id": "order_id",
+                      "order_status": "completed",
+                      "date": "2023-10-11T18:00:52.000Z",
+                      "customerInfo": {
+                        "id": "customer-id",
+                        "firstName": "customer-firstName",
+                        "lastName": "customer-lastName"
+                      },
+                      "items": [
+                        {
+                          "price": 1.23,
+                          "order_item_status": "pending",
+                          "category": {
+                            "id": 1,
+                            "name": "books",
+                            "createdAt": "2023-10-11T00:00:00.000Z",
+                            "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
+                            "sub_categories": [
                               {
-                                "sales": 11
+                                "id": 1,
+                                "name": "sub-book",
+                                "parent_category_id": 1,
+                                "createdAt": "2023-10-11T00:00:00.000Z"
                               }
                             ]
                           }
-                        ],
-                        "customer": [
-                          {
-                            "first_name": "customerFirstName",
-                            "last_name": "customerLastName"
-                          }
-                        ],
-                        "product": {
+                        },
+                        {
                           "price": 12.34,
-                          "name": "shoe",
-                          "category_id": 1
+                          "order_item_status": "pending",
+                          "category": {
+                            "id": 2,
+                            "name": "furniture",
+                            "createdAt": "2023-10-11T00:00:00.000Z",
+                            "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
+                            "sub_categories": [
+                              {
+                                "id": 2,
+                                "name": "sub-furniture",
+                                "parent_category_id": 2,
+                                "createdAt": "2023-10-11T00:00:00.000Z"
+                              }
+                            ]
+                          }
                         }
-                      }
+                      ]
                     }
                   ],
                   "pagination": {
@@ -1226,165 +1997,96 @@
             "description": "Internal server error."
           }
         }
-      },
-      "/auth/send-verification": {
-        "post": {
-          "tags": ["Authentication"],
-          "summary": "Send Verification Code",
-          "description": "Sends a verification code to the user's email for account activation.",
-          "requestBody": {
+      }
+    },
+    "/orders": {
+      "get": {
+        "tags": ["Order"],
+        "summary": "Gets all order count withing a timeframe",
+        "description": "Retrieve the total order count within a specific timeframe.",
+        "parameters": [
+          {
+            "name": "timeframe",
+            "in": "query",
+            "description": " values: today, yesterday,one-week-ago and two-weeks-ago ",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "first_name": {
-                      "type": "string",
-                      "example": "John"
-                    },
-                    "last_name": {
-                      "type": "string",
-                      "example": "Doe"
-                    },
-                    "username": {
-                      "type": "string",
-                      "example": "johndoe"
-                    },
-                    "email": {
-                      "type": "string",
-                      "format": "email",
-                      "example": "sicoj92691@elixirsd.com"
-                    },
-                    "password": {
-                      "type": "string",
-                      "format": "password",
-                      "example": "myPassword2021"
-                    },
-                    "refresh_token": {
-                      "type": "string",
-                      "format": "uuid",
-                      "example": "42e2a46a-e56f-4e4d-be0e-0675b7026f58"
-                    }
-                  },
-                  "required": ["first_name", "last_name", "username", "email", "password", "refresh_token"]
+                  "$ref": "#/components/schemas/ordersCount"
                 }
               }
             }
-          },
-          "responses": {
-            "200": {
-              "description": "Verification code sent successfully."
-            },
-            "400": {
-              "description": "Bad request. Please check the request parameters."
-            },
-            "401": {
-              "description": "Unauthorized. Refresh token is invalid or has expired."
-            },
-            "500": {
-              "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/order/status/{order_id}": {
+      "patch": {
+        "tags": ["Order"],
+        "summary": "Update Order Status",
+        "description": "Update the status of a specific order.",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "description": "Order ID",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
-        }
-      },
-      "/auth/confirm-verification": {
-        "post": {
-          "tags": ["Authentication"],
-          "summary": "Confirm Verification Code",
-          "description": "Verifies the verification code against the stored code for the user in the database.",
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "email": {
-                      "type": "string",
-                      "format": "email",
-                      "example": "sicoj92691@elixirsd.com"
-                    },
-                    "verificationCode": {
-                      "type": "string",
-                      "example": "3903"
-                    }
-                  },
-                  "required": ["email", "verificationCode"]
-                }
-              }
-            }
-          },
-          "responses": {
-            "200": {
-              "description": "Verification code confirmed successfully."
-            },
-            "400": {
-              "description": "Bad request. Please check the request parameters."
-            },
-            "401": {
-              "description": "Unauthorized. Verification code is invalid or has expired."
-            },
-            "500": {
-              "description": "Internal server error."
-            }
-          }
-        }
-      },
-      "/order/status/{order_id}": {
-        "patch": {
-          "tags": ["Order"],
-          "summary": "Update Order Status",
-          "description": "Update the status of a specific order.",
-          "parameters": [
-            {
-              "name": "order_id",
-              "in": "path",
-              "description": "Order ID",
-              "required": true,
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
               "schema": {
-                "type": "string"
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["pending", "complete", "failed"],
+                    "example": "complete"
+                  }
+                },
+                "required": ["status"]
               }
             }
-          ],
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "enum": ["pending", "complete", "failed"],
-                      "example": "complete"
-                    }
-                  },
-                  "required": ["status"]
-                }
-              }
-            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order status updated successfully."
           },
-          "responses": {
-            "200": {
-              "description": "Order status updated successfully."
-            },
-            "400": {
-              "description": "Bad request. Please check the request parameters or status value."
-            },
-            "401": {
-              "description": "Unauthorized. Token is invalid or action is not permitted."
-            },
-            "404": {
-              "description": "Order not found."
-            },
-            "500": {
-              "description": "Internal server error."
-            }
+          "400": {
+            "description": "Bad request. Please check the request parameters or status value."
           },
-          "security": [
-            {
-              "BearerAuth": []
-            }
-          ]
-        }
+          "401": {
+            "description": "Unauthorized. Token is invalid or action is not permitted."
+          },
+          "404": {
+            "description": "Order not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
       }
     },
     "/orders/average": {
@@ -1433,7 +2135,7 @@
         ]
       }
     },
-    "/order/search/{name}": {
+    "/orders/search/{name}": {
       "get": {
         "tags": ["Orders"],
         "summary": "Search Order By Product Name",
@@ -1515,53 +2217,6 @@
         ]
       }
     },
-    "/revenue/{order_id}": {
-      "patch": {
-        "tags": ["Revenue"],
-        "summary": "Update Revenue",
-        "description": "Update the revenue based on the order's status",
-        "parameters": [
-          {
-            "name": "order_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "string"
-            },
-            "description": "ID of the order to update revenue for"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "example": {
-                  "message": "Revenue updated successfully",
-                  "data": {
-                    "id": 1,
-                    "user_id": "d7955c27-4d61-4cd6-a6bb-e6402151d51f",
-                    "amount": 1500.0
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "example": {
-                  "error": "--order/not-found",
-                  "message": "Order not found"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/revenues": {
       "get": {
         "tags": ["Revenue"],
@@ -1575,14 +2230,21 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["today", "yesterday", "week"],
+              "enum": ["today", "yesterday", "all"],
               "example": "today"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Revenue fetched successfully"
+            "description": "Revenue fetched successfully",
+            "examples": {
+              "data": {
+                "timeframe": "today",
+                "revenue": 10000.4,
+                "currency": "NGN"
+              }
+            }
           },
           "400": {
             "description": "Missing parameter timeframe"
@@ -1875,31 +2537,18 @@
       "SalesReport": {
         "type": "object",
         "properties": {
-          "id": {
+          "timeframe": {
             "type": "string"
           },
-          "user_id": {
+          "sum": {
             "type": "string"
-          },
-          "sales": {
-            "type": "integer"
-          },
-          "order_id": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
           }
         },
-        "required": ["id", "user_id", "sales", "order_id", "createdAt"]
+        "required": ["timeframe", "sum"]
       },
-      "AddSales Report": {
+      "AddSalesReport": {
         "type": "object",
         "properties": {
-          "user_id": {
-            "type": "string"
-          },
           "order_id": {
             "type": "string"
           },
@@ -1907,9 +2556,8 @@
             "type": "number"
           }
         },
-        "required": ["user_id", "order_id", "sales"],
+        "required": ["order_id", "sales"],
         "example": {
-          "user_id": "fecfd17b-51a3-4288-9bd0-77ac4b7d60a0",
           "order_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
           "sales": 500
         }
@@ -2125,13 +2773,67 @@
           }
         }
       },
-
-      "securitySchemes": {
-        "BearerAuth": {
-          "type": "http",
-          "scheme": "bearer",
-          "bearerFormat": "JWT"
-        }
+      "UpdateDiscount": {
+        "type": "object",
+        "properties": {
+          "discount_type": {
+            "type": "string",
+            "required": false
+          },
+          "amount": {
+            "type": "number",
+            "required": false
+          },
+          "code": {
+            "type": "string",
+            "required": false
+          },
+          "quantity": {
+            "type": "number",
+            "required": false
+          },
+          "maximum_discount_price": {
+            "type": "number",
+            "required": false
+          },
+          "product_ids": {
+            "type": "number",
+            "required": false
+          },
+          "valid_from": {
+            "type": "object",
+            "format": "date-time",
+            "required": false
+          },
+          "valid_to": {
+            "type": "object",
+            "format": "date-time",
+            "required": false
+          }
+        },
+        "example": [
+          {
+            "id": 1,
+            "user_id": "merchant-uuid",
+            "promotion_type": "Discount",
+            "code": "YESSIR123",
+            "discount_type": "Percentage",
+            "quantity": 23,
+            "amount": 22.22,
+            "maximum_discount_price": 200,
+            "valid_from": "2023-10-23T00:00:00.000Z",
+            "valid_to": "2023-10-31T00:00:00.000Z",
+            "createdAt": "2023-10-11T00:00:00.000Z",
+            "updatedAt": "2023-10-11T00:00:00.000Z"
+          }
+        ]
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }

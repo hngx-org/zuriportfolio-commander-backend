@@ -66,7 +66,7 @@ export default class ProductRoute {
     );
 
     this.router.patch(
-      `${this.path}/unpublish/:productId`,
+      `${this.path}s/unpublish/:productId`,
       isAuthenticated,
       useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
     );
@@ -93,7 +93,7 @@ export default class ProductRoute {
     );
 
     this.router.get(
-      `${this.path}s/categories`,
+      `${this.path}/categories`,
       useCatchErrors(this.productController.getAllCategories.bind(this.productController))
     );
 

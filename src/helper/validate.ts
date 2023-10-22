@@ -11,7 +11,6 @@ export const productSchema = Joi.object({
   tax: Joi.number().optional(),
   currency: Joi.string().required(),
   sub_category_id: Joi.number().optional(),
-  // category_id: Joi.number().optional(),
   assets_name: Joi.string().required(),
   assets_link: Joi.string().required(),
   assets_notes: Joi.string().optional(),
@@ -110,7 +109,7 @@ export const updatedDiscountSchema = Joi.object({
 });
 
 export const trackPromotionSchema = Joi.object({
-  promo_id: Joi.string().required(),
+  promo_id: Joi.number().required(),
   productId: Joi.string().required(),
   merchant_id: Joi.string().required(),
 });
