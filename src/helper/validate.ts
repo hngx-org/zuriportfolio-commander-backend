@@ -5,7 +5,7 @@ const customUUIDPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-f
 export const productSchema = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().required(),
-  quantity: Joi.number().min(1).optional().default(1),
+  // quantity: Joi.number().min(1).optional().default(1),
   price: Joi.number().required(),
   discountPrice: Joi.number().min(0).optional().default(0),
   tax: Joi.number().optional(),
