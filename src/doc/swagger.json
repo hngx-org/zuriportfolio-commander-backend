@@ -2309,10 +2309,7 @@
             "type": "string",
             "format": "binary"
           },
-          "shopId": {
-            "type": "string"
-          },
-          "category_id": {
+          "sub_category_id": {
             "type": "integer"
           },
           "name": {
@@ -2321,11 +2318,11 @@
           "description": {
             "type": "string"
           },
-          "quantity": {
-            "type": "integer"
-          },
           "price": {
             "type": "number"
+          },
+          "currency": {
+            "type": "string"
           },
           "discountPrice": {
             "type": "number"
@@ -2348,7 +2345,7 @@
         },
         "required": [
           "image",
-          "shopId",
+          "sub_category_id",
           "name",
           "description",
           "price",
@@ -2356,8 +2353,7 @@
           "assets_name",
           "assets_link",
           "assets_notes",
-          "assets_type",
-          "category_id"
+          "assets_type"
         ],
         "example": {
           "sub_category_id": 1,
