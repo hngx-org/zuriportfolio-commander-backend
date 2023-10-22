@@ -12,6 +12,7 @@ export default class RevenueRoute {
     this.initializeRoutes();
   }
 
+  // get revenue
   initializeRoutes() {
     this.router.get(
       `${this.path}s`,

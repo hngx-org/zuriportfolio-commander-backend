@@ -12,6 +12,7 @@ export default class SalesRoute {
     this.initializeRoutes();
   }
 
+  // get sales reports
   initializeRoutes() {
     this.router.get(
       `${this.path}/reports`,
