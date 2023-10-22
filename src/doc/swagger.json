@@ -2581,22 +2581,6 @@
         },
         "required": ["timeframe", "sum"]
       },
-      "AddSalesReport": {
-        "type": "object",
-        "properties": {
-          "order_id": {
-            "type": "string"
-          },
-          "sales": {
-            "type": "number"
-          }
-        },
-        "required": ["order_id", "sales"],
-        "example": {
-          "order_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-          "sales": 500
-        }
-      },
       "getOrderData": {
         "type": "object",
         "properties": {
