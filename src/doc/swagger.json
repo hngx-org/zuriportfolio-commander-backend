@@ -1827,7 +1827,7 @@
           {
             "name": "timeframe",
             "in": "query",
-            "description": "Comma-separated list of timeframes (e.g., 12m,3m,1yr,7d,24hr)",
+            "description": "list of timeframes (e.g., 12m,3m,1yr,7d,24hr,1d)",
             "required": true,
             "schema": {
               "type": "string"
@@ -1848,48 +1848,6 @@
                     "sum": "123456"
                   }
                 ]
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
-    "/sales/reports": {
-      "post": {
-        "tags": ["Sales"],
-        "summary": "Add Sales Reports",
-        "description": "Add sales report",
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/AddSalesReport"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AddSalesReport"
-                }
               }
             }
           },
