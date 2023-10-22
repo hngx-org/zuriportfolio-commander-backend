@@ -66,6 +66,7 @@ export default class App {
 
     this.app.use('/api', (req, res) => {
       res.sendFile(path.join(__dirname, '..', 'src/public/views', 'index.html'));
+    });
 
     this.app.use('/api/v1', (req, res) => {
      res.sendFile(path.join(__dirname, '..', 'src/public/views', 'index.html'));
