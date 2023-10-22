@@ -800,7 +800,7 @@
         }
       }
     },
-    "/discount": {
+    "/discounts": {
       "post": {
         "summary": "Create a discount",
         "description": "Create a discount for specified products within a given time frame.",
@@ -878,7 +878,7 @@
         }
       }
     },
-    "/discount/{discount_id}": {
+    "/discounts/{discountId}": {
       "delete": {
         "summary": "Delete a discount",
         "description": "Delete a specific discount by providing its unique ID.",
@@ -902,9 +902,54 @@
             "description": "Bad request"
           }
         }
+      },
+      "patch": {
+        "summary": "Update a Discount",
+        "description": "Update an existing discount with the specified ID.",
+        "tags": ["Discount"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discount_id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The ID of the discount"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/UpdateDiscount"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Discount updated successfully",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Invalid discount ID/fields"
+          },
+          "404": {
+            "description": "Discount not found"
+          }
+        }
       }
     },
-    "/discount/promotions": {
+    "/discounts/promotions": {
       "get": {
         "summary": "Retrieve Products with Promotions and number of sales",
         "description": "Retrieve a list of products with associated promotions and the number of sales for each product. Supports pagination.",
@@ -983,54 +1028,7 @@
         }
       }
     },
-    "/discounts/{discountId}": {
-      "patch": {
-        "summary": "Update a Discount",
-        "description": "Update an existing discount with the specified ID.",
-        "tags": ["Discount"],
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "discount_id",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "The ID of the discount"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "$ref": "#/components/schemas/UpdateDiscount"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Discount updated successfully",
-            "content": {
-              "application/json": {}
-            }
-          },
-          "400": {
-            "description": "Invalid discount ID/fields"
-          },
-          "404": {
-            "description": "Discount not found"
-          }
-        }
-      }
-    },
-    "/discount/track": {
+    "/discounts/track": {
       "post": {
         "summary": "Track a Discount",
         "description": "Track a product that contains a discount.",
@@ -1077,7 +1075,7 @@
         }
       }
     },
-    "/shop": {
+    "/shops": {
       "post": {
         "summary": "Create a shop",
         "description": "Create a new shop with the provided details.",
@@ -1113,9 +1111,7 @@
             "description": "Bad request"
           }
         }
-      }
-    },
-    "/shops": {
+      },
       "get": {
         "tags": ["Shops"],
         "summary": "Fetch all shops",
@@ -1159,7 +1155,7 @@
         ]
       }
     },
-    "/shop/store-traffic/count/12months/{shop_id}": {
+    "/shops/store-traffic/count/12months/{shopId}": {
       "get": {
         "tags": ["Shops"],
         "summary": "Fetch shop traffic for a particular shop  within a year.",
@@ -1251,7 +1247,7 @@
         }
       }
     },
-    "/shop/store-traffic/count/30days/{shop_id}": {
+    "/shops/store-traffic/count/30days/{shopId}": {
       "get": {
         "tags": ["Shops"],
         "summary": "Fetch shop traffic for a particular shop  within a 30days.",
@@ -1433,7 +1429,7 @@
         }
       }
     },
-    "/shop/store-traffic/count/24hrs/{shop_id}": {
+    "/shops/store-traffic/count/24hrs/{shopId}": {
       "get": {
         "tags": ["Shops"],
         "summary": "Fetch shop traffic for a particular shop  within 24hrs.",
@@ -1609,7 +1605,7 @@
         }
       }
     },
-    "/shop/store-traffic/count/3months/{shop_id}": {
+    "/shops/store-traffic/count/3months/{shopId}": {
       "get": {
         "tags": ["Shops"],
         "summary": "Fetch shop traffic for a particular shop  within 3 months.",
@@ -1656,7 +1652,7 @@
         }
       }
     },
-    "/shop/store-traffic/count/7days/{shop_id}": {
+    "/shops/store-traffic/count/7days/{shopId}": {
       "get": {
         "tags": ["Shops"],
         "summary": "Fetch shop traffic for a particular shop within 7 days.",
@@ -1723,7 +1719,7 @@
         }
       }
     },
-    "/shop/{shop_id}": {
+    "/shops/{shopId}": {
       "get": {
         "tags": ["Shops"],
         "summary": "Fetch a shop and its products by shopId",
@@ -1785,7 +1781,7 @@
         ]
       }
     },
-    "/shop/store-traffic": {
+    "/shops/store-traffic": {
       "post": {
         "summary": "Used to track user visit to a shop",
         "description": "This endpoint is used to track user visits to a shop.",
