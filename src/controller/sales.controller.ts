@@ -222,7 +222,6 @@ export default class SalesController extends BaseController {
       }
     }
 
-
     if (timeframe === '24hr' || timeframe === '1d') {
       const frames = [];
       for (let i = 1; i < 24; i++) {
