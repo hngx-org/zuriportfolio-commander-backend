@@ -219,7 +219,7 @@
         ]
       }
     },
-    "/product/nopromo": {
+    "/products/nopromo": {
       "get": {
         "tags": ["Product"],
         "summary": "Fetch all products without promo",

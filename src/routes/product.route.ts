@@ -143,7 +143,7 @@ export default class ProductRoute {
 
     // get merchant products without promo
     this.router.get(
-      `${this.path}/nopromo`,
+      `${this.path}s/nopromo`,
       isAuthenticated,
       useCatchErrors(this.productController.getProductWithoutPromo.bind(this.productController))
     );
