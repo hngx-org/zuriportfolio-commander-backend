@@ -39,6 +39,11 @@ export default class DiscountController extends BaseController {
 
   async createDiscount(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--discount/invalid-user', 'User not found', 404);
+    }
+
     const validateSchema = createDiscountSchema.validate(req.body);
     if (validateSchema.error) {
       return this.error(res, '--discount/invalid-fields', validateSchema.error.message, 400);
@@ -90,7 +95,7 @@ export default class DiscountController extends BaseController {
     // make sure product added has no discount / promo
     if (product_ids.length > 0) {
       const result = await this.canAddPromoToProducts(product_ids, userId);
-      console.log(result);
+      
       if (result.length > 0) {
         logger.error(`One of this product already has a promo: ${notFoundProd.join(' ')}`);
         return this.error(res, '--discount/promo-exist', `One or more of the product already has a promo.`, 400);
@@ -224,7 +229,19 @@ export default class DiscountController extends BaseController {
     );
   }
 
-  async computePromoUsage(prodId: string, promoId: number, userId: string) {
+  async computePromoUsage(prodId: string, promoId: number, userId: string, res: Response) {
+    if (!prodId) {
+      return this.error(res, '--discount/error', 'Product ID is required', 400);
+    }
+  
+    if (isNaN(promoId)) {
+      return this.error(res, '--discount/error', 'Invalid promo ID', 400);
+    }
+
+    if (!userId) {
+      return this.error(res, '--discount/error', 'User ID is required', 400);
+    }
+
     const trackPromos = await prisma.track_promotion.findMany({
       where: {
         AND: {
@@ -237,13 +254,15 @@ export default class DiscountController extends BaseController {
     return trackPromos.length;
   }
 
-  async isPromoExpired(promoId: number) {
+  async isPromoExpired(promoId: number, res: Response) {
+    if (isNaN(promoId)) {
+      return this.error(res, '--discount/error', 'Invalid promo ID', 400);
+    }
+
     const currentDate = new Date();
     const promo = await prisma.promotion.findFirst({
       where: { id: promoId },
     });
-
-    console.log(promo);
 
     if (promo === null) return true;
 
@@ -263,6 +282,11 @@ export default class DiscountController extends BaseController {
 
   async getAllDiscount(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--discount/all', 'User not found', 404);
+    }
+
     const allPromotions = [];
 
     const promos = await prisma.promotion.findMany({
@@ -361,6 +385,11 @@ export default class DiscountController extends BaseController {
 
   async deleteDiscount(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--discount/delete', 'User not found', 404);
+    }
+
     const discountId = req.params['discount_id'] as string;
 
     if (!discountId || isNaN(+discountId)) {
@@ -385,6 +414,10 @@ export default class DiscountController extends BaseController {
 
   async updateDiscount(req: Request, res: Response) {
     const userId = (req as any).user?.id ?? TestUserId;
+
+    if (!userId) {
+      return this.error(res, '--discount/edit', 'User not found', 404);
+    }
     const discountId = req.params['discount_id'] as string;
 
     if (!discountId || isNaN(+discountId)) {
