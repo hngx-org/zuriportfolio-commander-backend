@@ -12,7 +12,7 @@ const upload = Multer({
 export default class ProductRoute {
   router = express.Router();
   productController = new productController();
-  path = '/v1/product';
+  path = '/product';
 
   constructor() {
     this.initializeRoutes();
