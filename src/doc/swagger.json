@@ -173,7 +173,7 @@
         }
       }
     },
-    "/product": {
+    "/products": {
       "get": {
         "tags": ["Product"],
         "summary": "Fetch all products",
@@ -243,7 +243,7 @@
         ]
       }
     },
-    "/product/marketplace": {
+    "/products/marketplace": {
       "get": {
         "tags": ["Product"],
         "summary": "Fetch all marketplace products",
@@ -371,7 +371,7 @@
         ]
       }
     },
-    "/product/categories": {
+    "/products/categories": {
       "get": {
         "summary": "Retrieve Product Categories",
         "description": "Retrieves a list of all product categories along with their respective subcategories. Each category object includes an ID, name, associated product ID, creation timestamp, and an array of its subcategories with their respective IDs, names, parent category IDs, and creation timestamps.",
@@ -729,7 +729,7 @@
         ]
       }
     },
-    "/product/unpublish/{productId}": {
+    "/products/{productId}/unpublish": {
       "patch": {
         "summary": "Unpublish a product",
         "tags": ["Product"],

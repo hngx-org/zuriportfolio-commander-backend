@@ -20,7 +20,7 @@ export default class ProductRoute {
 
   initializeRoutes() {
     this.router.patch(
-      `${this.path}/publish/:productId`,
+      `${this.path}s/:productId/publish`,
       isAuthenticated,
       useCatchErrors(this.productController.publishProduct.bind(this.productController))
     );
@@ -66,7 +66,7 @@ export default class ProductRoute {
     );
 
     this.router.patch(
-      `${this.path}/unpublish/:productId`,
+      `${this.path}s/:productId/unpublish`,
       isAuthenticated,
       useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
     );
@@ -77,7 +77,7 @@ export default class ProductRoute {
     );
     // get product on marketplace
     this.router.get(
-      `${this.path}/marketplace`,
+      `${this.path}s/marketplace`,
       useCatchErrors(this.productController.getMarketplaceProducts.bind(this.productController))
     );
     this.router.delete(
@@ -93,7 +93,7 @@ export default class ProductRoute {
     );
 
     this.router.get(
-      `${this.path}/categories`,
+      `${this.path}s/categories`,
       useCatchErrors(this.productController.getAllCategories.bind(this.productController))
     );
 
