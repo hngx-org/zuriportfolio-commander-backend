@@ -284,7 +284,7 @@
         }
       }
     },
-    "/product/add": {
+    "/products/add": {
       "post": {
         "tags": ["Product"],
         "summary": "Create a new Product",
@@ -317,7 +317,7 @@
         ]
       }
     },
-    "/product/category": {
+    "/products/category": {
       "post": {
         "tags": ["Product"],
         "summary": "Create a product category",
@@ -403,7 +403,7 @@
         }
       }
     },
-    "/product/{product_id}": {
+    "/products/{product_id}": {
       "get": {
         "tags": ["Product"],
         "summary": "Fetch product by id",
@@ -469,7 +469,7 @@
         ]
       }
     },
-    "/product/assets/{product_id}": {
+    "/products/assets/{product_id}": {
       "patch": {
         "tags": ["Product"],
         "summary": "Update product assets",
@@ -537,7 +537,7 @@
         ]
       }
     },
-    "/product/{product_id}/image": {
+    "/products/{product_id}/image": {
       "post": {
         "tags": ["Product"],
         "summary": "Upload a new Product Image",
