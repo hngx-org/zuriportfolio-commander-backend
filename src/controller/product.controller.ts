@@ -82,7 +82,6 @@ export default class ProductController extends BaseController {
       description,
       discountPrice,
       price,
-      quantity,
       tax,
       sub_category_id,
       assets_link,
@@ -113,6 +112,12 @@ export default class ProductController extends BaseController {
     }
 
     // check if parent or child category exists
+    // const subCatExists = await prisma.product_sub_category.findFirst({
+    //   where: {
+    //     id: +sub_category_id,
+    //   },
+    //   include: { parent_category: true },
+    // });
     const subCatExists = await prisma.product_sub_category.findFirst({
       where: {
         id: +sub_category_id,
@@ -133,11 +138,9 @@ export default class ProductController extends BaseController {
     // check if user exists
     const placeHolderImg = 'https://placehold.co/600x400/EEE/31343C?text=placeholder';
 
-    const prodId = uuidv4();
-
     const product = await prisma.product.create({
       data: {
-        id: prodId,
+        //id: prodId,
         name,
         currency,
         description,
@@ -160,9 +163,14 @@ export default class ProductController extends BaseController {
             id: shopExists.id,
           },
         },
+        sub_category: {
+          connect: {
+            id: subCatExists.id,
+          },
+        },
         category: {
           connect: {
-            id: +sub_category_id,
+            id: subCatExists.parent_category.id,
           },
         },
       },
@@ -175,7 +183,7 @@ export default class ProductController extends BaseController {
         name: assets_name,
         notes: assets_notes ?? '',
         link: assets_link,
-        product_id: prodId,
+        product_id: product.id,
         type: assets_type,
       },
     });
@@ -184,9 +192,12 @@ export default class ProductController extends BaseController {
       ...product,
       image: (product as any)?.image,
       category: {
-        id: subCatExists.id,
-        name: subCatExists.name,
-        parent: subCatExists.parent_category.name,
+        id: subCatExists.parent_category.id,
+        sub_category: {
+          id: subCatExists.id,
+          name: subCatExists.name,
+        },
+        parent: subCatExists.name,
       },
     });
   }

@@ -20,7 +20,7 @@ export default class ProductRoute {
 
   initializeRoutes() {
     this.router.patch(
-      `${this.path}/publish/:productId`,
+      `${this.path}s/:productId/publish`,
       isAuthenticated,
       useCatchErrors(this.productController.publishProduct.bind(this.productController))
     );
@@ -53,7 +53,7 @@ export default class ProductRoute {
     );
 
     this.router.patch(
-      `${this.path}/:product_id/image/:image_id`,
+      `${this.path}s/:product_id/image/:image_id`,
       upload.single('image'),
       isAuthenticated,
       useCatchErrors(this.productController.updateImage.bind(this.productController))
@@ -66,7 +66,7 @@ export default class ProductRoute {
     );
 
     this.router.patch(
-      `${this.path}s/unpublish/:productId`,
+      `${this.path}s/:productId/unpublish`,
       isAuthenticated,
       useCatchErrors(this.productController.unpublishProduct.bind(this.productController))
     );
@@ -93,7 +93,7 @@ export default class ProductRoute {
     );
 
     this.router.get(
-      `${this.path}/categories`,
+      `${this.path}s/categories`,
       useCatchErrors(this.productController.getAllCategories.bind(this.productController))
     );
 
@@ -136,7 +136,7 @@ export default class ProductRoute {
 
     // get products on merchant account
     this.router.get(
-      `${this.path}s`,
+      `${this.path}`,
       isAuthenticated,
       useCatchErrors(this.productController.getAllProducts.bind(this.productController))
     );

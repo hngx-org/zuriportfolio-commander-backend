@@ -103,7 +103,7 @@ model order {
 }
 
 model order_item {
-    id             Int          @id @unique
+    id             Int         @id @default(autoincrement())
     order_id       String
     product_id     String
     merchant_id    String
@@ -124,22 +124,23 @@ model order_item {
 }
 
 model product {
-    id             String         @id @unique
-    user_id        String
-    shop_id        String
-    category_id    Int
-    name           String
-    description    String
-    quantity       Int            @default(1)
-    price          Float
-    discount_price Float          @default(0)
-    tax            Float
-    admin_status   ADMIN_STATUS   @default(pending)
-    is_published   Boolean        @default(false)
-    is_deleted     product_status @default(active)
-    currency       String
-    createdAt      DateTime       @default(now())
-    updatedAt      DateTime       @default(now())
+    id              String         @id @default(uuid())
+    user_id         String
+    shop_id         String
+    category_id     Int
+    sub_category_id Int
+    name            String
+    description     String
+    quantity        Int            @default(1)
+    price           Float
+    discount_price  Float          @default(0)
+    tax             Float
+    admin_status    ADMIN_STATUS   @default(pending)
+    is_published    Boolean        @default(false)
+    is_deleted      product_status @default(active)
+    currency        String
+    createdAt       DateTime       @default(now())
+    updatedAt       DateTime       @default(now())
 
     image           product_image[]
     track_promotion track_promotion[]
@@ -149,7 +150,8 @@ model product {
     user           user?                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
     shop           shop                    @relation(fields: [shop_id], references: [id], onDelete: Cascade)
     digital_assets product_digital_assets?
-    sub_category   product_sub_category    @relation(fields: [category_id], references: [id])
+    category       product_category        @relation(fields: [category_id], references: [id]) //! Remove this later on.
+    sub_category   product_sub_category    @relation(fields: [sub_category_id], references: [id])
     //   rating
 }
 
@@ -160,7 +162,6 @@ model product_digital_assets {
     link       String
     type       PRODUCT_ASSET_TYPE @default(external)
     product_id String             @unique
-    // user_id String
     created_at DateTime           @default(now())
     updated_at DateTime           @default(now())
 
@@ -181,6 +182,7 @@ model product_category {
     user_id   String
     user      user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
+    product        product[] //! Remove this later on
     sub_categories product_sub_category[]
 }
 
@@ -284,13 +286,13 @@ model sales_report {
 }
 
 model activity {
-    id          String             @id
+    id          String   @id @default(uuid())
     action      String
     user_id     String
     title       String
     description String
-    user_type   ACTIVITY_USER_TYPE
-    createdAt   DateTime           @default(now())
+    // user_type   ACTIVITY_USER_TYPE
+    createdAt   DateTime @default(now())
 
     user user @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }

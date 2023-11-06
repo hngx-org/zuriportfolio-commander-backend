@@ -7,6 +7,7 @@ import HandleErrors from './middlewares/error';
 import { Routes } from './@types';
 import swaggerUi from 'swagger-ui-express';
 import swagggerJson from './doc/swagger.json';
+import path from 'path';
 
 export default class App {
   public app: express.Application;
@@ -31,15 +32,16 @@ export default class App {
       cors({
         origin: '*',
         credentials: true,
-      }),
+      })
     );
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
+    this.app.use('/', express.static(path.join(__dirname, '..', 'src/public')));
   }
 
   initSwaggerUI() {
     // handle swagger-doc
-    this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swagggerJson));
+    this.app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swagggerJson));
   }
 
   listen() {
@@ -54,25 +56,32 @@ export default class App {
   initializedRoutes(routes: Routes[]) {
     // initialize all routes middleware
     routes.forEach((route) => {
-      this.app.use('/api', route.router);
+      this.app.use('/api/v1', route.router);
     });
 
     this.app.use('/', (req, res) => {
-      res.json({ message: 'Youve reached Zuriportfolio shop internal api' });
+      res.sendFile(path.join(__dirname, '..', 'src/public/views', 'index.html'));
     });
 
+
     this.app.use('/api', (req, res) => {
-      res.json({ message: 'Youve reached Zuriportfolio shop internal api' });
+      res.sendFile(path.join(__dirname, '..', 'src/public/views', 'index.html'));
+
+    this.app.use('/api/v1', (req, res) => {
+     res.sendFile(path.join(__dirname, '..', 'src/public/views', 'index.html'));
     });
 
     this.initSwaggerUI();
 
     this.app.all('*', (req, res) => {
-      return res.status(404).json({
-        errorStatus: true,
-        code: '--route/route-not-found',
-        message: 'The requested route was not found.',
-      });
+      res.status(404);
+      if (req.accepts('html')) {
+        return res.sendFile(path.join(__dirname, '..', 'src/public/views', '404.html'));
+      } else if (req.accepts('json')) {
+        return res.json({ message: '404 Not Found' });
+      } else {
+        return res.type('txt').send('404 Not Found');
+      }
     });
     // handle global errors
     this.app.use(HandleErrors);

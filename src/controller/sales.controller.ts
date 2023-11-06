@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import BaseController from './base.controller';
 import logger from '../config/logger';
 import prisma from '../config/prisma';
-import { AddSalesReportType } from '@types';
-import { saleSchema } from './../helper/validate';
-import { v4 as uuidv4 } from 'uuid';
+import { TestUserId } from '../config/test';
+
+type ValidTimeFrame = '1d' | '7d' | '30d' | '3m' | '12m' | '1yr' | '24hr';
 
 export default class SalesController extends BaseController {
   constructor() {
@@ -14,7 +14,7 @@ export default class SalesController extends BaseController {
   async getAllReport(req: Request, res: Response) {
     try {
       // Get the user_id from the request
-      const userId = (req as any).user?.id // Replace with your actual logic to get user_id.
+      const userId = (req as any).user?.id ?? TestUserId; // Replace with your actual logic to get user_id.
 
       // Parse the "timeframe" query parameter
       const timeframe = req.query.timeframe;
@@ -23,32 +23,32 @@ export default class SalesController extends BaseController {
         logger.error('User not found');
         return this.error(res, '/api/sales/reports', 'User not found', 404);
       }
-      
+
       let salesReports;
       let start_date, end_date;
-      let date = new Date()
+      let date = new Date();
 
       // // Filter the sales reports based on the requested timeframe
       switch (timeframe) {
-        case "24h":
-          start_date = date.toISOString()
-          date.setHours(date.getHours() - 24)
-          end_date = date.toISOString()
+        case '24h':
+          start_date = date.toISOString();
+          date.setHours(date.getHours() - 24);
+          end_date = date.toISOString();
 
-        salesReports = await prisma.$queryRaw`
+          salesReports = await prisma.$queryRaw`
           SELECT
             EXTRACT(HOUR FROM "createdAt") AS hour, SUM(order_price)
           FROM order_item
           WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
           GROUP BY EXTRACT(HOUR FROM "createdAt")
           ORDER BY hour asc;
-        `
-          break
+        `;
+          break;
 
-        case "7d":
-          start_date = date.toISOString()
-          date.setDate(date.getDate() - 7)
-          end_date = date.toISOString()
+        case '7d':
+          start_date = date.toISOString();
+          date.setDate(date.getDate() - 7);
+          end_date = date.toISOString();
 
           salesReports = await prisma.$queryRaw`
           SELECT
@@ -57,13 +57,13 @@ export default class SalesController extends BaseController {
           WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
           GROUP BY EXTRACT(DAY FROM "createdAt")
           ORDER BY day asc;
-        `
-          break
+        `;
+          break;
 
-        case "3m":
-          start_date = date.toISOString()
-          date.setDate(date.getMonth() - 3)
-          end_date = date.toISOString()
+        case '3m':
+          start_date = date.toISOString();
+          date.setDate(date.getMonth() - 3);
+          end_date = date.toISOString();
 
           salesReports = await prisma.$queryRaw`
           SELECT
@@ -72,13 +72,13 @@ export default class SalesController extends BaseController {
           WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
           GROUP BY EXTRACT(QUARTER FROM "createdAt")
           ORDER BY quarter asc;
-        `
-          break
+        `;
+          break;
 
-        case "12m":
-          start_date = date.toISOString()
-          date.setDate(date.getMonth() - 12)
-          end_date = date.toISOString()
+        case '12m':
+          start_date = date.toISOString();
+          date.setDate(date.getMonth() - 12);
+          end_date = date.toISOString();
 
           salesReports = await prisma.$queryRaw`
           SELECT
@@ -87,22 +87,22 @@ export default class SalesController extends BaseController {
           WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
           GROUP BY EXTRACT(MONTH FROM "createdAt")
           ORDER BY month asc;
-        `
-          break
+        `;
+          break;
 
-        case "1y":
+        case '1y':
           salesReports = await prisma.$queryRaw`
           SELECT
             EXTRACT(YEAR FROM "createdAt") AS year, SUM(order_price)
           FROM order_item
           GROUP BY EXTRACT(YEAR FROM "createdAt")
           ORDER BY year asc;
-        `
-          break
+        `;
+          break;
         default:
-          start_date = date.toISOString()
-          date.setHours(date.getHours() - 24)
-          end_date = date.toISOString()
+          start_date = date.toISOString();
+          date.setHours(date.getHours() - 24);
+          end_date = date.toISOString();
 
           salesReports = await prisma.$queryRaw`
             SELECT
@@ -111,7 +111,7 @@ export default class SalesController extends BaseController {
             WHERE "createdAt" >= ${end_date}::timestamp AND "createdAt" <= ${start_date}::timestamp
             GROUP BY EXTRACT(HOUR FROM "createdAt")
             ORDER BY hour asc;
-          `
+          `;
       }
       this.success(res, '/api/sales/reports', 'Sales reports fetched successfully', 200, salesReports);
     } catch (error) {
@@ -120,38 +120,161 @@ export default class SalesController extends BaseController {
     }
   }
 
-  async addReport(req: Request, res: Response) {
-    const payload: AddSalesReportType = req.body;
-    const { error } = saleSchema.validate(payload);
+  getFrameLabel(date: Date, timeframe: ValidTimeFrame) {
+    const validDays = ['7d', '30d'];
+    const validHr = ['24hr', '1d'];
+    const validMonths = ['3m', '12m', '1yr'];
+    let label = '';
+    if (validHr.includes(timeframe)) {
+      // Format the date as "YYYY-MM-DD"
+      const formattedDate = date.toISOString().split('T')[0];
 
-    if (error) {
-      return this.error(res, '--sales/invalid-fields', error?.message ?? 'missing order details', 400);
+      // Convert hours to AM/PM format
+      const hours = date.getHours();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
+
+      label = `${formattedDate} ${formattedHours} ${ampm}`;
+    }
+    if (validDays.includes(timeframe)) {
+      label = date.toLocaleString('en-US', { weekday: 'short' });
+    }
+    if (validMonths.includes(timeframe)) {
+      label = date.toLocaleString('en-US', { month: 'long' });
+    }
+    return label;
+  }
+
+  async groupOrderItemsByTimeframe(timeframe, userId) {
+    // Calculate the start date based on the selected timeframe
+    const currentDate = new Date();
+    let startDate = new Date();
+
+    switch (timeframe) {
+      case '3m':
+        startDate.setMonth(currentDate.getMonth() - 3);
+        break;
+      case '12m':
+        startDate.setMonth(currentDate.getMonth() - 12);
+        break;
+      case '24hr':
+      case '1d':
+        startDate.setDate(currentDate.getDate() - 1);
+        startDate.setHours(0, 0, 0, 0);
+        break;
+      case '7d':
+        startDate.setDate(currentDate.getDate() - 7);
+        break;
+      case '30d':
+        startDate.setDate(currentDate.getDate() - 30);
+        break;
+      case '1yr':
+        startDate.setFullYear(currentDate.getFullYear() - 1);
+        break;
+      default:
+        break;
     }
 
-    const id = uuidv4();
-    const { user_id, sales, order_id } = payload;
-
-    // check if user exist
-    const userExists = await prisma.user.findFirst({
-      where: { id: user_id },
-    });
-
-    if (!userExists) {
-      return this.error(res, '--shop/merchant-not found', 'merchant not find', 404);
-    }
-
-    // create sales report
-    const created = await prisma.sales_report.create({
-      data: {
-        id,
-        user_id,
-        sales,
-        order_id,
+    // Query order_items data within the specified timeframe
+    const orderItems = await prisma.order_item.findMany({
+      where: {
+        merchant_id: userId,
+        createdAt: {
+          gte: startDate,
+          lte: currentDate,
+        },
+      },
+      include: {
+        product: true,
       },
     });
 
-    this.success(res, 'Sales report added', 'Sales report has been added successfully', 201, {
-      ...created,
-    });
+    // Create a report object with default values
+    const report = {
+      timeframe: timeframe,
+      reports: [],
+    };
+
+    // Create a map to store sales data for each month
+    const timeframeSales = new Map();
+
+    while (startDate <= currentDate) {
+      const frameLabel = this.getFrameLabel(startDate, timeframe);
+      timeframeSales.set(frameLabel, 0);
+
+      incrementDate(startDate, timeframe);
+    }
+
+    function incrementDate(date, timeframe) {
+      switch (timeframe) {
+        case '1m':
+        case '3m':
+        case '12m':
+        case '1yr':
+          date.setMonth(date.getMonth() + 1);
+          break;
+        case '1d':
+        case '30d':
+          date.setDate(date.getDate() + 1);
+          break;
+        default:
+          break;
+      }
+    }
+
+    if (timeframe === '24hr' || timeframe === '1d') {
+      const frames = [];
+      for (let i = 1; i < 24; i++) {
+        const date = new Date();
+        date.setHours(i);
+        const frameLabel = this.getFrameLabel(date, timeframe);
+        frames.push({ frame: frameLabel, sales: 0 });
+      }
+      // Set the frames array as the report.reports
+      report.reports = frames;
+    }
+
+    if (orderItems.length > 0) {
+      for (const item of orderItems) {
+        const createdAt = new Date(item.createdAt);
+        const promo = item.promo_id;
+        let sales = 0;
+        let currentSales;
+
+        if (promo) {
+          sales = item.order_price + item.order_VAT - item.order_discount;
+        } else {
+          sales = item.order_price + item.order_VAT;
+        }
+        if (timeframe === '24hr') {
+          const hour = createdAt.getHours();
+          currentSales = timeframeSales.get(hour) || 0;
+          timeframeSales.set(hour, currentSales + sales);
+
+          const frameLabel = this.getFrameLabel(createdAt, timeframe);
+          timeframeSales.set(frameLabel, currentSales + sales);
+        } else {
+          const frameLabel = this.getFrameLabel(createdAt, timeframe);
+          currentSales = timeframeSales.get(frameLabel) || 0;
+          timeframeSales.set(frameLabel, currentSales + sales);
+        }
+      }
+
+      // Convert the timeframeSales map to the salesReport format
+      timeframeSales.forEach((sales, frameLabel) => {
+        report.reports.push({ frame: frameLabel, sales, currency: orderItems[0].product.currency });
+      });
+    }
+
+    return report;
+  }
+
+  async getSalesReports(req: Request, res: Response) {
+    const userId = (req as any).user?.id ?? TestUserId;
+    const timeframe = req.query.timeframe ?? '7d';
+
+    const result = await this.groupOrderItemsByTimeframe(timeframe, userId);
+
+    this.success(res, '--sales-report/success', 'sales report fetched', 200, result);
   }
 }

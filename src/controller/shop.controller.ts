@@ -30,7 +30,6 @@ export default class ShopController extends BaseController {
     if (createdShops.length > 0) {
       return this.error(res, '--shop/shops-exists', `Sorry, you can only create one shop per account.`, 400);
     }
-
     const shop = await prisma.shop.create({
       data: {
         id,
@@ -162,15 +161,29 @@ export default class ShopController extends BaseController {
   } // end of shop traffic
 
   // Fetch the shop by its ID
-  async getShopId(req: Request, res: Response) {
+  async getProductsByShopId(req: Request, res: Response) {
     const shopId = req.params.shop_id;
 
     if (!isUUID(shopId)) {
       return this.error(res, '--shop/invalid-id', 'Invalid uuid format.', 400);
     }
+    const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : 12;
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    // Fetch the total count of products for pagination
+    const totalCount = await prisma.product.count({
+      where: {
+        shop_id: shopId,
+        is_deleted: 'active',
+      },
+    });
+
+    // Calculate the total number of pages
+    const totalPages = Math.ceil(totalCount / pageSize);
 
     // Fetch the shop associated with the merchant, including all its products
     const shop = await prisma.shop.findFirst({
+      skip: pageSize * (page - 1),
+      take: pageSize,
       where: {
         AND: {
           id: shopId,
@@ -198,7 +211,15 @@ export default class ShopController extends BaseController {
       `Shop and Products for Merchant ${shopId} Shown`,
       'Shop and its products retrieved successfully',
       200,
-      shop
+      {
+        shop,
+        pagination: {
+          totalItems: totalCount,
+          totalPages,
+          currentPage: page,
+          pageSize,
+        },
+      },
     );
   }
 

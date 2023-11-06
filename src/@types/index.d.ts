@@ -28,7 +28,6 @@ export interface TrackPromo {
 }
 
 export interface AddSalesReportType {
-  user_id: string;
   sales: number;
   order_id: string;
 }
@@ -53,7 +52,7 @@ export interface CreateDiscountType {
   discount_type: string;
   amount: number;
   quantity: number;
-  maximum_discount_price: number;
+  maximum_discount_price?: number;
   product_ids: string[];
   valid_from: string;
   valid_to: string;
@@ -64,7 +63,7 @@ export interface UpdateDiscountType {
   amount: number;
   code: string;
   quantity: number;
-  maximum_discount_price: number;
+  maximum_discount_price?: number;
   product_ids: string[];
   valid_from: string;
   valid_to: string;
